@@ -1,137 +1,92 @@
 # KeystoneDataHQ
 
-KeystoneDataHQ is a premium, dark-theme Executive Revenue Intelligence Platform designed for small IT consulting firms (5–20 employees).
-
-This project is being built as a commercial SaaS-ready prototype with future backend scalability in mind.
+Executive Revenue Intelligence Platform  
+For Scaling IT Consulting Firms
 
 ---
 
-## 🚀 Product Vision
+## Overview
 
-KeystoneDataHQ helps consulting founders:
+KeystoneDataHQ is a commercial SaaS product under development.
 
-- Gain full revenue visibility
+It provides executive-level revenue visibility, profitability analysis, consultant utilization tracking, and forward-looking forecasting for small IT consulting firms (5–20 employees).
+
+This repository contains the frontend SaaS-ready prototype built with scalable architecture in mind.
+
+This is a proprietary commercial system.
+
+---
+
+## Product Objective
+
+KeystoneDataHQ enables consulting founders to:
+
+- Gain real-time revenue clarity
 - Identify low-margin clients
 - Monitor consultant utilization
-- Forecast 90-day performance
-- Improve profitability clarity
+- Protect profit margins
+- Forecast next 90 days with confidence
 
-This is not just a dashboard.
-It is a decision-making command center.
+The platform is designed as an executive decision-making command center.
 
 ---
 
-## 🧱 Tech Stack
+## Current Development Phase
 
-### Frontend
+Phase: SaaS-Ready Frontend Prototype
+
+- Dark premium executive interface
+- Modular architecture
+- Structured mock data
+- Routing-based SaaS layout
+- Backend-ready structure
+
+Future phases include:
+
+- FastAPI backend integration
+- PostgreSQL database
+- Multi-tenant account system
+- Authentication layer
+- API data ingestion
+
+---
+
+## Tech Stack
+
+Frontend:
 - React (Vite)
 - TypeScript
 - TailwindCSS
-- React Router DOM
-- Recharts (data visualization)
-- Lucide React (icons)
-- clsx + tailwind-merge (utility helpers)
+- React Router
+- Recharts
+- Lucide React
 
-### Backend (Planned Phase)
+Backend (Planned):
 - FastAPI
 - PostgreSQL
 - Multi-tenant architecture
-- Authentication layer
-
-Frontend is currently powered by structured mock data and built to support future API integration.
 
 ---
 
-## 🎨 Design Philosophy
+## Architecture Principles
 
-- Dark executive theme (`#0f1117` base)
-- Electric blue accent (`#3b82f6`)
-- Minimal and premium layout
-- Generous spacing
-- Rounded UI (12–16px)
-- No visual clutter
-- Calm, executive experience
+- Modular component system
+- Reusable UI primitives
+- Clean folder separation
+- Backend-ready data structure
+- Scalable state handling
 
-Inspired by:
-Stripe Dashboard + Linear (dark mode).
+Design Philosophy:
+Minimal, executive, calm, premium.
 
 ---
 
-## 📁 Project Structure
+## Commercial Status
 
+This project is private and proprietary.
 
-src/
-components/
-layout/
-ui/
-charts/
-pages/
-data/
-hooks/
-App.tsx
-main.tsx
+Not open source.  
+Not licensed for redistribution.  
+Not intended for public collaboration.
 
-
-### Key Modules
-
-- **Overview** – Executive KPI snapshot
-- **Revenue** – MRR, service mix, YTD growth
-- **Clients** – Profitability & risk tracking
-- **Consultants** – Utilization intelligence
-- **Forecast** – 90-day revenue modeling
-
----
-
-## ⚙️ Installation
-
-Clone the repository:
-
-```bash
-git clone <repo-url>
-cd keystone
-
-Install dependencies:
-
-npm install
-
-Run development server:
-
-npm run dev
-
-Build for production:
-
-npm run build
-📊 Current Development Phase
-
-Phase 1: SaaS-ready frontend prototype
-Phase 2: API integration & authentication
-Phase 3: Multi-tenant backend architecture
-Phase 4: Commercial rollout
-
-💰 Monetization Strategy (Planned)
-
-Setup fee: $2,500 – $5,000
-
-Monthly subscription: $400 – $1,000
-
-Future productized SaaS tiering
-
-🧠 Long-Term Vision
-
-KeystoneDataHQ will evolve into a scalable revenue intelligence platform serving consulting firms globally.
-
-This repository represents the foundation of that system.
-
-📄 License
-
-Proprietary – All rights reserved.
-
-
----
-
-If you want, I can also:
-
-- Create a **clean landing page README version** (more marketing tone)
-- Or a **technical documentation version** (more developer-focused)
-
-Since this is a revenue asset, both eventually matter.
+All rights reserved.
