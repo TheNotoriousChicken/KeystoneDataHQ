@@ -18,7 +18,7 @@ export default function DataTable<T>({ columns, data, className }: DataTableProp
     return (
         <div className={cn("overflow-x-auto", className)}>
             <table className="w-full text-left border-collapse">
-                <thead>
+                <thead className="bg-background/50 backdrop-blur-sm">
                     <tr>
                         {columns.map((col, i) => (
                             <th
@@ -40,7 +40,7 @@ export default function DataTable<T>({ columns, data, className }: DataTableProp
                     {data.map((row, rowIndex) => (
                         <tr
                             key={rowIndex}
-                            className="border-b border-border hover:bg-surfaceHover/50 transition-colors last:border-0"
+                            className="border-b border-border border-l-2 border-l-transparent hover:bg-surfaceHover/40 hover:border-l-primary transition-all duration-200 last:border-b-0"
                         >
                             {columns.map((col, colIndex) => (
                                 <td

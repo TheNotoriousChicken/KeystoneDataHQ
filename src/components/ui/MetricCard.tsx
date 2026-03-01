@@ -20,12 +20,14 @@ export default function MetricCard({
     className,
 }: MetricCardProps) {
     const TrendIcon = isGood ? TrendingUp : TrendingDown;
-    const trendColorClass = isGood ? "text-emerald-400" : "text-rose-400";
+    const trendColorClass = isGood
+        ? "bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 px-2 py-0.5 rounded-full"
+        : "bg-rose-400/10 text-rose-400 border border-rose-400/20 px-2 py-0.5 rounded-full";
 
     return (
         <Card className={cn("flex flex-col gap-4", className)}>
             <div className="text-sm font-medium text-text-muted">{title}</div>
-            <div className="text-3xl font-semibold text-text-main">{value}</div>
+            <div className="text-3xl font-bold tracking-tight text-text-main">{value}</div>
             <div className="flex items-center gap-2 text-sm mt-auto text-text-muted">
                 <span className={cn("flex items-center gap-1 font-medium", trendColorClass)}>
                     <TrendIcon className="w-4 h-4" />
