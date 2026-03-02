@@ -1,9 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #0F172A;
+  --color-brand-surface: #1E293B;
+  --color-brand-primary: #06B6D4;
+  --color-brand-primary-hover: #0891B2;
+  --color-brand-secondary: #10B981;
+  --color-brand-text: #FFFFFF;
+  --color-brand-muted: #94A3B8;
+  --color-brand-border: #334155;
+
+  --font-sans: "Outfit", system-ui, sans-serif;
+
+  --radius-soft: 12px;
+}
 
 @layer base {
   body {
-    @apply bg-background text-text-main font-sans antialiased;
+    @apply bg-brand-bg text-brand-text font-sans antialiased;
   }
+}
+
+.glass-panel {
+  @apply bg-brand-surface/80 backdrop-blur-md border border-brand-border rounded-[8px] shadow-lg shadow-black/20;
 }
