@@ -44,9 +44,10 @@ export default function PublicLayout() {
                         <span className="text-brand-muted text-sm">© 2026 Keystone Data HQ. All rights reserved.</span>
                     </div>
                     <div className="flex items-center gap-6">
-                        <a href="#" className="text-sm text-brand-muted hover:text-white transition-colors">Privacy</a>
-                        <a href="#" className="text-sm text-brand-muted hover:text-white transition-colors">Terms</a>
-                        <a href="#" className="text-sm text-brand-muted hover:text-white transition-colors">Contact</a>
+                        <Link to="/privacy" className="text-sm text-brand-muted hover:text-white transition-colors">Privacy Policy</Link>
+                        <Link to="/terms" className="text-sm text-brand-muted hover:text-white transition-colors">Terms of Service</Link>
+                        <Link to="/refund" className="text-sm text-brand-muted hover:text-white transition-colors">Refund Policy</Link>
+                        <a href="mailto:support@keystonedatahq.com" className="text-sm text-brand-muted hover:text-white transition-colors">Contact</a>
                     </div>
                 </div>
             </footer>
