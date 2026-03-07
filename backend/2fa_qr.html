@@ -1,0 +1,24 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>KeystoneDataHQ 2FA Setup</title>
+            <style>
+                body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f9fafb; }
+                .card { background: white; padding: 2rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+                img { border: 4px solid #f3f4f6; border-radius: 0.5rem; margin: 1rem 0; }
+                .secret { font-family: monospace; background: #f3f4f6; padding: 0.5rem; border-radius: 0.5rem; margin-top: 1rem; font-size: 1.2rem; letter-spacing: 0.1em;}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h2>Scan this QR Code</h2>
+                <p>Open Google Authenticator and scan this image:</p>
+                <img src="data:image/png;base64,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" alt="2FA QR Code" width="256" height="256" />
+                <p>Or enter this secret manually:</p>
+                <div class="secret">KY6GI7J4GFJTYMKAMVFT4L3SO5KGWUKMPFDSU323FREXE4TVGZJQ</div>
+                <p style="margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">You can close this file when done.</p>
+            </div>
+        </body>
+        </html>
+        
