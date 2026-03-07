@@ -130,11 +130,7 @@ export default function Integrations() {
         setSuccessMsg(null);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/shopify/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/shopify/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -173,11 +169,7 @@ export default function Integrations() {
         setMetaSuccess(null);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/meta/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/meta/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -216,11 +208,7 @@ export default function Integrations() {
         setGa4Success(null);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/ga4/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/ga4/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -259,11 +247,7 @@ export default function Integrations() {
         setKlaviyoSuccess(null);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/klaviyo/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/klaviyo/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

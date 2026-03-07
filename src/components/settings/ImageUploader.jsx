@@ -58,11 +58,7 @@ export default function ImageUploader({ endpoint, label, currentImageUrl, onUplo
         formData.append(fieldName, file);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/${endpoint}`, {
-=======
-            const res = await fetch(`http://localhost:4000/api/settings/${endpoint}`, {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -85,11 +81,7 @@ export default function ImageUploader({ endpoint, label, currentImageUrl, onUplo
         }
     };
 
-<<<<<<< HEAD
     const displayUrl = previewUrl?.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${previewUrl}` : previewUrl;
-=======
-    const displayUrl = previewUrl?.startsWith('/uploads') ? `http://localhost:4000${previewUrl}` : previewUrl;
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
 
     return (
         <div className="space-y-4">

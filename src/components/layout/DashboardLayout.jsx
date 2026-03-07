@@ -30,11 +30,7 @@ export default function DashboardLayout() {
     useEffect(() => {
         const fetchBroadcast = async () => {
             try {
-<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/broadcast/active`);
-=======
-                const res = await fetch('http://localhost:4000/api/broadcast/active');
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 if (res.ok) {
                     const data = await res.json();
                     setBroadcast(data.broadcast);
@@ -110,11 +106,7 @@ export default function DashboardLayout() {
                 <header className="h-20 border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm fixed top-0 w-full z-50 flex items-center px-6">
                     <Link to="/" className="flex items-center gap-2">
                         {user?.company?.logoUrl ? (
-<<<<<<< HEAD
                             <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
-=======
-                            <img src={`http://localhost:4000${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                         ) : (
                             <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
                                 <Database className="w-5 h-5 text-brand-primary" />
@@ -135,11 +127,7 @@ export default function DashboardLayout() {
                     <div className="h-20 flex items-center px-6 border-b border-brand-border">
                         <Link to="/dashboard" className="flex items-center gap-2 group">
                             {user?.company?.logoUrl ? (
-<<<<<<< HEAD
                                 <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
-=======
-                                <img src={`http://localhost:4000${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                             ) : (
                                 <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
                                     <Database className="w-5 h-5 text-brand-primary" />
@@ -172,11 +160,7 @@ export default function DashboardLayout() {
                         <Link to="/dashboard/profile" className="flex items-center gap-3 px-3 py-3 rounded-[8px] glass-panel mb-2 hover:border-brand-primary transition-colors group">
                             <div className="w-8 h-8 rounded-full bg-brand-primary/20 flex flex-shrink-0 items-center justify-center text-brand-primary font-bold text-sm group-hover:bg-brand-primary group-hover:text-white transition-colors overflow-hidden border border-brand-primary/30">
                                 {user?.avatarUrl ? (
-<<<<<<< HEAD
                                     <img src={`${import.meta.env.VITE_API_URL}${user.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
-=======
-                                    <img src={`http://localhost:4000${user.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                                 ) : (
                                     initials
                                 )}

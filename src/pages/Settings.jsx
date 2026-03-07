@@ -41,11 +41,7 @@ export default function Settings() {
     const fetchSettings = async () => {
         try {
             setIsLoading(true);
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/settings`, {
-=======
-            const res = await fetch('http://localhost:4000/api/settings', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -91,11 +87,7 @@ export default function Settings() {
                 body.newPassword = profileForm.newPassword;
             }
 
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/profile`, {
-=======
-            const res = await fetch('http://localhost:4000/api/settings/profile', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -125,11 +117,7 @@ export default function Settings() {
         setIsSavingCompany(true);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/settings/company`, {
-=======
-            const res = await fetch('http://localhost:4000/api/settings/company', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -299,11 +287,7 @@ export default function Settings() {
                             <ImageUploader
                                 endpoint="upload-logo"
                                 label="Company Logo"
-<<<<<<< HEAD
                                 currentImageUrl={companyForm.logoUrl ? `${import.meta.env.VITE_API_URL}${companyForm.logoUrl}` : null}
-=======
-                                currentImageUrl={companyForm.logoUrl ? `http://localhost:4000${companyForm.logoUrl}` : null}
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                                 onUploadSuccess={(url) => setCompanyForm({ ...companyForm, logoUrl: url })}
                             />
                         </div>

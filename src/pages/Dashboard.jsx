@@ -60,11 +60,7 @@ export default function Dashboard() {
             setIsLoading(true);
             setError(null);
 
-<<<<<<< HEAD
             let url = `${import.meta.env.VITE_API_URL}/api/dashboard`;
-=======
-            let url = 'http://localhost:4000/api/dashboard';
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
             if (startDate && endDate) {
                 const query = new URLSearchParams({
                     startDate: startDate.toISOString(),
@@ -91,11 +87,7 @@ export default function Dashboard() {
         try {
             setIsSyncing(true);
             setError(null);
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dashboard/sync`, {
-=======
-            const res = await fetch('http://localhost:4000/api/dashboard/sync', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });

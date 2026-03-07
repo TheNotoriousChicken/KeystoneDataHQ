@@ -26,11 +26,7 @@ export default function Onboarding() {
         setShopifyStatus('loading');
         setError(null);
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/shopify/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/shopify/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,11 +48,7 @@ export default function Onboarding() {
         setMetaStatus('loading');
         setError(null);
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/integrations/meta/connect`, {
-=======
-            const res = await fetch('http://localhost:4000/api/integrations/meta/connect', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,11 +70,7 @@ export default function Onboarding() {
         setError(null);
         try {
             // 1. Mark onboarding complete in DB
-<<<<<<< HEAD
             const completeRes = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/onboarding/complete`, {
-=======
-            const completeRes = await fetch('http://localhost:4000/api/auth/onboarding/complete', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -90,11 +78,7 @@ export default function Onboarding() {
             if (!completeRes.ok) throw new Error(completeData.error);
 
             // 2. Trigger initial data sync
-<<<<<<< HEAD
             await fetch(`${import.meta.env.VITE_API_URL}/api/dashboard/sync`, {
-=======
-            await fetch('http://localhost:4000/api/dashboard/sync', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             }).catch(e => console.warn('Initial sync fell back: ', e)); // non-blocking for nav

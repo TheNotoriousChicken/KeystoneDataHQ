@@ -9,11 +9,7 @@ export function FlagProvider({ children }) {
     useEffect(() => {
         const fetchFlags = async () => {
             try {
-<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/flags`);
-=======
-                const res = await fetch('http://localhost:4000/api/flags');
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 if (res.ok) {
                     const data = await res.json();
                     setFlags(data);

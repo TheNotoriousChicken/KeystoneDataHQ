@@ -33,11 +33,7 @@ export default function Pricing() {
     const handleCheckout = async (tier) => {
         setCheckoutLoading(tier);
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/billing/checkout`, {
-=======
-            const res = await fetch('http://localhost:4000/api/billing/checkout', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -145,11 +145,7 @@ export default function Login() {
                                             onClick={async () => {
                                                 setResendStatus('sending');
                                                 try {
-<<<<<<< HEAD
                                                     await fetch(`${import.meta.env.VITE_API_URL}/api/auth/resend-verification`, {
-=======
-                                                    await fetch('http://localhost:4000/api/auth/resend-verification', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                                                         method: 'POST',
                                                         headers: { 'Content-Type': 'application/json' },
                                                         body: JSON.stringify({ email: unverifiedEmail }),

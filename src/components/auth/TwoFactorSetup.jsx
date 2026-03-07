@@ -19,11 +19,7 @@ export default function TwoFactorSetup() {
 
     const fetchStatus = async () => {
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/2fa/status`, {
-=======
-            const res = await fetch('http://localhost:4000/api/auth/2fa/status', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -47,11 +43,7 @@ export default function TwoFactorSetup() {
         setIsSettingUp(true);
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/2fa/setup`, {
-=======
-            const res = await fetch('http://localhost:4000/api/auth/2fa/setup', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,11 +67,7 @@ export default function TwoFactorSetup() {
         setSetupError('');
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/2fa/verify-setup`, {
-=======
-            const res = await fetch('http://localhost:4000/api/auth/2fa/verify-setup', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,11 +94,7 @@ export default function TwoFactorSetup() {
         setDisableError('');
 
         try {
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/2fa/disable`, {
-=======
-            const res = await fetch('http://localhost:4000/api/auth/2fa/disable', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

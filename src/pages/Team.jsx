@@ -23,11 +23,7 @@ export default function Team() {
         try {
             setIsLoading(true);
             setError(null);
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/team`, {
-=======
-            const res = await fetch('http://localhost:4000/api/team', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -53,11 +49,7 @@ export default function Team() {
             setError(null);
             setInviteSuccess('');
 
-<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/team/invite`, {
-=======
-            const res = await fetch('http://localhost:4000/api/team/invite', {
->>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
