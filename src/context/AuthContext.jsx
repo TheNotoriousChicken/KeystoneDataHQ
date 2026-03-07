@@ -1,7 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext(null);
+<<<<<<< HEAD
 const API_BASE = `${import.meta.env.VITE_API_URL}/api/auth`;
+=======
+const API_BASE = 'http://localhost:4000/api/auth';
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -90,7 +94,11 @@ export function AuthProvider({ children }) {
     };
 
     const impersonate = async (companyId) => {
+<<<<<<< HEAD
         const API_ADMIN = `${import.meta.env.VITE_API_URL}/api/admin`;
+=======
+        const API_ADMIN = 'http://localhost:4000/api/admin';
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
         const res = await fetch(`${API_ADMIN}/impersonate`, {
             method: 'POST',
             headers: {

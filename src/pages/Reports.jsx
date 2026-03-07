@@ -36,7 +36,11 @@ export default function Reports() {
         setError(null);
         try {
             // Build query based on selected range
+<<<<<<< HEAD
             let url = `${import.meta.env.VITE_API_URL}/api/reports`;
+=======
+            let url = 'http://localhost:4000/api/reports';
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
             if (dateRange !== '30days') {
                 const end = new Date();
                 const start = new Date();

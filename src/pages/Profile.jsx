@@ -29,7 +29,11 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
+<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+=======
+                const res = await fetch('http://localhost:4000/api/auth/profile', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
@@ -55,7 +59,11 @@ export default function Profile() {
         setProfileMessage({ type: '', text: '' });
 
         try {
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/profile`, {
+=======
+            const res = await fetch('http://localhost:4000/api/auth/profile', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -88,7 +96,11 @@ export default function Profile() {
         setPasswordMessage({ type: '', text: '' });
 
         try {
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/change-password`, {
+=======
+            const res = await fetch('http://localhost:4000/api/auth/change-password', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -146,7 +158,11 @@ export default function Profile() {
                 <div className="border-b border-white/5 p-6 flex items-start gap-4">
                     <div className="w-16 h-16 rounded-full bg-brand-primary/20 flex flex-shrink-0 items-center justify-center text-brand-primary font-bold text-2xl border border-brand-primary/30 overflow-hidden">
                         {profile?.avatarUrl ? (
+<<<<<<< HEAD
                             <img src={`${import.meta.env.VITE_API_URL}${profile.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
+=======
+                            <img src={`http://localhost:4000${profile.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                         ) : (
                             <>{firstName[0]}{lastName[0]}</>
                         )}
@@ -167,7 +183,11 @@ export default function Profile() {
                         <ImageUploader
                             endpoint="upload-avatar"
                             label="Profile Picture"
+<<<<<<< HEAD
                             currentImageUrl={profile.avatarUrl ? `${import.meta.env.VITE_API_URL}${profile.avatarUrl}` : null}
+=======
+                            currentImageUrl={profile.avatarUrl ? `http://localhost:4000${profile.avatarUrl}` : null}
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                             onUploadSuccess={(url) => setProfile({ ...profile, avatarUrl: url })}
                         />
                     </div>

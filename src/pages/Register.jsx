@@ -34,7 +34,11 @@ export default function Register() {
 
         const validateInvite = async () => {
             try {
+<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/validate-invite/${inviteToken}`);
+=======
+                const res = await fetch(`http://localhost:4000/api/auth/validate-invite/${inviteToken}`);
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 const data = await res.json();
 
                 if (!res.ok || !data.valid) {
@@ -110,7 +114,11 @@ export default function Register() {
                             onClick={async () => {
                                 setResendStatus('sending');
                                 try {
+<<<<<<< HEAD
                                     await fetch(`${import.meta.env.VITE_API_URL}/api/auth/resend-verification`, {
+=======
+                                    await fetch('http://localhost:4000/api/auth/resend-verification', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ email }),

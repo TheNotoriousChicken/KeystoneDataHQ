@@ -24,7 +24,11 @@ export default function NotificationDropdown() {
 
     const fetchNotifications = async () => {
         try {
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications?limit=5`, {
+=======
+            const res = await fetch('http://localhost:4000/api/notifications?limit=5', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
@@ -54,7 +58,11 @@ export default function NotificationDropdown() {
 
     const handleMarkAsRead = async (id, link) => {
         try {
+<<<<<<< HEAD
             await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/${id}/read`, {
+=======
+            await fetch(`http://localhost:4000/api/notifications/${id}/read`, {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -73,7 +81,11 @@ export default function NotificationDropdown() {
 
     const handleMarkAllRead = async () => {
         try {
+<<<<<<< HEAD
             await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/read-all`, {
+=======
+            await fetch('http://localhost:4000/api/notifications/read-all', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

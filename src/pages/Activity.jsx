@@ -39,7 +39,11 @@ export default function Activity() {
     useEffect(() => {
         const fetchActivity = async () => {
             try {
+<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/activity`, {
+=======
+                const res = await fetch('http://localhost:4000/api/activity', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();

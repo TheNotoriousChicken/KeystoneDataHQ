@@ -31,6 +31,7 @@ export default function FounderHQ() {
         const fetchData = async () => {
             try {
                 const [statsRes, companiesRes, revRes, flagsRes, healthRes, pulseRes, usersRes] = await Promise.all([
+<<<<<<< HEAD
                     fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }),
@@ -50,6 +51,27 @@ export default function FounderHQ() {
                         headers: { 'Authorization': `Bearer ${token}` }
                     }),
                     fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
+=======
+                    fetch('http://localhost:4000/api/admin/stats', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/companies', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/revenue', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/flags', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/integrations-health', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/pulse', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    }),
+                    fetch('http://localhost:4000/api/admin/users', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                         headers: { 'Authorization': `Bearer ${token}` }
                     })
                 ]);
@@ -99,7 +121,11 @@ export default function FounderHQ() {
     const handleDeleteCompany = async (companyId) => {
         try {
             setError('');
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/companies/${companyId}`, {
+=======
+            const res = await fetch(`http://localhost:4000/api/admin/companies/${companyId}`, {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -119,7 +145,11 @@ export default function FounderHQ() {
         try {
             setTogglingFlag(key);
             setError('');
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/flags`, {
+=======
+            const res = await fetch('http://localhost:4000/api/admin/flags', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -147,7 +177,11 @@ export default function FounderHQ() {
 
         try {
             setError('');
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/flags`, {
+=======
+            const res = await fetch('http://localhost:4000/api/admin/flags', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -182,7 +216,11 @@ export default function FounderHQ() {
 
         try {
             setError('');
+<<<<<<< HEAD
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/broadcast`, {
+=======
+            const res = await fetch('http://localhost:4000/api/admin/broadcast', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

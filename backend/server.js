@@ -32,12 +32,16 @@ app.use(helmet());                              // Security headers (XSS, HSTS, 
 app.use(morgan('short'));                        // Request logging
 
 app.use(cors({
+<<<<<<< HEAD
     origin: [
         'http://localhost:5173',
         'https://keystonedatahq.com',
         'https://www.keystonedatahq.com',
         process.env.FRONTEND_URL
     ].filter(Boolean),
+=======
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
     credentials: true,
 }));
 

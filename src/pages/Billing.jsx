@@ -17,7 +17,11 @@ export default function Billing() {
     useEffect(() => {
         const fetchBilling = async () => {
             try {
+<<<<<<< HEAD
                 const res = await fetch(`${import.meta.env.VITE_API_URL}/api/billing/status`, {
+=======
+                const res = await fetch('http://localhost:4000/api/billing/status', {
+>>>>>>> 42c2f46dab99a0890797d25e4a219a7b1da60c68
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();
