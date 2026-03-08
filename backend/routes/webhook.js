@@ -60,8 +60,8 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
                         data: {
                             subscriptionTier: tier,
                             subscriptionStatus: status === 'active' ? 'active' : status,
-                            lemonSqueezyCustomerId: String(data?.customerId || ''),
-                            lemonSqueezySubscriptionId: String(data?.id || ''),
+                            paddleCustomerId: String(data?.customerId || ''),
+                            paddleSubscriptionId: String(data?.id || ''),
                         },
                     });
 

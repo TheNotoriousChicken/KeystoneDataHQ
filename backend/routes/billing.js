@@ -51,7 +51,10 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
                     quantity: 1,
                 },
             ],
-            // We don't set checkout.url here because we want the Paddle-hosted version
+            // collection_mode is REQUIRED for hosted checkout to work smoothly without manual payment step overrides
+            collectionMode: 'automatic',
+            // Pre-fill customer data for a smoother UX and better tracking
+            customerEmail: user.email,
             customData: {
                 company_id: user.companyId,
                 tier: tier,
@@ -88,8 +91,8 @@ router.get('/status', authMiddleware, async (req, res) => {
                 name: true,
                 subscriptionTier: true,
                 subscriptionStatus: true,
-                lemonSqueezyCustomerId: true,
-                lemonSqueezySubscriptionId: true,
+                paddleCustomerId: true,
+                paddleSubscriptionId: true,
             },
         });
 
