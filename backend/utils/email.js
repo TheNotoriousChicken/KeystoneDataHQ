@@ -7,7 +7,7 @@ const { Resend } = require('resend');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.FROM_EMAIL || 'Keystone Data HQ <tejas@keystonedatahq.com>';
-const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND = process.env.FRONTEND_URL || 'https://keystonedatahq.com';
 const LOGO_URL = process.env.LOGO_URL || 'https://media.discordapp.net/attachments/777793193769041920/1478430364895805694/hrthrthrthrthrt_1.jpg?ex=69a85f12&is=69a70d92&hm=3214efaa6b021e57dd01cfdfdca57c59bd0436da00b70e08752f5e890105498f&=&format=webp&width=960&height=960';
 
 // ---------------------------------------------------------------------------

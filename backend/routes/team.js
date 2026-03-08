@@ -57,7 +57,7 @@ router.post('/invite', authMiddleware, requireRole('ADMIN'), async (req, res) =>
     try {
         const { email } = req.body;
         const companyId = req.user.companyId;
-        const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
+        const FRONTEND = process.env.FRONTEND_URL || 'https://keystonedatahq.com';
 
         if (!email) {
             return res.status(400).json({ error: 'Email is required.' });

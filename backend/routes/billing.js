@@ -47,6 +47,9 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
                     quantity: 1,
                 },
             ],
+            checkout: {
+                returnUrl: process.env.FRONTEND_URL || 'https://keystonedatahq.com'
+            },
             customData: {
                 company_id: user.companyId,
                 tier: tier,
