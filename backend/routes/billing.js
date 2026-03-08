@@ -1,3 +1,5 @@
+const express = require('express');
+const { Paddle, Environment } = require('@paddle/paddle-node-sdk');
 const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/requireRole');
