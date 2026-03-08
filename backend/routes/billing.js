@@ -40,23 +40,20 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        const transaction = await paddle.transactions.create({
+        const paymentLink = await paddle.paymentLinks.create({
             items: [
                 {
                     priceId: PRICE_MAP[tier],
                     quantity: 1,
                 },
             ],
-            checkout: {
-                url: process.env.FRONTEND_URL || 'https://keystonedatahq.com'
-            },
             customData: {
                 company_id: user.companyId,
                 tier: tier,
             }
         });
 
-        const checkoutUrl = transaction?.checkout?.url;
+        const checkoutUrl = paymentLink?.url;
         if (!checkoutUrl) {
             return res.status(500).json({ error: 'No checkout URL returned from Paddle.' });
         }
