@@ -1,10 +1,9 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const { syncCompanyMetrics } = require('../services/syncEngine');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // ---------------------------------------------------------------------------
 // POST /api/dashboard/sync  (Protected)

@@ -3,11 +3,10 @@ const bcrypt = require('bcrypt');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 const SALT_ROUNDS = 12;
 
 // Ensure upload directory exists

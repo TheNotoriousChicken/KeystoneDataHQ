@@ -1,9 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const verifySuperAdmin = require('../middleware/verifySuperAdmin');
 

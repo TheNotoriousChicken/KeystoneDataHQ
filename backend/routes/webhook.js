@@ -1,10 +1,9 @@
 const express = require('express');
 const { Paddle, Environment } = require('@paddle/paddle-node-sdk');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const { notifyAdmins } = require('../utils/notificationService');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Initialize Paddle SDK
 const paddle = new Paddle(process.env.PADDLE_API_KEY, {

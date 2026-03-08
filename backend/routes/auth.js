@@ -4,13 +4,12 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail, sendTwoFactorEmail } = require('../utils/email');
 const { logActivity } = require('../utils/auditLogger');
 const { notifyUser, notifyAdmins } = require('../utils/notificationService');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const SALT_ROUNDS = 12;
 const TOKEN_EXPIRY = '7d';

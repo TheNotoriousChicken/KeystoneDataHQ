@@ -1,13 +1,12 @@
 const express = require('express');
 const crypto = require('crypto');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/requireRole');
 const { sendTeamInviteEmail } = require('../utils/email');
 const { logActivity } = require('../utils/auditLogger');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // ---------------------------------------------------------------------------
 // GET /api/team  (Protected)

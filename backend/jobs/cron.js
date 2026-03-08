@@ -1,8 +1,4 @@
-const cron = require('node-cron');
-const { PrismaClient } = require('@prisma/client');
-const { syncCompanyMetrics } = require('../services/syncEngine');
-
-const prisma = new PrismaClient();
+const prisma = require('../db');
 
 // ---------------------------------------------------------------------------
 // Scheduled Sync: Runs every 6 hours

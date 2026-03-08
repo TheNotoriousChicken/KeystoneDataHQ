@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../db');
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
 const { notifyAdmins } = require('../utils/notificationService');
 const { logActivity } = require('../utils/auditLogger');

@@ -1,10 +1,9 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../db');
 const { BetaAnalyticsDataClient } = require('@google-analytics/data');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // ---------------------------------------------------------------------------
 // POST /api/integrations/shopify/connect  (Protected)

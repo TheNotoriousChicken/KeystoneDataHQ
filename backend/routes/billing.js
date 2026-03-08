@@ -1,11 +1,6 @@
 const express = require('express');
 const { Paddle, Environment } = require('@paddle/paddle-node-sdk');
-const { PrismaClient } = require('@prisma/client');
-const authMiddleware = require('../middleware/authMiddleware');
-const requireRole = require('../middleware/requireRole');
-
-const router = express.Router();
-const prisma = new PrismaClient();
+const prisma = require('../db');
 
 // Initialize the Paddle SDK
 const paddle = new Paddle(process.env.PADDLE_API_KEY, {
@@ -61,11 +56,11 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
 
         console.log(`[Billing] Transaction created: ${transaction.id}`);
 
-        // Use the official Paddle-hosted checkout URL pattern for v3
+        // Use the official Paddle-hosted checkout URL pattern for v3 (buy.paddle.com)
         const isSandbox = process.env.PADDLE_ENVIRONMENT === 'sandbox';
         const checkoutUrl = isSandbox
-            ? `https://sandbox-pay.paddle.com/checkout/${transaction.id}`
-            : `https://pay.paddle.com/checkout/${transaction.id}`;
+            ? `https://sandbox-buy.paddle.com/checkout/${transaction.id}`
+            : `https://buy.paddle.com/checkout/${transaction.id}`;
 
         console.log(`[Billing] Generated checkout URL: ${checkoutUrl}`);
 
