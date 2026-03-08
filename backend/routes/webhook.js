@@ -28,7 +28,14 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
         console.log(`✅ Paddle webhook verified: ${eventData.eventType}`);
 
         const data = eventData.data;
-        const customData = data?.customData;
+        // Paddle SDK usually uses camelCase, but we'll check both just in case
+        const customData = data?.customData || data?.custom_data;
+
+        if (!customData?.company_id) {
+            console.log(`ℹ️  Event "${eventData.eventType}" - No company_id found. Available keys in data:`, Object.keys(data || {}));
+            if (data?.customData) console.log(`   - customData keys:`, Object.keys(data.customData));
+            if (data?.custom_data) console.log(`   - custom_data keys:`, Object.keys(data.custom_data));
+        }
 
         if (customData?.company_id) {
             const companyId = customData.company_id;
