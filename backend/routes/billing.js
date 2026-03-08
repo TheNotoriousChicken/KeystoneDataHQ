@@ -40,23 +40,22 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
             return res.status(404).json({ error: 'User not found.' });
         }
 
-        const paymentLink = await paddle.paymentLinks.create({
+        const transaction = await paddle.transactions.create({
             items: [
                 {
                     priceId: PRICE_MAP[tier],
                     quantity: 1,
                 },
             ],
+            // We don't set checkout.url here because we want the Paddle-hosted version
             customData: {
                 company_id: user.companyId,
                 tier: tier,
             }
         });
 
-        const checkoutUrl = paymentLink?.url;
-        if (!checkoutUrl) {
-            return res.status(500).json({ error: 'No checkout URL returned from Paddle.' });
-        }
+        // Use the official Paddle-hosted checkout URL pattern for v3
+        const checkoutUrl = `https://pay.paddle.io/checkout/${transaction.id}`;
 
         return res.json({ checkoutUrl });
     } catch (err) {
