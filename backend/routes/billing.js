@@ -55,7 +55,10 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
         });
 
         // Use the official Paddle-hosted checkout URL pattern for v3
-        const checkoutUrl = `https://pay.paddle.io/checkout/${transaction.id}`;
+        const isSandbox = process.env.PADDLE_ENVIRONMENT === 'sandbox';
+        const checkoutUrl = isSandbox
+            ? `https://sandbox-pay.paddle.com/checkout/${transaction.id}`
+            : `https://pay.paddle.com/checkout/${transaction.id}`;
 
         return res.json({ checkoutUrl });
     } catch (err) {
