@@ -273,12 +273,15 @@ router.post('/login', async (req, res) => {
         }
 
         // --- Standard Login (No 2FA) ---
+        // Founder Guard: Ensure specific email always has super admin access
+        const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
+
         const token = jwt.sign(
             {
                 userId: user.id,
                 companyId: user.companyId,
                 role: user.role,
-                isSuperAdmin: user.isSuperAdmin,
+                isSuperAdmin: user.isSuperAdmin || isFounder,
             },
             process.env.JWT_SECRET,
             { expiresIn: TOKEN_EXPIRY }
@@ -389,12 +392,15 @@ router.post('/login/verify', async (req, res) => {
         }
 
         // --- Success: Issue real JWT ---
+        // Founder Guard: Ensure specific email always has super admin access
+        const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
+
         const token = jwt.sign(
             {
                 userId: user.id,
                 companyId: user.companyId,
                 role: user.role,
-                isSuperAdmin: user.isSuperAdmin,
+                isSuperAdmin: user.isSuperAdmin || isFounder,
             },
             process.env.JWT_SECRET,
             { expiresIn: TOKEN_EXPIRY }
