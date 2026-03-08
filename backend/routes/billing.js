@@ -31,14 +31,19 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
             return res.status(400).json({ error: 'Invalid tier. Must be STARTER or GROWTH.' });
         }
 
+        console.log(`[Billing] Creating checkout session for user ${req.user.userId}, tier: ${tier}`);
+
         const user = await prisma.user.findUnique({
             where: { id: req.user.userId },
             include: { company: true },
         });
 
         if (!user) {
+            console.log(`[Billing] User ${req.user.userId} not found.`);
             return res.status(404).json({ error: 'User not found.' });
         }
+
+        console.log(`[Billing] User found, creating transaction for price: ${PRICE_MAP[tier]}`);
 
         const transaction = await paddle.transactions.create({
             items: [
@@ -54,11 +59,15 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
             }
         });
 
+        console.log(`[Billing] Transaction created: ${transaction.id}`);
+
         // Use the official Paddle-hosted checkout URL pattern for v3
         const isSandbox = process.env.PADDLE_ENVIRONMENT === 'sandbox';
         const checkoutUrl = isSandbox
             ? `https://sandbox-pay.paddle.com/checkout/${transaction.id}`
             : `https://pay.paddle.com/checkout/${transaction.id}`;
+
+        console.log(`[Billing] Generated checkout URL: ${checkoutUrl}`);
 
         return res.json({ checkoutUrl });
     } catch (err) {
