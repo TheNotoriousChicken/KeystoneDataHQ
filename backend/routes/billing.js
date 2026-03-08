@@ -48,7 +48,7 @@ router.post('/checkout', authMiddleware, requireRole('ADMIN'), async (req, res) 
                 },
             ],
             checkout: {
-                returnUrl: process.env.FRONTEND_URL || 'https://keystonedatahq.com'
+                url: process.env.FRONTEND_URL || 'https://keystonedatahq.com'
             },
             customData: {
                 company_id: user.companyId,
