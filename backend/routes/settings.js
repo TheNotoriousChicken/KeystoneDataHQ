@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
+const requireRole = require('../middleware/requireRole');
 
 const router = express.Router();
 const SALT_ROUNDS = 12;
@@ -187,17 +188,12 @@ router.post('/upload-logo', authMiddleware, upload.single('logo'), async (req, r
 // PUT /api/settings/company
 // Update company name (ADMIN only).
 // ---------------------------------------------------------------------------
-router.put('/company', authMiddleware, async (req, res) => {
+router.put('/company', authMiddleware, requireRole('ADMIN'), async (req, res) => {
     try {
         const { companyName } = req.body;
 
         if (!companyName) {
             return res.status(400).json({ error: 'Company name is required.' });
-        }
-
-        // Only admins can change company settings
-        if (req.user.role !== 'ADMIN') {
-            return res.status(403).json({ error: 'Only admins can update company settings.' });
         }
 
         const updatedCompany = await prisma.company.update({

@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import Papa from 'papaparse';
-import { FileText, Download, Calendar, TrendingUp, TrendingDown, Minus, DollarSign, Target, ShoppingCart, MousePointerClick } from 'lucide-react';
+import { FileText, Download, TrendingUp, TrendingDown, Minus, DollarSign, Target, ShoppingCart, MousePointerClick } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
+import { useQuery } from '@tanstack/react-query';
+import { useDateStore } from '../store/useDateStore';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Date formatter
 const fmtDate = (dateString) => {
@@ -20,31 +23,19 @@ const fmtC = (val) => {
 
 export default function Reports() {
     const { token } = useAuth();
-    const [reportData, setReportData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
 
-    // Simple date filter state (default: last 30 days)
-    const [dateRange, setDateRange] = useState('30days');
+    // Global Date Store
+    const { dateRange, setDateRange } = useDateStore();
+    const [startDate, endDate] = dateRange;
 
-    useEffect(() => {
-        fetchReport();
-    }, [dateRange]);
-
-    const fetchReport = async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            // Build query based on selected range
+    // --- React Query: Fetch Reports ---
+    const { data: reportData, isLoading, error } = useQuery({
+        queryKey: ['reports', startDate?.toISOString(), endDate?.toISOString()],
+        queryFn: async () => {
             let url = `${import.meta.env.VITE_API_URL}/api/reports`;
-            if (dateRange !== '30days') {
-                const end = new Date();
-                const start = new Date();
-                if (dateRange === '7days') start.setDate(end.getDate() - 7);
-                if (dateRange === '90days') start.setDate(end.getDate() - 90);
-
-                const startStr = start.toISOString().split('T')[0];
-                const endStr = end.toISOString().split('T')[0];
+            if (startDate && endDate) {
+                const startStr = startDate.toISOString();
+                const endStr = endDate.toISOString();
                 url += `?startDate=${startStr}&endDate=${endStr}`;
             }
 
@@ -52,16 +43,12 @@ export default function Reports() {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
-
             if (!res.ok) throw new Error(data.error || 'Failed to fetch report');
 
-            setReportData(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+            return data;
+        },
+        enabled: !!token,
+    });
 
     const handleExportCSV = () => {
         if (!reportData || reportData.dailyMetrics.length === 0) return;
@@ -132,17 +119,17 @@ export default function Reports() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="relative flex items-center bg-brand-surface border border-brand-border rounded-[8px] p-1">
-                        <select
-                            value={dateRange}
-                            onChange={(e) => setDateRange(e.target.value)}
-                            className="bg-transparent text-white text-sm pl-8 pr-4 py-1.5 focus:outline-none appearance-none cursor-pointer"
-                        >
-                            <option value="7days">Last 7 Days</option>
-                            <option value="30days">Last 30 Days</option>
-                            <option value="90days">Last 90 Days</option>
-                        </select>
-                        <Calendar className="w-4 h-4 text-brand-muted absolute left-3 pointer-events-none" />
+                    <div className="bg-brand-surface border border-brand-border rounded-lg px-3 py-2 flex items-center">
+                        <DatePicker
+                            selectsRange={true}
+                            startDate={startDate}
+                            endDate={endDate}
+                            onChange={(update) => setDateRange(update)}
+                            className="bg-transparent text-white text-sm focus:outline-none w-48 font-medium placeholder-brand-muted cursor-pointer"
+                            placeholderText="Select date range"
+                            dateFormat="MMM d, yyyy"
+                            maxDate={new Date()}
+                        />
                     </div>
                     <button
                         onClick={handleExportCSV}

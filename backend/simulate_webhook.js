@@ -31,8 +31,8 @@ async function simulateWebhook(eventType, status, tier) {
                 data: {
                     subscriptionTier: tier,
                     subscriptionStatus: status === 'active' ? 'active' : status,
-                    lemonSqueezyCustomerId: 'mock_cust_123',
-                    lemonSqueezySubscriptionId: 'mock_sub_456',
+                    paddleCustomerId: 'mock_cust_123',
+                    paddleSubscriptionId: 'mock_sub_456',
                 },
             });
 

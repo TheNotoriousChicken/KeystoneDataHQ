@@ -8,6 +8,8 @@ const prisma = require('../db');
 const { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail, sendTwoFactorEmail } = require('../utils/email');
 const { logActivity } = require('../utils/auditLogger');
 const { notifyUser, notifyAdmins } = require('../utils/notificationService');
+const validate = require('../middleware/validate');
+const { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, profileUpdateSchema } = require('../validations/auth.validation');
 
 const router = express.Router();
 
@@ -17,27 +19,9 @@ const TOKEN_EXPIRY = '7d';
 // ---------------------------------------------------------------------------
 // POST /api/auth/register
 // ---------------------------------------------------------------------------
-router.post('/register', async (req, res) => {
+router.post('/register', validate(registerSchema), async (req, res) => {
     try {
         const { email, password, firstName, lastName, companyName, inviteToken } = req.body;
-
-        // --- Validation ---
-        if (!email || !password || !firstName || !lastName) {
-            return res.status(400).json({
-                error: 'All fields are required: email, password, firstName, lastName.',
-            });
-        }
-
-        // companyName is required ONLY if there's no invite token
-        if (!inviteToken && !companyName) {
-            return res.status(400).json({
-                error: 'companyName is required when registering without an invite.',
-            });
-        }
-
-        if (password.length < 8) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters.' });
-        }
 
         // --- Check for existing user ---
         const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -199,14 +183,9 @@ router.get('/validate-invite/:token', async (req, res) => {
 // ---------------------------------------------------------------------------
 // POST /api/auth/login
 // ---------------------------------------------------------------------------
-router.post('/login', async (req, res) => {
+router.post('/login', validate(loginSchema), async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        // --- Validation ---
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required.' });
-        }
 
         // --- Find user (include company info) ---
         const user = await prisma.user.findUnique({
@@ -304,6 +283,7 @@ router.post('/login', async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 role: user.role,
+                isSuperAdmin: user.isSuperAdmin || isFounder,
                 emailVerified: user.emailVerified,
                 company: {
                     id: user.company.id,
@@ -422,6 +402,7 @@ router.post('/login/verify', async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 role: user.role,
+                isSuperAdmin: user.isSuperAdmin || isFounder,
                 twoFactorEnabled: user.twoFactorEnabled,
                 company: {
                     id: user.company.id,
@@ -443,13 +424,9 @@ router.post('/login/verify', async (req, res) => {
 // Generates a reset token (valid for 1 hour) and logs the link.
 // In production, you'd email this link instead.
 // ---------------------------------------------------------------------------
-router.post('/forgot-password', async (req, res) => {
+router.post('/forgot-password', validate(forgotPasswordSchema), async (req, res) => {
     try {
         const { email } = req.body;
-
-        if (!email) {
-            return res.status(400).json({ error: 'Email is required.' });
-        }
 
         const user = await prisma.user.findUnique({ where: { email } });
 
@@ -499,17 +476,9 @@ router.post('/forgot-password', async (req, res) => {
 // POST /api/auth/reset-password
 // Validates the token and sets a new password.
 // ---------------------------------------------------------------------------
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', validate(resetPasswordSchema), async (req, res) => {
     try {
         const { token, password } = req.body;
-
-        if (!token || !password) {
-            return res.status(400).json({ error: 'Token and new password are required.' });
-        }
-
-        if (password.length < 8) {
-            return res.status(400).json({ error: 'Password must be at least 8 characters.' });
-        }
 
         // Find the reset record
         const resetRecord = await prisma.passwordReset.findUnique({
@@ -734,13 +703,9 @@ router.get('/profile', authMiddleware, async (req, res) => {
 // Updates the authenticated user's profile (name, email).
 // If the email changes, mark as unverified and send a new verification email.
 // ---------------------------------------------------------------------------
-router.put('/profile', authMiddleware, async (req, res) => {
+router.put('/profile', authMiddleware, validate(profileUpdateSchema), async (req, res) => {
     try {
         const { firstName, lastName, email } = req.body;
-
-        if (!firstName || !lastName || !email) {
-            return res.status(400).json({ error: 'firstName, lastName, and email are required.' });
-        }
 
         const currentUser = await prisma.user.findUnique({
             where: { id: req.user.userId },

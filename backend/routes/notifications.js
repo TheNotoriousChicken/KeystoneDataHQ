@@ -30,6 +30,29 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// PUT /api/notifications/read-all  (Protected)
+// Marks all of the user's unread notifications as read.
+// ⚠️ MUST be registered BEFORE /:id/read to avoid Express treating
+//    "read-all" as a dynamic :id parameter.
+// ---------------------------------------------------------------------------
+router.put('/read-all', authMiddleware, async (req, res) => {
+    try {
+        await prisma.notification.updateMany({
+            where: {
+                userId: req.user.userId,
+                read: false
+            },
+            data: { read: true }
+        });
+
+        return res.json({ message: 'All notifications marked as read.' });
+    } catch (err) {
+        console.error('Failed to mark all notifications read:', err);
+        return res.status(500).json({ error: 'Failed to update notifications.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
 // PUT /api/notifications/:id/read  (Protected)
 // Marks a specific notification as read.
 // ---------------------------------------------------------------------------
@@ -55,27 +78,6 @@ router.put('/:id/read', authMiddleware, async (req, res) => {
     } catch (err) {
         console.error('Failed to mark notification state:', err);
         return res.status(500).json({ error: 'Failed to update notification.' });
-    }
-});
-
-// ---------------------------------------------------------------------------
-// PUT /api/notifications/read-all  (Protected)
-// Marks all of the user's unread notifications as read.
-// ---------------------------------------------------------------------------
-router.put('/read-all', authMiddleware, async (req, res) => {
-    try {
-        await prisma.notification.updateMany({
-            where: {
-                userId: req.user.userId,
-                read: false
-            },
-            data: { read: true }
-        });
-
-        return res.json({ message: 'All notifications marked as read.' });
-    } catch (err) {
-        console.error('Failed to mark all notifications read:', err);
-        return res.status(500).json({ error: 'Failed to update notifications.' });
     }
 });
 

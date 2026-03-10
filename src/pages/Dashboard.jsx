@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { subDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { DollarSign, Target, MousePointerClick, ShoppingCart, RefreshCw, TrendingUp, Plug, TrendingDown, Users, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { DashboardSkeleton } from '../components/Skeleton';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useDateStore } from '../store/useDateStore';
+import OnboardingWizard from '../components/onboarding/OnboardingWizard';
 
 // Format currency
 const fmt = (val) => {
@@ -40,26 +43,17 @@ const DeltaBadge = ({ value, invertColors = false }) => {
 };
 
 export default function Dashboard() {
-    const { token } = useAuth();
+    const { user, token } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const [dashboardData, setDashboardData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSyncing, setIsSyncing] = useState(false);
-    const [error, setError] = useState(null);
-    const [dateRange, setDateRange] = useState([subDays(new Date(), 30), new Date()]);
+    const { dateRange, setDateRange } = useDateStore();
     const [startDate, endDate] = dateRange;
 
-    // --- Initial fetch on mount & when date changes ---
-    useEffect(() => {
-        fetchDashboard();
-    }, [startDate, endDate]);
-
-    const fetchDashboard = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-
+    // --- React Query: Fetch Dashboard ---
+    const { data: dashboardData, isLoading, error } = useQuery({
+        queryKey: ['dashboard', startDate?.toISOString(), endDate?.toISOString()],
+        queryFn: async () => {
             let url = `${import.meta.env.VITE_API_URL}/api/dashboard`;
             if (startDate && endDate) {
                 const query = new URLSearchParams({
@@ -74,34 +68,31 @@ export default function Dashboard() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to fetch dashboard.');
-            setDashboardData(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+            return data;
+        },
+        enabled: !!token,
+    });
 
-    // --- Manual sync ---
-    const handleSync = async () => {
-        try {
-            setIsSyncing(true);
-            setError(null);
+    // --- React Query: Manual Sync ---
+    const syncMutation = useMutation({
+        mutationFn: async () => {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/dashboard/sync`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Sync failed.');
-
-            // Re-fetch after sync to get updated history
-            await fetchDashboard();
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsSyncing(false);
+            return data;
+        },
+        onSuccess: () => {
+            // Invalidate to refetch dashboard metrics immediately
+            queryClient.invalidateQueries({ queryKey: ['dashboard'] });
         }
-    };
+    });
+
+    const isSyncing = syncMutation.isPending;
+    const syncError = syncMutation.error;
+
 
     const latest = dashboardData?.latest;
     const history = dashboardData?.history || [];
@@ -120,40 +111,14 @@ export default function Dashboard() {
 
     // --- Empty State (no cached data yet) ---
     if (!latest) {
+        const hasPlan = user?.company?.subscriptionTier === 'STARTER' || user?.company?.subscriptionTier === 'GROWTH';
+        const initialStep = hasPlan ? 2 : 1;
+
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="glass-panel p-12 max-w-lg text-center space-y-6">
-                    <div className="w-16 h-16 rounded-2xl bg-brand-primary/10 flex items-center justify-center mx-auto">
-                        <Plug className="w-8 h-8 text-brand-primary" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-white mb-2">No data yet</h2>
-                        <p className="text-brand-muted leading-relaxed">
-                            Connect your Shopify store and Meta Ads account on the Integrations page, then hit
-                            <span className="text-brand-primary font-semibold"> Sync Now</span> to pull your first metrics.
-                        </p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <button
-                            onClick={() => navigate('/dashboard/integrations')}
-                            className="px-6 py-2.5 bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold rounded-lg transition-all shadow-lg shadow-brand-primary/20"
-                        >
-                            Go to Integrations
-                        </button>
-                        <button
-                            onClick={handleSync}
-                            disabled={isSyncing}
-                            className="px-6 py-2.5 bg-brand-surface border border-brand-border text-white font-semibold rounded-lg hover:border-brand-primary transition-all flex items-center justify-center gap-2"
-                        >
-                            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-                            {isSyncing ? 'Syncing...' : 'Sync Now'}
-                        </button>
-                    </div>
-                    {error && (
-                        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">{error}</div>
-                    )}
-                </div>
-            </div>
+            <OnboardingWizard
+                initialStep={initialStep}
+                onComplete={() => queryClient.invalidateQueries({ queryKey: ['dashboard'] })}
+            />
         );
     }
 
@@ -185,7 +150,7 @@ export default function Dashboard() {
                     </div>
 
                     <button
-                        onClick={handleSync}
+                        onClick={() => syncMutation.mutate()}
                         disabled={isSyncing}
                         className="flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-lg text-white font-semibold text-sm hover:border-brand-primary transition-all disabled:opacity-50"
                     >
@@ -195,8 +160,10 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {error && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">{error}</div>
+            {(error || syncError) && (
+                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                    {(error?.message || syncError?.message)}
+                </div>
             )}
 
             {/* KPI Cards */}

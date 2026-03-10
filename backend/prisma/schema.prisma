@@ -12,8 +12,6 @@ model Company {
   id                         String           @id @default(uuid())
   name                       String
   subscriptionTier           SubscriptionTier @default(NONE)
-  lemonSqueezyCustomerId     String?
-  lemonSqueezySubscriptionId String?          @unique
   subscriptionStatus         String           @default("inactive")
   paddleCustomerId           String?          @unique
   paddleSubscriptionId       String?          @unique

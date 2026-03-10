@@ -1,6 +1,5 @@
 import React from 'react';
 import { AlertOctagon, RefreshCw, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 class GlobalErrorBoundary extends React.Component {
     constructor(props) {
@@ -44,14 +43,14 @@ class GlobalErrorBoundary extends React.Component {
                                 <RefreshCw className="w-4 h-4" />
                                 Refresh Page
                             </button>
-                            <Link
-                                to="/"
+                            <a
+                                href="/"
                                 onClick={() => this.setState({ hasError: false })}
                                 className="w-full py-2.5 bg-transparent border border-brand-border hover:bg-brand-surface text-white rounded-[8px] font-semibold transition-colors flex items-center justify-center gap-2"
                             >
                                 <Home className="w-4 h-4" />
                                 Return Home
-                            </Link>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { Activity as ActivityIcon, User, Clock, Monitor, Key, LogIn, Mail, CreditCard, Shield } from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
@@ -32,31 +32,19 @@ const getActionDisplay = (action) => {
 
 export default function Activity() {
     const { token } = useAuth();
-    const [isLoading, setIsLoading] = useState(true);
-    const [activities, setActivities] = useState([]);
-    const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchActivity = async () => {
-            try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/api/activity`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-
-                if (!res.ok) throw new Error(data.error);
-
-                setActivities(data.activity);
-            } catch (err) {
-                setError('Failed to load activity log.');
-                console.error(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (token) fetchActivity();
-    }, [token]);
+    const { data: activities, isLoading, error } = useQuery({
+        queryKey: ['activity'],
+        queryFn: async () => {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/activity`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to load activity log.');
+            return data.activity;
+        },
+        enabled: !!token,
+    });
 
     if (isLoading) {
         return (
@@ -83,7 +71,7 @@ export default function Activity() {
     if (error) {
         return (
             <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-xl max-w-4xl">
-                <p className="text-rose-400 font-medium">{error}</p>
+                <p className="text-rose-400 font-medium">{error.message}</p>
             </div>
         );
     }

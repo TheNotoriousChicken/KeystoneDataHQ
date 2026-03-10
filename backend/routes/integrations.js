@@ -6,6 +6,34 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // ---------------------------------------------------------------------------
+// GET /api/integrations/status  (Protected)
+// Returns connection status of all integrations for the user's company.
+// ---------------------------------------------------------------------------
+router.get('/status', authMiddleware, async (req, res) => {
+    try {
+        const company = await prisma.company.findUnique({
+            where: { id: req.user.companyId },
+            select: {
+                shopifyShopName: true,
+                metaAdAccountId: true,
+                ga4PropertyId: true,
+                klaviyoApiKey: true
+            }
+        });
+
+        return res.json({
+            shopify: !!company?.shopifyShopName,
+            meta: !!company?.metaAdAccountId,
+            ga4: !!company?.ga4PropertyId,
+            klaviyo: !!company?.klaviyoApiKey
+        });
+    } catch (err) {
+        console.error('Integration status error:', err);
+        return res.status(500).json({ error: 'Failed to fetch integration status.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
 // POST /api/integrations/shopify/connect  (Protected)
 // Validates Shopify credentials against the live API, then saves to DB.
 // ---------------------------------------------------------------------------
@@ -81,13 +109,16 @@ router.post('/meta/connect', authMiddleware, async (req, res) => {
         }
 
         // --- 1. Validate credentials against live Facebook Graph API ---
-        const graphUrl = `https://graph.facebook.com/v19.0/${adAccountId}?access_token=${accessToken}`;
+        const graphUrl = `https://graph.facebook.com/v19.0/${adAccountId}`;
 
         let metaRes;
         try {
             metaRes = await fetch(graphUrl, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                },
             });
         } catch (fetchErr) {
             console.error('Meta Graph API fetch error:', fetchErr.message);

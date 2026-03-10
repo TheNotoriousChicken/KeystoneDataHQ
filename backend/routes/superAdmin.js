@@ -11,25 +11,72 @@ router.use(verifySuperAdmin);
 
 // ---------------------------------------------------------------------------
 // GET /api/admin/stats
-// Returns global platform metrics for the Super Admin overview.
+// Enhanced global platform metrics with growth & engagement data.
 // ---------------------------------------------------------------------------
 router.get('/stats', async (_req, res) => {
     try {
-        const totalUsers = await prisma.user.count();
-        const totalCompanies = await prisma.company.count();
-        const activeIntegrations = await prisma.company.count({
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const [
+            totalUsers,
+            totalCompanies,
+            activeIntegrations,
+            newUsers7d,
+            newUsers30d,
+            newCompanies7d,
+            newCompanies30d,
+            verifiedUsers,
+            twoFactorUsers,
+            onboardedCompanies,
+        ] = await Promise.all([
+            prisma.user.count(),
+            prisma.company.count(),
+            prisma.company.count({
+                where: {
+                    OR: [
+                        { shopifyToken: { not: null } },
+                        { metaAccessToken: { not: null } },
+                        { ga4PropertyId: { not: null } },
+                        { klaviyoApiKey: { not: null } },
+                    ]
+                }
+            }),
+            prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+            prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+            prisma.company.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+            prisma.company.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+            prisma.user.count({ where: { emailVerified: true } }),
+            prisma.user.count({ where: { twoFactorEnabled: true } }),
+            prisma.company.count({ where: { onboardingCompleted: true } }),
+        ]);
+
+        // Recent logins (proxy: audit logs with USER_LOGIN in last 7 days)
+        const recentLogins = await prisma.auditLog.groupBy({
+            by: ['userId'],
             where: {
-                OR: [
-                    { shopifyToken: { not: null } },
-                    { metaAccessToken: { not: null } }
-                ]
-            }
+                action: 'USER_LOGIN',
+                createdAt: { gte: sevenDaysAgo },
+            },
         });
 
         return res.json({
             totalUsers,
             totalCompanies,
-            activeIntegrations
+            activeIntegrations,
+            growth: {
+                newUsers7d,
+                newUsers30d,
+                newCompanies7d,
+                newCompanies30d,
+            },
+            engagement: {
+                verifiedRate: totalUsers > 0 ? Math.round((verifiedUsers / totalUsers) * 100) : 0,
+                twoFactorRate: totalUsers > 0 ? Math.round((twoFactorUsers / totalUsers) * 100) : 0,
+                onboardingRate: totalCompanies > 0 ? Math.round((onboardedCompanies / totalCompanies) * 100) : 0,
+                activeUsersLast7d: recentLogins.length,
+            },
         });
     } catch (error) {
         console.error('SuperAdmin stats error:', error);
@@ -39,7 +86,7 @@ router.get('/stats', async (_req, res) => {
 
 // ---------------------------------------------------------------------------
 // GET /api/admin/companies
-// Returns a detailed list of all companies on the platform.
+// Enhanced: includes health score, integration count, last activity.
 // ---------------------------------------------------------------------------
 router.get('/companies', async (_req, res) => {
     try {
@@ -47,22 +94,74 @@ router.get('/companies', async (_req, res) => {
             select: {
                 id: true,
                 name: true,
+                subscriptionTier: true,
+                subscriptionStatus: true,
+                onboardingCompleted: true,
                 createdAt: true,
+                shopifyToken: true,
+                metaAccessToken: true,
+                ga4PropertyId: true,
+                klaviyoApiKey: true,
                 _count: {
-                    select: { users: true }
-                }
+                    select: { users: true, integrations: true }
+                },
+                integrations: {
+                    select: { syncStatus: true, lastSyncedAt: true },
+                    orderBy: { lastSyncedAt: 'desc' },
+                    take: 1
+                },
             },
-            orderBy: {
-                createdAt: 'desc'
-            }
+            orderBy: { createdAt: 'desc' }
         });
 
-        // Flatten the _count to be cleaner for the frontend, and calculate MRR
+        // Get most recent login per company (from audit logs)
+        const companyIds = companies.map(c => c.id);
+        const lastLogins = await prisma.auditLog.groupBy({
+            by: ['companyId'],
+            where: {
+                action: 'USER_LOGIN',
+                companyId: { in: companyIds },
+            },
+            _max: { createdAt: true },
+        });
+
+        const loginMap = {};
+        lastLogins.forEach(l => {
+            loginMap[l.companyId] = l._max.createdAt;
+        });
+
         const mappedCompanies = companies.map(company => {
+            // Count connected platforms
+            let integrationCount = 0;
+            if (company.shopifyToken) integrationCount++;
+            if (company.metaAccessToken) integrationCount++;
+            if (company.ga4PropertyId) integrationCount++;
+            if (company.klaviyoApiKey) integrationCount++;
+
+            // MRR calculation
             let mrr = 0;
             if (company.subscriptionStatus === 'active') {
-                if (company.subscriptionTier === 'STARTER') mrr = 150;
+                if (company.subscriptionTier === 'STARTER') mrr = 500;
                 else if (company.subscriptionTier === 'GROWTH') mrr = 1500;
+            }
+
+            // Last sync time
+            const lastSync = company.integrations[0]?.lastSyncedAt || null;
+            const lastSyncStatus = company.integrations[0]?.syncStatus || null;
+
+            // Last login
+            const lastLogin = loginMap[company.id] || null;
+
+            // Health Score (0-100)
+            let healthScore = 0;
+            if (company.subscriptionStatus === 'active') healthScore += 25;
+            if (company.onboardingCompleted) healthScore += 15;
+            if (integrationCount > 0) healthScore += Math.min(integrationCount * 10, 30);
+            if (lastLogin) {
+                const daysSinceLogin = (Date.now() - new Date(lastLogin).getTime()) / (1000 * 60 * 60 * 24);
+                if (daysSinceLogin < 1) healthScore += 30;
+                else if (daysSinceLogin < 7) healthScore += 20;
+                else if (daysSinceLogin < 30) healthScore += 10;
             }
 
             return {
@@ -72,13 +171,16 @@ router.get('/companies', async (_req, res) => {
                 userCount: company._count.users,
                 subscriptionTier: company.subscriptionTier,
                 subscriptionStatus: company.subscriptionStatus,
-                mrr
+                mrr,
+                integrationCount,
+                lastSync,
+                lastSyncStatus,
+                lastLogin,
+                healthScore: Math.min(healthScore, 100),
             };
         });
 
-        // Sort by MRR ascending locally (highest MRR at the top)
         mappedCompanies.sort((a, b) => b.mrr - a.mrr);
-
         return res.json(mappedCompanies);
     } catch (error) {
         console.error('SuperAdmin companies error:', error);
@@ -97,7 +199,17 @@ router.post('/impersonate', async (req, res) => {
 
         const targetUser = await prisma.user.findFirst({
             where: { companyId, role: 'ADMIN' },
-            orderBy: { createdAt: 'asc' } // Original creator usually
+            orderBy: { createdAt: 'asc' },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                role: true,
+                companyId: true,
+                isSuperAdmin: true,
+                createdAt: true,
+            }
         });
 
         if (!targetUser) {
@@ -105,7 +217,6 @@ router.post('/impersonate', async (req, res) => {
         }
 
         const company = await prisma.company.findUnique({ where: { id: targetUser.companyId } });
-        targetUser.company = company;
 
         const payload = {
             userId: targetUser.id,
@@ -116,9 +227,14 @@ router.post('/impersonate', async (req, res) => {
         };
 
         const impersonationToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
-        delete targetUser.passwordHash;
 
-        return res.json({ token: impersonationToken, user: targetUser });
+        return res.json({
+            token: impersonationToken,
+            user: {
+                ...targetUser,
+                company,
+            }
+        });
     } catch (error) {
         console.error('SuperAdmin impersonate error:', error);
         return res.status(500).json({ error: 'Impersonation failed.' });
@@ -127,41 +243,183 @@ router.post('/impersonate', async (req, res) => {
 
 // ---------------------------------------------------------------------------
 // GET /api/admin/revenue
-// Calculates Monthly Recurring Revenue (MRR) based on active subscriptions
+// Enhanced: ARR, net new MRR, tier breakdown, 6-month trend.
 // ---------------------------------------------------------------------------
 router.get('/revenue', async (_req, res) => {
     try {
         const companies = await prisma.company.findMany({
-            select: { subscriptionTier: true, subscriptionStatus: true }
+            select: { subscriptionTier: true, subscriptionStatus: true, createdAt: true }
         });
 
         let mrr = 0;
         let activeSubs = 0;
         let canceledSubs = 0;
+        let starterCount = 0;
+        let growthCount = 0;
+        let starterMrr = 0;
+        let growthMrr = 0;
 
         companies.forEach(company => {
             if (company.subscriptionStatus === 'active') {
                 activeSubs++;
-                if (company.subscriptionTier === 'STARTER') mrr += 150;
-                if (company.subscriptionTier === 'GROWTH') mrr += 1500;
+                if (company.subscriptionTier === 'STARTER') {
+                    mrr += 500;
+                    starterCount++;
+                    starterMrr += 500;
+                }
+                if (company.subscriptionTier === 'GROWTH') {
+                    mrr += 1500;
+                    growthCount++;
+                    growthMrr += 1500;
+                }
             } else if (company.subscriptionStatus === 'canceled' || company.subscriptionStatus === 'past_due') {
                 canceledSubs++;
             }
         });
 
-        // Basic churn rate calculation based on totals
         const totalEverSubscribed = activeSubs + canceledSubs;
         const churnRate = totalEverSubscribed > 0 ? (canceledSubs / totalEverSubscribed) * 100 : 0;
 
+        // Build 6-month MRR trend (synthetic based on company creation dates)
+        const now = new Date();
+        const trend = [];
+        for (let i = 5; i >= 0; i--) {
+            const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
+            const monthLabel = monthStart.toLocaleString('default', { month: 'short' });
+
+            // Count companies that existed and were active by end of that month
+            let monthMrr = 0;
+            companies.forEach(c => {
+                if (new Date(c.createdAt) <= monthEnd) {
+                    if (c.subscriptionStatus === 'active') {
+                        if (c.subscriptionTier === 'STARTER') monthMrr += 500;
+                        if (c.subscriptionTier === 'GROWTH') monthMrr += 1500;
+                    }
+                }
+            });
+
+            trend.push({ month: monthLabel, mrr: monthMrr });
+        }
+
         return res.json({
             mrr,
+            arr: mrr * 12,
             activeSubs,
             canceledSubs,
-            churnRate: churnRate.toFixed(1)
+            churnRate: churnRate.toFixed(1),
+            breakdown: {
+                starter: { count: starterCount, mrr: starterMrr },
+                growth: { count: growthCount, mrr: growthMrr },
+            },
+            trend,
         });
     } catch (error) {
         console.error('SuperAdmin revenue error:', error);
         return res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/admin/signups
+// Recent signups: companies and users from the last 7 days.
+// ---------------------------------------------------------------------------
+router.get('/signups', async (_req, res) => {
+    try {
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+        const [recentCompanies, recentUsers] = await Promise.all([
+            prisma.company.findMany({
+                where: { createdAt: { gte: sevenDaysAgo } },
+                select: { id: true, name: true, subscriptionTier: true, createdAt: true, _count: { select: { users: true } } },
+                orderBy: { createdAt: 'desc' },
+                take: 20,
+            }),
+            prisma.user.findMany({
+                where: { createdAt: { gte: sevenDaysAgo } },
+                select: {
+                    id: true, firstName: true, lastName: true, email: true, role: true, createdAt: true,
+                    company: { select: { name: true } },
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 20,
+            }),
+        ]);
+
+        return res.json({
+            companies: recentCompanies.map(c => ({
+                id: c.id,
+                name: c.name,
+                tier: c.subscriptionTier,
+                userCount: c._count.users,
+                createdAt: c.createdAt,
+            })),
+            users: recentUsers.map(u => ({
+                id: u.id,
+                name: `${u.firstName} ${u.lastName}`,
+                email: u.email,
+                role: u.role,
+                company: u.company?.name || 'Unknown',
+                createdAt: u.createdAt,
+            })),
+        });
+    } catch (error) {
+        console.error('SuperAdmin signups error:', error);
+        return res.status(500).json({ error: 'Failed to fetch signups.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/admin/trigger-sync
+// Manually triggers the data sync engine for all eligible companies.
+// ---------------------------------------------------------------------------
+router.post('/trigger-sync', async (req, res) => {
+    try {
+        const { syncCompanyMetrics } = require('../services/syncEngine');
+
+        // Find all companies with at least one connected integration
+        const companies = await prisma.company.findMany({
+            where: {
+                OR: [
+                    { shopifyToken: { not: null } },
+                    { metaAccessToken: { not: null } },
+                    { ga4PropertyId: { not: null } },
+                    { klaviyoApiKey: { not: null } },
+                ]
+            },
+            select: { id: true }
+        });
+
+        // Fire and forget — run syncs in parallel without blocking the response
+        Promise.all(
+            companies.map(c => syncCompanyMetrics(c.id).catch(err => console.error(`Sync failed for ${c.id}:`, err)))
+        ).catch(err => console.error('Manual sync batch error:', err));
+
+        return res.json({ message: `Data sync triggered for ${companies.length} eligible companies.` });
+    } catch (error) {
+        console.error('SuperAdmin trigger-sync error:', error);
+        return res.status(500).json({ error: 'Failed to trigger sync.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// DELETE /api/admin/companies/:id
+// Permanently deletes a company and all related data (cascading).
+// ---------------------------------------------------------------------------
+router.delete('/companies/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const company = await prisma.company.findUnique({ where: { id } });
+        if (!company) {
+            return res.status(404).json({ error: 'Company not found.' });
+        }
+
+        await prisma.company.delete({ where: { id } });
+        return res.json({ message: `Company "${company.name}" permanently deleted.` });
+    } catch (error) {
+        console.error('SuperAdmin delete company error:', error);
+        return res.status(500).json({ error: 'Failed to delete company.' });
     }
 });
 
@@ -252,7 +510,6 @@ router.get('/integrations-health', async (_req, res) => {
             include: { company: { select: { name: true } } }
         });
 
-        // Map errors to a clean format
         const errorLog = recentErrors.map(int => ({
             id: int.id,
             companyName: int.company.name,
@@ -313,7 +570,6 @@ router.get('/users', async (_req, res) => {
             }
         });
 
-        // Standardize output to remove sensitive fields just in case
         const safeUsers = users.map(u => ({
             id: u.id,
             email: u.email,

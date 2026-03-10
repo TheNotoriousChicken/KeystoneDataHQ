@@ -1,89 +1,93 @@
 import { useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Crown, Users, Building2, Cable, Activity, DollarSign, TrendingUp, Key, Megaphone, Globe, BookUser, Trash2, AlertTriangle } from 'lucide-react';
+import {
+    Crown, Users, Building2, Cable, Activity, DollarSign, TrendingUp,
+    Key, Megaphone, Globe, BookUser, Trash2, AlertTriangle, RefreshCw,
+    Download, Zap, ShieldCheck, UserPlus, CheckCircle2, BarChart3,
+    ArrowUpRight, ArrowDownRight, Sparkles, Clock, Wifi, WifiOff
+} from 'lucide-react';
 import { Skeleton } from '../components/Skeleton';
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 
+import RevenueAnalytics from '../components/admin/RevenueAnalytics';
+import HealthTable from '../components/admin/HealthTable';
+import InsightsPanel from '../components/admin/InsightsPanel';
+
+// ── Helpers ──
+const pct = (value) => `${value}%`;
+const usd = (value) => `$${(value || 0).toLocaleString()}`;
+
+
+
+// ── Stat Card ──
+function StatCard({ icon: Icon, label, value, sub, iconColor = 'text-brand-primary', bg = 'bg-brand-surface' }) {
+    return (
+        <div className="p-5 rounded-xl bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 group">
+            <div className="flex items-start justify-between">
+                <div>
+                    <p className="text-brand-muted font-medium text-xs mb-1">{label}</p>
+                    <h3 className="text-2xl font-bold text-white">{value}</h3>
+                    {sub && <p className="text-[11px] text-brand-muted mt-1">{sub}</p>}
+                </div>
+                <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center flex-shrink-0 border border-brand-border`}>
+                    <Icon className={`w-4 h-4 ${iconColor}`} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+// ══════════════════════════════════════════════════════════════════════════════
 export default function FounderHQ() {
     const { user, token, impersonate } = useAuth();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    const [stats, setStats] = useState(null);
-    const [revenue, setRevenue] = useState(null);
-    const [companies, setCompanies] = useState([]);
-    const [flags, setFlags] = useState([]);
-    const [broadcasts, setBroadcasts] = useState([]);
-    const [health, setHealth] = useState(null);
-    const [pulse, setPulse] = useState([]);
-    const [usersList, setUsersList] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [impersonatingId, setImpersonatingId] = useState(null);
     const [deletingCompany, setDeletingCompany] = useState(null);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
     const [togglingFlag, setTogglingFlag] = useState(null);
+    const [syncTriggered, setSyncTriggered] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        // Double check within component just in case
-        if (!user || user.isSuperAdmin !== true) return;
+    const API = import.meta.env.VITE_API_URL;
+    const headers = { 'Authorization': `Bearer ${token}` };
 
-        const fetchData = async () => {
-            try {
-                const [statsRes, companiesRes, revRes, flagsRes, healthRes, pulseRes, usersRes] = await Promise.all([
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/stats`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/companies`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/revenue`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/flags`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/integrations-health`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/pulse`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    }),
-                    fetch(`${import.meta.env.VITE_API_URL}/api/admin/users`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    })
-                ]);
+    const { data: adminData, isLoading, isError, error: queryError } = useQuery({
+        queryKey: ['adminDashboard'],
+        queryFn: async () => {
+            const endpoints = [
+                'stats', 'companies', 'revenue', 'flags',
+                'integrations-health', 'pulse', 'users', 'signups'
+            ];
+            const responses = await Promise.all(
+                endpoints.map(ep => fetch(`${API}/api/admin/${ep}`, { headers }))
+            );
 
-                if (!statsRes.ok || !companiesRes.ok || !revRes.ok || !flagsRes.ok || !healthRes.ok || !pulseRes.ok || !usersRes.ok) {
-                    throw new Error('Failed to fetch admin data.');
-                }
+            const failed = responses.find(r => !r.ok);
+            if (failed) throw new Error('Failed to fetch admin data.');
 
-                const statsData = await statsRes.json();
-                const companiesData = await companiesRes.json();
-                const revData = await revRes.json();
-                const flagsData = await flagsRes.json();
-                const healthData = await healthRes.json();
-                const pulseData = await pulseRes.json();
-                const usersData = await usersRes.json();
+            const [stats, companies, revenue, flags, health, pulse, usersList, signups] =
+                await Promise.all(responses.map(r => r.json()));
 
-                setStats(statsData);
-                setCompanies(companiesData);
-                setRevenue(revData);
-                setFlags(flagsData);
-                setHealth(healthData);
-                setPulse(pulseData);
-                setUsersList(usersData);
-            } catch (err) {
-                console.error(err);
-                setError('Failed to load Super Admin dashboard.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            return { stats, companies, revenue, flags, health, pulse, usersList, signups };
+        },
+        enabled: !!user && user.isSuperAdmin === true,
+    });
 
-        fetchData();
-    }, [user, token]);
+    const stats = adminData?.stats;
+    const companies = adminData?.companies || [];
+    const revenue = adminData?.revenue;
+    const flags = adminData?.flags || [];
+    const health = adminData?.health;
+    const pulse = adminData?.pulse || [];
+    const usersList = adminData?.usersList || [];
+    const signups = adminData?.signups;
 
+    // ── Actions ──
     const handleImpersonate = async (companyId) => {
         try {
             setImpersonatingId(companyId);
@@ -99,15 +103,11 @@ export default function FounderHQ() {
     const handleDeleteCompany = async (companyId) => {
         try {
             setError('');
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/companies/${companyId}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+            const res = await fetch(`${API}/api/admin/companies/${companyId}`, {
+                method: 'DELETE', headers
             });
-
             if (!res.ok) throw new Error('Failed to delete company.');
-
-            // Remove from local state
-            setCompanies(companies.filter(c => c.id !== companyId));
+            queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
             setDeletingCompany(null);
             setDeleteConfirmText('');
         } catch (err) {
@@ -115,23 +115,30 @@ export default function FounderHQ() {
         }
     };
 
+    const handleTriggerSync = async () => {
+        try {
+            setSyncTriggered(true);
+            await fetch(`${API}/api/admin/trigger-sync`, {
+                method: 'POST', headers
+            });
+            setTimeout(() => setSyncTriggered(false), 5000);
+        } catch (err) {
+            setError('Sync trigger failed.');
+            setSyncTriggered(false);
+        }
+    };
+
     const handleToggleFlag = async (key, currentStatus, description) => {
         try {
             setTogglingFlag(key);
             setError('');
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/flags`, {
+            const res = await fetch(`${API}/api/admin/flags`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { ...headers, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key, isEnabled: !currentStatus, description })
             });
-
             if (!res.ok) throw new Error('Failed to update feature flag.');
-            const data = await res.json();
-
-            setFlags(flags.map(f => f.key === key ? { ...f, isEnabled: !currentStatus } : f));
+            queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
         } catch (err) {
             setError(err.message);
         } finally {
@@ -144,28 +151,15 @@ export default function FounderHQ() {
         const fd = new FormData(e.target);
         const key = fd.get('key');
         if (!key) return;
-
         try {
             setError('');
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/flags`, {
+            const res = await fetch(`${API}/api/admin/flags`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { ...headers, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ key, isEnabled: false, description: fd.get('description') })
             });
-
             if (!res.ok) throw new Error('Failed to create flag.');
-            const data = await res.json();
-
-            // Re-fetch flags to get ID/timestamp, or simply append
-            const flagMap = new Set(flags.map(f => f.key));
-            if (!flagMap.has(key)) {
-                setFlags([...flags, data.flag].sort((a, b) => a.key.localeCompare(b.key)));
-            } else {
-                setFlags(flags.map(f => f.key === key ? data.flag : f));
-            }
+            queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
             e.target.reset();
         } catch (err) {
             setError(err.message);
@@ -176,32 +170,36 @@ export default function FounderHQ() {
         e.preventDefault();
         const fd = new FormData(e.target);
         const message = fd.get('message');
-        const type = fd.get('type');
-
         if (!message) return;
-
         try {
             setError('');
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/admin/broadcast`, {
+            const res = await fetch(`${API}/api/admin/broadcast`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ message, type })
+                headers: { ...headers, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message, type: fd.get('type') })
             });
-
             if (!res.ok) throw new Error('Failed to publish broadcast.');
-            const data = await res.json();
-
-            // Reload the entire page to let the new broadcast show up in DashboardLayout too
             window.location.reload();
         } catch (err) {
             setError(err.message);
         }
     };
 
-    // Strict frontend protection
+    const exportCompaniesCSV = () => {
+        const csvRows = [
+            'Name,Tier,Status,MRR,Users,Integrations,Health Score,Last Login',
+            ...companies.map(c => `"${c.name}",${c.subscriptionTier},${c.subscriptionStatus},${c.mrr},${c.userCount},${c.integrationCount},${c.healthScore},${c.lastLogin || 'Never'}`)
+        ];
+        const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `keystonedata-companies-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // ── Guards ──
     if (!user || user.isSuperAdmin !== true) {
         return <Navigate to="/dashboard" replace />;
     }
@@ -209,19 +207,16 @@ export default function FounderHQ() {
     if (isLoading) {
         return (
             <div className="max-w-7xl mx-auto space-y-6">
-                <div>
-                    <Skeleton className="h-8 w-64 mb-2" />
-                    <Skeleton className="h-4 w-96" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 rounded-xl" />)}
+                <div><Skeleton className="h-8 w-64 mb-2" /><Skeleton className="h-4 w-96" /></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
                 </div>
                 <Skeleton className="h-96 w-full rounded-xl" />
             </div>
         );
     }
 
-    if (error) {
+    if (error && !stats) {
         return (
             <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-xl max-w-2xl">
                 <p className="text-red-400 font-medium">{error}</p>
@@ -231,29 +226,68 @@ export default function FounderHQ() {
 
     return (
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-            <div>
-                <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-                    <Crown className="w-6 h-6 text-amber-400" />
-                    Founder HQ
-                </h2>
-                <p className="text-brand-muted mt-1">Global platform overview and tenant management.</p>
+
+            {/* ═══ HEADER + QUICK ACTIONS ═══ */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+                        <Crown className="w-6 h-6 text-amber-400" />
+                        Founder HQ
+                    </h2>
+                    <p className="text-brand-muted mt-1">Command center for Keystone Data platform operations.</p>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleTriggerSync}
+                        disabled={syncTriggered}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-lg hover:border-brand-primary transition-colors disabled:opacity-50"
+                    >
+                        <RefreshCw className={`w-4 h-4 ${syncTriggered ? 'animate-spin' : ''}`} />
+                        {syncTriggered ? 'Syncing…' : 'Trigger Sync'}
+                    </button>
+                    <button
+                        onClick={exportCompaniesCSV}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-lg hover:border-brand-primary transition-colors"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export CSV
+                    </button>
+                </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">{error}</div>
+            )}
 
-                {/* MRR Card */}
-                <div className="p-6 rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-surface border border-brand-primary/20 relative overflow-hidden group">
+            {/* ═══ REVENUE ANALYTICS ═══ */}
+            <RevenueAnalytics revenue={revenue} />
+
+            {/* ═══ SYSTEM INSIGHTS & ANOMALIES ═══ */}
+            <InsightsPanel companies={companies} />
+
+            {/* ═══ GROWTH & ENGAGEMENT METRICS ═══ */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                <StatCard icon={UserPlus} label="New Users (7d)" value={stats?.growth?.newUsers7d || 0} iconColor="text-emerald-400" bg="bg-emerald-500/10" />
+                <StatCard icon={UserPlus} label="New Users (30d)" value={stats?.growth?.newUsers30d || 0} iconColor="text-blue-400" bg="bg-blue-500/10" />
+                <StatCard icon={Building2} label="New Cos (7d)" value={stats?.growth?.newCompanies7d || 0} iconColor="text-purple-400" bg="bg-purple-500/10" />
+                <StatCard icon={Building2} label="New Cos (30d)" value={stats?.growth?.newCompanies30d || 0} iconColor="text-indigo-400" bg="bg-indigo-500/10" />
+                <StatCard icon={CheckCircle2} label="Verified" value={pct(stats?.engagement?.verifiedRate)} iconColor="text-emerald-400" bg="bg-emerald-500/10" />
+                <StatCard icon={ShieldCheck} label="2FA Enabled" value={pct(stats?.engagement?.twoFactorRate)} iconColor="text-amber-400" bg="bg-amber-500/10" />
+                <StatCard icon={BarChart3} label="Onboarded" value={pct(stats?.engagement?.onboardingRate)} iconColor="text-brand-primary" bg="bg-brand-primary/10" />
+                <StatCard icon={Activity} label="Active (7d)" value={stats?.engagement?.activeUsersLast7d || 0} iconColor="text-pink-400" bg="bg-pink-500/10" />
+            </div>
+
+            {/* ═══ PLATFORM OVERVIEW CARDS ═══ */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-5 rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-surface border border-brand-primary/20">
                     <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-brand-primary font-medium text-sm mb-1 flex items-center gap-1.5">
+                            <p className="text-brand-primary font-medium text-xs mb-1 flex items-center gap-1.5">
                                 <TrendingUp className="w-4 h-4" /> Live MRR
                             </p>
-                            <h3 className="text-3xl font-bold text-white">
-                                ${revenue?.mrr?.toLocaleString() || 0}
-                            </h3>
+                            <h3 className="text-3xl font-bold text-white">{usd(revenue?.mrr)}</h3>
                             <p className="text-xs text-brand-muted mt-2">
-                                {revenue?.activeSubs || 0} active subscriptions ({revenue?.churnRate || 0}% churn)
+                                {revenue?.activeSubs || 0} active · {revenue?.churnRate || 0}% churn
                             </p>
                         </div>
                         <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
@@ -261,45 +295,67 @@ export default function FounderHQ() {
                         </div>
                     </div>
                 </div>
-
-                <div className="p-6 rounded-xl bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 relative overflow-hidden group">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-brand-muted font-medium text-sm mb-1">Total Users</p>
-                            <h3 className="text-3xl font-bold text-white">{stats?.totalUsers?.toLocaleString() || 0}</h3>
-                        </div>
-                        <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                            <Users className="w-5 h-5 text-emerald-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 rounded-xl bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 relative overflow-hidden group">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-brand-muted font-medium text-sm mb-1">Total Companies</p>
-                            <h3 className="text-3xl font-bold text-white">{stats?.totalCompanies?.toLocaleString() || 0}</h3>
-                        </div>
-                        <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                            <Building2 className="w-5 h-5 text-blue-400" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 rounded-xl bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 relative overflow-hidden group">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-brand-muted font-medium text-sm mb-1">Active Integrations</p>
-                            <h3 className="text-3xl font-bold text-white">{stats?.activeIntegrations?.toLocaleString() || 0}</h3>
-                        </div>
-                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                            <Cable className="w-5 h-5 text-purple-400" />
-                        </div>
-                    </div>
-                </div>
+                <StatCard icon={Users} label="Total Users" value={stats?.totalUsers?.toLocaleString() || 0} iconColor="text-emerald-400" bg="bg-emerald-500/10" />
+                <StatCard icon={Building2} label="Total Companies" value={stats?.totalCompanies?.toLocaleString() || 0} iconColor="text-blue-400" bg="bg-blue-500/10" />
+                <StatCard icon={Cable} label="Active Integrations" value={stats?.activeIntegrations?.toLocaleString() || 0} iconColor="text-purple-400" bg="bg-purple-500/10" />
             </div>
 
-            {/* API Health Dashboard */}
+            {/* ═══ RECENT SIGNUPS FEED ═══ */}
+            {signups && (signups.companies?.length > 0 || signups.users?.length > 0) && (
+                <div className="glass-panel overflow-hidden">
+                    <div className="p-6 border-b border-brand-border flex items-center gap-3">
+                        <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                            <UserPlus className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white">New This Week</h3>
+                            <p className="text-sm text-brand-muted">Companies and users that signed up in the last 7 days.</p>
+                        </div>
+                    </div>
+                    <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {/* New Companies */}
+                        <div>
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-brand-muted mb-3">New Companies ({signups.companies?.length || 0})</h4>
+                            <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                                {signups.companies?.map(c => (
+                                    <div key={c.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border/50 flex items-center justify-between">
+                                        <div>
+                                            <span className="text-sm font-medium text-white">{c.name}</span>
+                                            <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${c.tier === 'GROWTH' ? 'bg-amber-500/20 text-amber-400' : c.tier === 'STARTER' ? 'bg-brand-primary/20 text-brand-primary' : 'bg-brand-surface text-brand-muted'}`}>
+                                                {c.tier}
+                                            </span>
+                                        </div>
+                                        <span className="text-[11px] text-brand-muted">{formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}</span>
+                                    </div>
+                                ))}
+                                {(!signups.companies || signups.companies.length === 0) && (
+                                    <p className="text-sm text-brand-muted text-center py-4">No new companies this week.</p>
+                                )}
+                            </div>
+                        </div>
+                        {/* New Users */}
+                        <div>
+                            <h4 className="text-xs font-bold uppercase tracking-wider text-brand-muted mb-3">New Users ({signups.users?.length || 0})</h4>
+                            <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                                {signups.users?.map(u => (
+                                    <div key={u.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border/50 flex items-center justify-between">
+                                        <div>
+                                            <span className="text-sm font-medium text-white">{u.name}</span>
+                                            <span className="text-xs text-brand-muted ml-2">{u.company}</span>
+                                        </div>
+                                        <span className="text-[11px] text-brand-muted">{formatDistanceToNow(new Date(u.createdAt), { addSuffix: true })}</span>
+                                    </div>
+                                ))}
+                                {(!signups.users || signups.users.length === 0) && (
+                                    <p className="text-sm text-brand-muted text-center py-4">No new users this week.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ═══ API HEALTH DASHBOARD ═══ */}
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -312,9 +368,7 @@ export default function FounderHQ() {
                         </div>
                     </div>
                 </div>
-
                 <div className="p-6">
-                    {/* Health Metrics Summary */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <div className="p-4 rounded-xl bg-brand-bg border border-brand-border text-center">
                             <p className="text-sm font-medium text-brand-muted mb-1">Total Connections</p>
@@ -338,8 +392,6 @@ export default function FounderHQ() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Recent Errors Log */}
                     <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Recent Sync Errors</h4>
                     {health?.recentErrors?.length === 0 ? (
                         <div className="text-center py-8 text-brand-muted bg-brand-bg rounded-xl border border-brand-border">
@@ -352,9 +404,7 @@ export default function FounderHQ() {
                                 <div key={idx} className="p-4 rounded-xl bg-brand-bg border border-red-500/20 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-surface text-brand-muted uppercase tracking-wider">
-                                                {err.platformName}
-                                            </span>
+                                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-surface text-brand-muted uppercase tracking-wider">{err.platformName}</span>
                                             <span className="text-sm font-medium text-white">{err.companyName}</span>
                                         </div>
                                         <p className="text-xs text-brand-muted font-mono">{err.error || 'Unknown sync error occurred.'}</p>
@@ -369,26 +419,31 @@ export default function FounderHQ() {
                 </div>
             </div>
 
-            {/* Global User Directory Table */}
+            {/* ═══ COMPANY HEALTH TABLE ═══ */}
+            <HealthTable
+                companies={companies}
+                handleImpersonate={handleImpersonate}
+                impersonatingId={impersonatingId}
+                setDeletingCompany={setDeletingCompany}
+            />
+
+            {/* ═══ GLOBAL USER DIRECTORY ═══ */}
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg">
-                        <BookUser className="w-4 h-4 text-emerald-400" />
-                    </div>
+                    <div className="p-2 bg-brand-surface rounded-lg"><BookUser className="w-4 h-4 text-emerald-400" /></div>
                     <div>
                         <h3 className="text-lg font-bold text-white">Global User Directory</h3>
                         <p className="text-sm text-brand-muted">Cross-tenant list of all platform individuals.</p>
                     </div>
                 </div>
-
                 <div className="overflow-x-auto max-h-96">
                     <table className="w-full text-left text-sm text-brand-muted sticky-header">
                         <thead className="text-xs uppercase bg-brand-surface border-b border-brand-border text-brand-muted/70 sticky top-0 z-10">
                             <tr>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">User</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Tenant (Company)</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Role</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider text-right">Date Joined</th>
+                                <th className="px-6 py-4 font-semibold tracking-wider">User</th>
+                                <th className="px-6 py-4 font-semibold tracking-wider">Tenant (Company)</th>
+                                <th className="px-6 py-4 font-semibold tracking-wider">Role</th>
+                                <th className="px-6 py-4 font-semibold tracking-wider text-right">Date Joined</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-brand-border/50">
@@ -400,9 +455,7 @@ export default function FounderHQ() {
                                             <span className="text-xs text-brand-muted/70">{u.email}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-white">
-                                        {u.companyName}
-                                    </td>
+                                    <td className="px-6 py-4 text-white">{u.companyName}</td>
                                     <td className="px-6 py-4">
                                         {u.isSuperAdmin ? (
                                             <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 uppercase tracking-wide">
@@ -414,113 +467,23 @@ export default function FounderHQ() {
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-right">
-                                        {format(new Date(u.createdAt), 'MMM d, yyyy')}
-                                    </td>
+                                    <td className="px-6 py-4 text-right">{format(new Date(u.createdAt), 'MMM d, yyyy')}</td>
                                 </tr>
                             )) : (
-                                <tr>
-                                    <td colSpan="4" className="px-6 py-8 text-center text-brand-muted">
-                                        No users found.
-                                    </td>
-                                </tr>
+                                <tr><td colSpan="4" className="px-6 py-8 text-center text-brand-muted">No users found.</td></tr>
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Companies Leaderboard Table */}
+            {/* ═══ GLOBAL AUDIT PULSE ═══ */}
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg">
-                        <Activity className="w-4 h-4 text-brand-primary" />
-                    </div>
+                    <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Globe className="w-5 h-5 text-emerald-400" /></div>
                     <div>
-                        <h3 className="text-lg font-bold text-white">Platform Tenants & Leaderboard</h3>
-                        <p className="text-sm text-brand-muted">All active companies ranked by MRR.</p>
-                    </div>
-                </div>
-
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-brand-muted">
-                        <thead className="text-xs uppercase bg-brand-surface/30 border-b border-brand-border text-brand-muted/70">
-                            <tr>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Company ID</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Name</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Tier / Status</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">MRR</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider">Members</th>
-                                <th scope="col" className="px-6 py-4 font-semibold tracking-wider text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-brand-border/50">
-                            {companies.length > 0 ? companies.map((comp) => (
-                                <tr key={comp.id} className="hover:bg-brand-surface/20 transition-colors">
-                                    <td className="px-6 py-4 font-mono text-xs text-brand-muted/50">{comp.id}</td>
-                                    <td className="px-6 py-4 font-medium text-white">{comp.name}</td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-col gap-1 items-start">
-                                            <span className={`inline-flex text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${comp.subscriptionTier === 'GROWTH' ? 'bg-amber-500/20 text-amber-500' :
-                                                comp.subscriptionTier === 'STARTER' ? 'bg-brand-primary/20 text-brand-primary' :
-                                                    'bg-brand-surface text-brand-muted'
-                                                }`}>
-                                                {comp.subscriptionTier}
-                                            </span>
-                                            <span className="text-[10px] uppercase tracking-wide text-brand-muted/70">
-                                                {comp.subscriptionStatus}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 font-medium text-white">
-                                        ${comp.mrr}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-surface text-brand-muted">
-                                            {comp.userCount} {comp.userCount === 1 ? 'user' : 'users'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button
-                                                onClick={() => handleImpersonate(comp.id)}
-                                                disabled={impersonatingId === comp.id}
-                                                className="px-3 py-1.5 text-xs font-semibold bg-brand-surface border border-brand-border text-white rounded hover:border-brand-primary transition-colors disabled:opacity-50"
-                                            >
-                                                {impersonatingId === comp.id ? 'Loading...' : 'Impersonate'}
-                                            </button>
-                                            <button
-                                                onClick={() => setDeletingCompany(comp)}
-                                                className="p-1.5 text-brand-muted hover:text-red-400 hover:bg-red-500/10 rounded transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="6" className="px-6 py-8 text-center text-brand-muted">
-                                        No companies found.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Global Audit Trail (Pulse) */}
-            <div className="glass-panel overflow-hidden">
-                <div className="p-6 border-b border-brand-border flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
-                            <Globe className="w-5 h-5 text-emerald-400" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Global Audit Pulse</h3>
-                            <p className="text-sm text-brand-muted">Real-time cross-tenant activity log.</p>
-                        </div>
+                        <h3 className="text-lg font-bold text-white">Global Audit Pulse</h3>
+                        <p className="text-sm text-brand-muted">Real-time cross-tenant activity log.</p>
                     </div>
                 </div>
                 <div className="p-6">
@@ -535,13 +498,9 @@ export default function FounderHQ() {
                                             <span className="font-semibold text-white whitespace-nowrap">{log.user?.firstName} {log.user?.lastName}</span>
                                             <span className="text-brand-muted text-sm whitespace-nowrap">({log.user?.email})</span>
                                             <span className="text-brand-muted/50 text-sm hidden sm:inline">from</span>
-                                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-brand-surface text-brand-primary border border-brand-primary/20">
-                                                {log.company?.name}
-                                            </span>
+                                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-brand-surface text-brand-primary border border-brand-primary/20">{log.company?.name}</span>
                                         </div>
-                                        <span className="text-xs text-brand-muted whitespace-nowrap ml-4">
-                                            {format(new Date(log.createdAt), 'MMM d, h:mm a')}
-                                        </span>
+                                        <span className="text-xs text-brand-muted whitespace-nowrap ml-4">{format(new Date(log.createdAt), 'MMM d, h:mm a')}</span>
                                     </div>
                                     <p className="text-sm text-brand-muted">
                                         Performed action: <span className="font-mono text-white text-xs px-1.5 py-0.5 bg-brand-surface rounded">{log.action}</span>
@@ -558,138 +517,81 @@ export default function FounderHQ() {
                 </div>
             </div>
 
-            {/* Global Broadcast System */}
-            <div className="glass-panel overflow-hidden">
-                <div className="p-6 border-b border-brand-border flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
-                            <Megaphone className="w-5 h-5 text-red-400" />
-                        </div>
+            {/* ═══ BROADCAST + FEATURE FLAGS ═══ */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Broadcast System */}
+                <div className="glass-panel overflow-hidden">
+                    <div className="p-6 border-b border-brand-border flex items-center gap-3">
+                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Megaphone className="w-5 h-5 text-red-400" /></div>
                         <div>
-                            <h3 className="text-lg font-bold text-white">Global Broadcast System</h3>
-                            <p className="text-sm text-brand-muted">Publish real-time alerts and announcements to all active users.</p>
+                            <h3 className="text-lg font-bold text-white">Global Broadcast</h3>
+                            <p className="text-sm text-brand-muted">Publish alerts to all users.</p>
                         </div>
                     </div>
-                </div>
-
-                <div className="p-6 max-w-2xl">
-                    <form onSubmit={handleCreateBroadcast} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-brand-muted mb-1">Broadcast Message</label>
+                    <div className="p-6">
+                        <form onSubmit={handleCreateBroadcast} className="space-y-4">
                             <textarea
                                 name="message"
-                                placeholder="e.g. Scheduled maintenance in 1 hour. Expect 5 minutes of downtime."
+                                placeholder="e.g. Scheduled maintenance in 1 hour."
                                 rows={3}
-                                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 focus:bg-brand-surface/50 resize-none"
+                                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 resize-none"
                                 required
                             />
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="flex-1">
-                                <label className="block text-sm font-medium text-brand-muted mb-1">Alert Type</label>
-                                <select
-                                    name="type"
-                                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-primary/50 focus:bg-brand-surface/50"
-                                >
+                            <div className="flex gap-4">
+                                <select name="type" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-primary/50">
                                     <option value="INFO">Informational (Blue)</option>
                                     <option value="WARNING">Warning (Yellow)</option>
                                     <option value="CRITICAL">Critical (Red)</option>
                                 </select>
-                            </div>
-                            <div className="flex items-end">
-                                <button
-                                    type="submit"
-                                    className="py-2.5 px-6 bg-red-600/90 text-white text-sm font-bold rounded-lg hover:bg-red-500 transition-colors whitespace-nowrap"
-                                >
-                                    Publish Broadcast
+                                <button type="submit" className="py-2.5 px-6 bg-red-600/90 text-white text-sm font-bold rounded-lg hover:bg-red-500 transition-colors whitespace-nowrap">
+                                    Publish
                                 </button>
                             </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            {/* Feature Flags System */}
-            <div className="glass-panel overflow-hidden">
-                <div className="p-6 border-b border-brand-border flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
-                            <Key className="w-5 h-5 text-amber-400" />
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Feature Flag Engine</h3>
-                            <p className="text-sm text-brand-muted">Globally enable or disable platform features.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Add new flag form */}
-                    <div className="lg:col-span-1">
-                        <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Create New Flag</h4>
-                        <form onSubmit={handleCreateFlag} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-brand-muted mb-1">Flag Key</label>
-                                <input
-                                    type="text"
-                                    name="key"
-                                    placeholder="e.g. enable_integrations"
-                                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 focus:bg-brand-surface/50"
-                                    required
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-brand-muted mb-1">Description</label>
-                                <input
-                                    type="text"
-                                    name="description"
-                                    placeholder="Brief explanation of this flag"
-                                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 focus:bg-brand-surface/50"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full py-2.5 bg-brand-surface border border-brand-border text-white text-sm font-bold rounded-lg hover:border-brand-primary transition-colors"
-                            >
-                                Add Flag
-                            </button>
                         </form>
                     </div>
+                </div>
 
-                    {/* Existing flags list */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Active Flags</h4>
-
-                        {flags.length === 0 ? (
-                            <div className="text-center py-8 text-brand-muted border border-dashed border-brand-border rounded-xl">
-                                No feature flags created yet.
-                            </div>
-                        ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {flags.map(flag => (
-                                    <div key={flag.id} className="p-4 rounded-xl bg-brand-bg border border-brand-border flex items-start justify-between">
+                {/* Feature Flags */}
+                <div className="glass-panel overflow-hidden">
+                    <div className="p-6 border-b border-brand-border flex items-center gap-3">
+                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Key className="w-5 h-5 text-amber-400" /></div>
+                        <div>
+                            <h3 className="text-lg font-bold text-white">Feature Flags</h3>
+                            <p className="text-sm text-brand-muted">Toggle platform features globally.</p>
+                        </div>
+                    </div>
+                    <div className="p-6 space-y-4">
+                        <form onSubmit={handleCreateFlag} className="flex gap-2">
+                            <input type="text" name="key" placeholder="flag_key" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50" required />
+                            <input type="text" name="description" placeholder="Description" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50" />
+                            <button type="submit" className="px-4 py-2 bg-brand-surface border border-brand-border text-white text-sm font-bold rounded-lg hover:border-brand-primary transition-colors">Add</button>
+                        </form>
+                        <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+                            {flags.length === 0 ? (
+                                <div className="text-center py-6 text-brand-muted border border-dashed border-brand-border rounded-xl text-sm">No flags created yet.</div>
+                            ) : (
+                                flags.map(flag => (
+                                    <div key={flag.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border flex items-center justify-between">
                                         <div>
-                                            <p className="font-mono text-sm text-brand-primary mb-1">{flag.key}</p>
-                                            {flag.description && <p className="text-xs text-brand-muted line-clamp-2">{flag.description}</p>}
+                                            <p className="font-mono text-sm text-brand-primary">{flag.key}</p>
+                                            {flag.description && <p className="text-xs text-brand-muted line-clamp-1">{flag.description}</p>}
                                         </div>
                                         <button
                                             onClick={() => handleToggleFlag(flag.key, flag.isEnabled, flag.description)}
                                             disabled={togglingFlag === flag.key}
                                             className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${flag.isEnabled ? 'bg-emerald-500' : 'bg-brand-surface'}`}
                                         >
-                                            <span
-                                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${flag.isEnabled ? 'translate-x-5' : 'translate-x-0'}`}
-                                            />
+                                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${flag.isEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
                                         </button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Strict Delete Confirmation Modal */}
+            {/* ═══ DELETE CONFIRMATION MODAL ═══ */}
             {deletingCompany && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
                     <div className="bg-brand-bg border border-red-500/30 rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
@@ -714,21 +616,14 @@ export default function FounderHQ() {
                             />
                             <div className="flex gap-3 justify-end">
                                 <button
-                                    onClick={() => {
-                                        setDeletingCompany(null);
-                                        setDeleteConfirmText('');
-                                    }}
+                                    onClick={() => { setDeletingCompany(null); setDeleteConfirmText(''); }}
                                     className="px-4 py-2 text-sm font-semibold text-white bg-brand-surface hover:bg-brand-surface/80 rounded-lg transition-colors"
-                                >
-                                    Cancel
-                                </button>
+                                >Cancel</button>
                                 <button
                                     onClick={() => handleDeleteCompany(deletingCompany.id)}
                                     disabled={deleteConfirmText !== deletingCompany.name}
                                     className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    PERMANENTLY DELETE
-                                </button>
+                                >PERMANENTLY DELETE</button>
                             </div>
                         </div>
                     </div>

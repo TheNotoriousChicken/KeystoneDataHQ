@@ -7,6 +7,7 @@ const path = require('path');
 
 const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
+const prisma = require('./db');
 
 const authRoutes = require('./routes/auth');
 const billingRoutes = require('./routes/billing');
@@ -103,7 +104,8 @@ const server = app.listen(PORT, () => {
 // Handle graceful shutdown on SIGTERM / SIGINT
 const shutdown = (signal) => {
     console.log(`\n🛑 ${signal} received. Shutting down gracefully...`);
-    server.close(() => {
+    server.close(async () => {
+        await prisma.$disconnect();
         console.log('💤 Server closed.');
         process.exit(0);
     });

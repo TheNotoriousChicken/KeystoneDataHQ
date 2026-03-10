@@ -30,8 +30,12 @@ export default function Login() {
         setIsLoading(true);
 
         try {
-            await login(email, password);
-            navigate('/dashboard');
+            const user = await login(email, password);
+            if (user.isSuperAdmin && user.email === 'tejas@keystonedatahq.com') {
+                navigate('/admin');
+            } else {
+                navigate('/dashboard');
+            }
         } catch (err) {
             if (err.requiresTwoFactor) {
                 setRequires2FA(true);

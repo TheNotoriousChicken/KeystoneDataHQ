@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const faqs = [
     { question: "How long does setup take?", answer: "Once you sign up, our team connects to your platforms via API. Your baseline dashboard is usually live within 48 hours." },
@@ -27,35 +27,6 @@ const staggerContainer = {
 
 export default function Pricing() {
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
-    const { token } = useAuth();
-    const [checkoutLoading, setCheckoutLoading] = useState(null); // 'STARTER' | 'GROWTH' | null
-
-    const handleCheckout = async (tier) => {
-        setCheckoutLoading(tier);
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/billing/checkout`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                },
-                body: JSON.stringify({ tier }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.error || 'Failed to create checkout.');
-                return;
-            }
-
-            // Redirect to Lemon Squeezy checkout
-            window.location.href = data.checkoutUrl;
-        } catch (err) {
-            alert('Network error. Please try again.');
-        } finally {
-            setCheckoutLoading(null);
-        }
-    };
 
     return (
         <div className="px-6 py-24 pb-32 relative overflow-hidden bg-brand-bg">
@@ -91,17 +62,12 @@ export default function Pricing() {
                             <span className="text-brand-muted font-medium">/mo</span>
                         </div>
 
-                        <button
-                            onClick={() => handleCheckout('STARTER')}
-                            disabled={checkoutLoading === 'STARTER'}
-                            className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-xl font-semibold transition-colors mb-8 disabled:opacity-50 flex items-center justify-center gap-2"
+                        <Link
+                            to="/register"
+                            className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-xl font-semibold transition-colors mb-8 flex items-center justify-center gap-2"
                         >
-                            {checkoutLoading === 'STARTER' ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                'Get Started'
-                            )}
-                        </button>
+                            Get Started
+                        </Link>
 
                         <div className="flex-1">
                             <p className="font-semibold mb-4 text-sm uppercase tracking-wider text-brand-muted">What's included:</p>
@@ -140,17 +106,12 @@ export default function Pricing() {
                             <span className="relative text-brand-muted font-medium">/mo</span>
                         </div>
 
-                        <button
-                            onClick={() => handleCheckout('GROWTH')}
-                            disabled={checkoutLoading === 'GROWTH'}
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] text-white py-3 rounded-xl font-bold transition-all mb-8 disabled:opacity-50 flex items-center justify-center gap-2"
+                        <Link
+                            to="/register"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] text-white py-3 rounded-xl font-bold transition-all mb-8 flex items-center justify-center gap-2"
                         >
-                            {checkoutLoading === 'GROWTH' ? (
-                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                'Get Started'
-                            )}
-                        </button>
+                            Get Started
+                        </Link>
 
                         <div className="flex-1">
                             <p className="font-semibold mb-4 text-sm uppercase tracking-wider text-white">Everything in Starter, plus:</p>
