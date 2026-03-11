@@ -51,7 +51,12 @@ export default function DashboardLayout() {
     // Filter nav items by role dynamically
     const visibleNav = navigation.filter(item => {
         if (item.superAdminOnly && !isSuperAdmin) return false;
-        if (item.superAdminOnly && isSuperAdmin) return true;
+
+        // If SuperAdmin and NOT impersonating a tenant, ONLY show Founder HQ
+        if (isSuperAdmin && !isImpersonating) {
+            return item.superAdminOnly;
+        }
+
         if (item.adminOnly && !isAdmin) return false;
 
         // Feature flag protections
@@ -187,24 +192,41 @@ export default function DashboardLayout() {
                     {/* Topbar */}
                     <header className="h-20 border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm sticky top-0 z-30 flex items-center justify-between px-8">
                         <div>
-                            <h1 className="text-xl font-bold text-white">{companyName} Analytics</h1>
+                            <h1 className="text-xl font-bold text-white">
+                                {isSuperAdmin && !isImpersonating ? 'Founder HQ' : `${companyName} Analytics`}
+                            </h1>
                             <p className="text-xs text-brand-secondary flex items-center gap-1.5 mt-0.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-brand-secondary animate-pulse"></span>
-                                Live Data Sync Active
+                                {isSuperAdmin && !isImpersonating ? (
+                                    <>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary animate-pulse"></span>
+                                        <span className="text-brand-primary">Global Admin Access</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-brand-secondary animate-pulse"></span>
+                                        Live Data Sync Active
+                                    </>
+                                )}
                             </p>
                         </div>
 
                         <div className="flex items-center gap-4">
                             <NotificationDropdown />
-                            <div className="glass-panel px-4 py-2 flex items-center gap-2 cursor-pointer hover:border-brand-primary transition-colors text-sm">
-                                <span className="text-brand-muted text-xs">Date Range:</span>
-                                <span className="font-medium">Last 30 Days</span>
-                                <ChevronDown className="w-4 h-4 text-brand-muted" />
-                            </div>
-                            <button className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white font-medium px-4 py-2 rounded-[8px] transition-colors flex items-center gap-2 text-sm shadow-sm">
-                                <Download className="w-4 h-4" />
-                                Export PDF
-                            </button>
+
+                            {/* Hide date range and export for SuperAdmin view */}
+                            {!(isSuperAdmin && !isImpersonating) && (
+                                <>
+                                    <div className="glass-panel px-4 py-2 flex items-center gap-2 cursor-pointer hover:border-brand-primary transition-colors text-sm">
+                                        <span className="text-brand-muted text-xs">Date Range:</span>
+                                        <span className="font-medium">Last 30 Days</span>
+                                        <ChevronDown className="w-4 h-4 text-brand-muted" />
+                                    </div>
+                                    <button className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white font-medium px-4 py-2 rounded-[8px] transition-colors flex items-center gap-2 text-sm shadow-sm">
+                                        <Download className="w-4 h-4" />
+                                        Export PDF
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </header>
 
