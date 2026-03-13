@@ -13,7 +13,7 @@ const { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, 
 
 const router = express.Router();
 
-const SALT_ROUNDS = 12;
+const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = '7d';
 
 // ---------------------------------------------------------------------------

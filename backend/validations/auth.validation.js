@@ -5,8 +5,8 @@ const registerSchema = z.object({
     password: z.string().min(8, 'Password must be at least 8 characters.'),
     firstName: z.string().min(1, 'First name is required.'),
     lastName: z.string().min(1, 'Last name is required.'),
-    companyName: z.string().optional(),
-    inviteToken: z.string().optional()
+    companyName: z.string().nullish(),
+    inviteToken: z.string().nullish()
 }).refine(data => data.inviteToken || data.companyName, {
     message: "companyName is required when registering without an invite.",
     path: ["companyName"]
