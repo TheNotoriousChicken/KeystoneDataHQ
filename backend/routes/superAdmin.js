@@ -424,6 +424,210 @@ router.delete('/companies/:id', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// PUT /api/admin/companies/:id/suspend
+// Toggles the kill switch for a company.
+// ---------------------------------------------------------------------------
+router.put('/companies/:id/suspend', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isSuspended } = req.body;
+
+        const company = await prisma.company.findUnique({ where: { id } });
+        if (!company) return res.status(404).json({ error: 'Company not found.' });
+
+        await prisma.company.update({
+            where: { id },
+            data: { isSuspended }
+        });
+
+        return res.json({ message: `Company ${isSuspended ? 'suspended' : 'reactivated'}.` });
+    } catch (error) {
+        console.error('SuperAdmin suspend error:', error);
+        return res.status(500).json({ error: 'Failed to suspend company.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// PUT /api/admin/companies/:id/tier
+// Manually adjusts a company's subscription tier or trial period.
+// ---------------------------------------------------------------------------
+router.put('/companies/:id/tier', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { subscriptionTier, subscriptionStatus, trialDays } = req.body;
+
+        const company = await prisma.company.findUnique({ where: { id } });
+        if (!company) return res.status(404).json({ error: 'Company not found.' });
+
+        let trialEndsAt = company.trialEndsAt;
+        if (trialDays && trialDays > 0) {
+            trialEndsAt = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000);
+        }
+
+        const dataToUpdate = {};
+        if (subscriptionTier !== undefined) dataToUpdate.subscriptionTier = subscriptionTier;
+        if (subscriptionStatus !== undefined) dataToUpdate.subscriptionStatus = subscriptionStatus;
+        if (trialDays) dataToUpdate.trialEndsAt = trialEndsAt;
+
+        await prisma.company.update({
+            where: { id },
+            data: dataToUpdate
+        });
+
+        return res.json({ message: 'Company subscription updated manually.' });
+    } catch (error) {
+        console.error('SuperAdmin manual tier error:', error);
+        return res.status(500).json({ error: 'Failed to update company tier.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// PUT /api/admin/users/:id/role
+// Elevate or demote user roles within their company.
+// ---------------------------------------------------------------------------
+router.put('/users/:id/role', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body; // 'ADMIN' or 'VIEWER'
+
+        if (!['ADMIN', 'VIEWER'].includes(role)) {
+            return res.status(400).json({ error: 'Invalid role provided.' });
+        }
+
+        const targetUser = await prisma.user.findUnique({ where: { id } });
+        if (!targetUser) return res.status(404).json({ error: 'User not found.' });
+
+        // Guard against demoting the only admin.
+        if (role === 'VIEWER' && targetUser.role === 'ADMIN') {
+            const adminCount = await prisma.user.count({ 
+                where: { companyId: targetUser.companyId, role: 'ADMIN' } 
+            });
+            if (adminCount <= 1) {
+                return res.status(400).json({ error: 'Cannot demote the last admin of a workspace.' });
+            }
+        }
+
+        await prisma.user.update({
+            where: { id },
+            data: { role }
+        });
+
+        return res.json({ message: `User role updated to ${role}.` });
+    } catch (error) {
+        console.error('SuperAdmin role error:', error);
+        return res.status(500).json({ error: 'Failed to update user role.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/admin/users/:id/reset-password
+// Forces a password reset for a specific user.
+// ---------------------------------------------------------------------------
+router.post('/users/:id/reset-password', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const targetUser = await prisma.user.findUnique({ where: { id } });
+        if (!targetUser) return res.status(404).json({ error: 'User not found.' });
+
+        // Generate token and expire any old ones
+        const crypto = require('crypto');
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+        await prisma.passwordReset.updateMany({
+            where: { userId: id, used: false },
+            data: { used: true },
+        });
+
+        await prisma.passwordReset.create({
+            data: { token, expiresAt, userId: id },
+        });
+
+        const { sendPasswordResetEmail } = require('../utils/email');
+        await sendPasswordResetEmail(targetUser.email, targetUser.firstName, token);
+
+        return res.json({ message: `Password reset email sent to ${targetUser.email}.` });
+    } catch (error) {
+        console.error('SuperAdmin force reset error:', error);
+        return res.status(500).json({ error: 'Failed to trigger password reset.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/admin/concierge
+// Magic onboarding: Generates a company and sends a magic link to the user.
+// ---------------------------------------------------------------------------
+router.post('/concierge', async (req, res) => {
+    try {
+        const { email, firstName, lastName, companyName, tier, trialDays } = req.body;
+
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            return res.status(400).json({ error: 'A user with this email already exists.' });
+        }
+
+        const crypto = require('crypto');
+        const bcrypt = require('bcrypt');
+
+        // Random temporary password
+        const tempPassword = crypto.randomBytes(16).toString('hex');
+        const passwordHash = await bcrypt.hash(tempPassword, 10);
+
+        const trialEndsAt = new Date(Date.now() + (trialDays || 14) * 24 * 60 * 60 * 1000);
+
+        const result = await prisma.$transaction(async (tx) => {
+            const company = await tx.company.create({
+                data: { 
+                    name: companyName,
+                    subscriptionTier: tier || 'STARTER',
+                    subscriptionStatus: 'active',
+                    trialEndsAt
+                },
+            });
+
+            const verifyToken = crypto.randomBytes(32).toString('hex');
+            const user = await tx.user.create({
+                data: {
+                    email,
+                    passwordHash,
+                    firstName,
+                    lastName,
+                    role: 'ADMIN',
+                    companyId: company.id,
+                    emailVerifyToken: verifyToken,
+                },
+            });
+
+            // Generate password reset link immediately for them to set their password
+            const resetToken = crypto.randomBytes(32).toString('hex');
+            await tx.passwordReset.create({
+                data: {
+                    token: resetToken,
+                    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Valid for 7 days
+                    userId: user.id
+                }
+            });
+
+            return { company, user, resetToken };
+        });
+
+        // Here we send the special "Concierge" welcome email
+        // Reuse the generic password reset email for now until we define a template
+        const { sendPasswordResetEmail } = require('../utils/email');
+        await sendPasswordResetEmail(result.user.email, result.user.firstName, result.resetToken);
+
+        return res.json({ 
+            message: `Magic workspace created for ${companyName}! Email sent to ${email}.`,
+            companyId: result.company.id,
+        });
+    } catch (error) {
+        console.error('SuperAdmin concierge error:', error);
+        return res.status(500).json({ error: 'Failed to execute concierge setup.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
 // PUT /api/admin/flags
 // Creates or updates a feature flag
 // ---------------------------------------------------------------------------
@@ -586,6 +790,40 @@ router.get('/users', async (_req, res) => {
     } catch (error) {
         console.error('SuperAdmin users error:', error);
         return res.status(500).json({ error: 'Failed to fetch global users.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/admin/error-logs
+// Mini-sentry: Fetch all 500-level backend errors
+// ---------------------------------------------------------------------------
+router.get('/error-logs', async (req, res) => {
+    try {
+        const logs = await prisma.errorLog.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 100
+        });
+        return res.json(logs);
+    } catch (error) {
+        console.error('SuperAdmin fetch error logs failed:', error);
+        return res.status(500).json({ error: 'Failed to fetch error logs.' });
+    }
+});
+
+// ---------------------------------------------------------------------------
+// PUT /api/admin/error-logs/:id/resolve
+// Mark an error as resolved
+// ---------------------------------------------------------------------------
+router.put('/error-logs/:id/resolve', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.errorLog.update({
+            where: { id },
+            data: { resolved: true }
+        });
+        return res.json({ message: 'Error marked as resolved.' });
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to resolve error.' });
     }
 });
 

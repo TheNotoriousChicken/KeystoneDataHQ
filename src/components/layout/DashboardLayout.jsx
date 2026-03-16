@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Cable, FileText, Settings, CreditCard, LogOut, Database, ChevronDown, Download, Users, Activity as ActivityIcon, Crown } from 'lucide-react';
+import { LayoutDashboard, Cable, FileText, Settings, CreditCard, LogOut, Database, ChevronDown, Download, Users, Activity as ActivityIcon, Crown, Radio, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useFlags } from '../../context/FlagContext';
 import MobileBlocker from './MobileBlocker';
 import NotificationDropdown from './NotificationDropdown';
 
-const navigation = [
+const standardNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Integrations', href: '/dashboard/integrations', icon: Cable },
     { name: 'Reports', href: '/dashboard/reports', icon: FileText },
@@ -15,6 +15,15 @@ const navigation = [
     { name: 'Activity', href: '/dashboard/activity', icon: ActivityIcon, adminOnly: true },
     { name: 'Settings', href: '/dashboard/settings', icon: Settings, adminOnly: true },
     { name: 'Billing', href: '/dashboard/billing', icon: CreditCard, adminOnly: true },
+];
+
+const superAdminNavigation = [
+    { name: 'Overview', href: '/dashboard/founder-hq', icon: Crown },
+    { name: 'User Directory', href: '/dashboard/founder-hq/users', icon: Users },
+    { name: 'Feature Flags', href: '/dashboard/founder-hq/flags', icon: Settings },
+    { name: 'Broadcasts', href: '/dashboard/founder-hq/broadcasts', icon: Radio },
+    { name: 'System Logs', href: '/dashboard/founder-hq/logs', icon: ActivityIcon },
+    { name: 'Error Log', href: '/dashboard/founder-hq/errors', icon: ShieldAlert },
 ];
 
 export default function DashboardLayout() {
@@ -49,14 +58,10 @@ export default function DashboardLayout() {
     const isSuperAdmin = user?.isSuperAdmin === true;
 
     // Filter nav items by role dynamically
-    const visibleNav = navigation.filter(item => {
+    const navSource = (isSuperAdmin && !isImpersonating) ? superAdminNavigation : standardNavigation;
+    
+    const visibleNav = navSource.filter(item => {
         if (item.superAdminOnly && !isSuperAdmin) return false;
-
-        // If SuperAdmin and NOT impersonating a tenant, ONLY show Founder HQ
-        if (isSuperAdmin && !isImpersonating) {
-            return item.superAdminOnly;
-        }
-
         if (item.adminOnly && !isAdmin) return false;
 
         // Feature flag protections

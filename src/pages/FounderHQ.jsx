@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
     Crown, Users, Building2, Cable, Activity, DollarSign, TrendingUp,
-    Key, Megaphone, Globe, BookUser, Trash2, AlertTriangle, RefreshCw,
+    Trash2, AlertTriangle, RefreshCw,
     Download, Zap, ShieldCheck, UserPlus, CheckCircle2, BarChart3,
     ArrowUpRight, ArrowDownRight, Sparkles, Clock, Wifi, WifiOff
 } from 'lucide-react';
@@ -13,6 +13,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import RevenueAnalytics from '../components/admin/RevenueAnalytics';
 import HealthTable from '../components/admin/HealthTable';
 import InsightsPanel from '../components/admin/InsightsPanel';
+import EditCompanyModal from '../components/admin/EditCompanyModal';
+import ConciergeModal from '../components/admin/ConciergeModal';
 
 // ── Helpers ──
 const pct = (value) => `${value}%`;
@@ -48,8 +50,9 @@ export default function FounderHQ() {
 
     const [impersonatingId, setImpersonatingId] = useState(null);
     const [deletingCompany, setDeletingCompany] = useState(null);
+    const [editingCompany, setEditingCompany] = useState(null);
+    const [showConcierge, setShowConcierge] = useState(false);
     const [deleteConfirmText, setDeleteConfirmText] = useState('');
-    const [togglingFlag, setTogglingFlag] = useState(null);
     const [syncTriggered, setSyncTriggered] = useState(false);
     const [error, setError] = useState('');
 
@@ -60,8 +63,8 @@ export default function FounderHQ() {
         queryKey: ['adminDashboard'],
         queryFn: async () => {
             const endpoints = [
-                'stats', 'companies', 'revenue', 'flags',
-                'integrations-health', 'pulse', 'users', 'signups'
+                'stats', 'companies', 'revenue',
+                'integrations-health', 'signups'
             ];
             const responses = await Promise.all(
                 endpoints.map(ep => fetch(`${API}/api/admin/${ep}`, { headers }))
@@ -70,10 +73,10 @@ export default function FounderHQ() {
             const failed = responses.find(r => !r.ok);
             if (failed) throw new Error('Failed to fetch admin data.');
 
-            const [stats, companies, revenue, flags, health, pulse, usersList, signups] =
+            const [stats, companies, revenue, health, signups] =
                 await Promise.all(responses.map(r => r.json()));
 
-            return { stats, companies, revenue, flags, health, pulse, usersList, signups };
+            return { stats, companies, revenue, health, signups };
         },
         enabled: !!user && user.isSuperAdmin === true,
     });
@@ -81,10 +84,7 @@ export default function FounderHQ() {
     const stats = adminData?.stats;
     const companies = adminData?.companies || [];
     const revenue = adminData?.revenue;
-    const flags = adminData?.flags || [];
     const health = adminData?.health;
-    const pulse = adminData?.pulse || [];
-    const usersList = adminData?.usersList || [];
     const signups = adminData?.signups;
 
     // ── Actions ──
@@ -128,62 +128,7 @@ export default function FounderHQ() {
         }
     };
 
-    const handleToggleFlag = async (key, currentStatus, description) => {
-        try {
-            setTogglingFlag(key);
-            setError('');
-            const res = await fetch(`${API}/api/admin/flags`, {
-                method: 'PUT',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key, isEnabled: !currentStatus, description })
-            });
-            if (!res.ok) throw new Error('Failed to update feature flag.');
-            queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setTogglingFlag(null);
-        }
-    };
 
-    const handleCreateFlag = async (e) => {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const key = fd.get('key');
-        if (!key) return;
-        try {
-            setError('');
-            const res = await fetch(`${API}/api/admin/flags`, {
-                method: 'PUT',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key, isEnabled: false, description: fd.get('description') })
-            });
-            if (!res.ok) throw new Error('Failed to create flag.');
-            queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
-            e.target.reset();
-        } catch (err) {
-            setError(err.message);
-        }
-    };
-
-    const handleCreateBroadcast = async (e) => {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const message = fd.get('message');
-        if (!message) return;
-        try {
-            setError('');
-            const res = await fetch(`${API}/api/admin/broadcast`, {
-                method: 'POST',
-                headers: { ...headers, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message, type: fd.get('type') })
-            });
-            if (!res.ok) throw new Error('Failed to publish broadcast.');
-            window.location.reload();
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     const exportCompaniesCSV = () => {
         const csvRows = [
@@ -237,6 +182,13 @@ export default function FounderHQ() {
                     <p className="text-brand-muted mt-1">Command center for Keystone Data platform operations.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setShowConcierge(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/20"
+                    >
+                        <Sparkles className="w-4 h-4" />
+                        Generate Client
+                    </button>
                     <button
                         onClick={handleTriggerSync}
                         disabled={syncTriggered}
@@ -425,171 +377,25 @@ export default function FounderHQ() {
                 handleImpersonate={handleImpersonate}
                 impersonatingId={impersonatingId}
                 setDeletingCompany={setDeletingCompany}
+                setEditingCompany={setEditingCompany}
             />
 
-            {/* ═══ GLOBAL USER DIRECTORY ═══ */}
-            <div className="glass-panel overflow-hidden">
-                <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg"><BookUser className="w-4 h-4 text-emerald-400" /></div>
-                    <div>
-                        <h3 className="text-lg font-bold text-white">Global User Directory</h3>
-                        <p className="text-sm text-brand-muted">Cross-tenant list of all platform individuals.</p>
-                    </div>
-                </div>
-                <div className="overflow-x-auto max-h-96">
-                    <table className="w-full text-left text-sm text-brand-muted sticky-header">
-                        <thead className="text-xs uppercase bg-brand-surface border-b border-brand-border text-brand-muted/70 sticky top-0 z-10">
-                            <tr>
-                                <th className="px-6 py-4 font-semibold tracking-wider">User</th>
-                                <th className="px-6 py-4 font-semibold tracking-wider">Tenant (Company)</th>
-                                <th className="px-6 py-4 font-semibold tracking-wider">Role</th>
-                                <th className="px-6 py-4 font-semibold tracking-wider text-right">Date Joined</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-brand-border/50">
-                            {usersList.length > 0 ? usersList.map((u) => (
-                                <tr key={u.id} className="hover:bg-brand-surface/20 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-col">
-                                            <span className="font-medium text-white">{u.firstName} {u.lastName}</span>
-                                            <span className="text-xs text-brand-muted/70">{u.email}</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-white">{u.companyName}</td>
-                                    <td className="px-6 py-4">
-                                        {u.isSuperAdmin ? (
-                                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 uppercase tracking-wide">
-                                                <Crown className="w-3 h-3" /> Founder
-                                            </span>
-                                        ) : (
-                                            <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${u.role === 'ADMIN' ? 'bg-brand-primary/20 text-brand-primary' : 'bg-brand-surface/50 text-brand-muted'}`}>
-                                                {u.role}
-                                            </span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">{format(new Date(u.createdAt), 'MMM d, yyyy')}</td>
-                                </tr>
-                            )) : (
-                                <tr><td colSpan="4" className="px-6 py-8 text-center text-brand-muted">No users found.</td></tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            {/* ═══ EDIT COMPANY MODAL ═══ */}
+            {editingCompany && (
+                <EditCompanyModal
+                    company={editingCompany}
+                    onClose={() => setEditingCompany(null)}
+                    refetch={() => queryClient.invalidateQueries({ queryKey: ['adminDashboard'] })}
+                />
+            )}
 
-            {/* ═══ GLOBAL AUDIT PULSE ═══ */}
-            <div className="glass-panel overflow-hidden">
-                <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Globe className="w-5 h-5 text-emerald-400" /></div>
-                    <div>
-                        <h3 className="text-lg font-bold text-white">Global Audit Pulse</h3>
-                        <p className="text-sm text-brand-muted">Real-time cross-tenant activity log.</p>
-                    </div>
-                </div>
-                <div className="p-6">
-                    <div className="max-h-96 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                        {pulse.length === 0 ? (
-                            <p className="text-brand-muted text-center py-4">No recent activity on the platform.</p>
-                        ) : (
-                            pulse.map((log) => (
-                                <div key={log.id} className="p-4 rounded-xl bg-brand-surface/30 border border-brand-border/50 hover:border-brand-border transition-colors">
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="font-semibold text-white whitespace-nowrap">{log.user?.firstName} {log.user?.lastName}</span>
-                                            <span className="text-brand-muted text-sm whitespace-nowrap">({log.user?.email})</span>
-                                            <span className="text-brand-muted/50 text-sm hidden sm:inline">from</span>
-                                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-brand-surface text-brand-primary border border-brand-primary/20">{log.company?.name}</span>
-                                        </div>
-                                        <span className="text-xs text-brand-muted whitespace-nowrap ml-4">{format(new Date(log.createdAt), 'MMM d, h:mm a')}</span>
-                                    </div>
-                                    <p className="text-sm text-brand-muted">
-                                        Performed action: <span className="font-mono text-white text-xs px-1.5 py-0.5 bg-brand-surface rounded">{log.action}</span>
-                                    </p>
-                                    {log.details && Object.keys(log.details).length > 0 && (
-                                        <div className="mt-2 text-xs font-mono text-brand-muted/70 bg-brand-bg p-2 rounded border border-brand-border/50 overflow-x-auto">
-                                            {JSON.stringify(log.details)}
-                                        </div>
-                                    )}
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* ═══ BROADCAST + FEATURE FLAGS ═══ */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Broadcast System */}
-                <div className="glass-panel overflow-hidden">
-                    <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Megaphone className="w-5 h-5 text-red-400" /></div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Global Broadcast</h3>
-                            <p className="text-sm text-brand-muted">Publish alerts to all users.</p>
-                        </div>
-                    </div>
-                    <div className="p-6">
-                        <form onSubmit={handleCreateBroadcast} className="space-y-4">
-                            <textarea
-                                name="message"
-                                placeholder="e.g. Scheduled maintenance in 1 hour."
-                                rows={3}
-                                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 resize-none"
-                                required
-                            />
-                            <div className="flex gap-4">
-                                <select name="type" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-primary/50">
-                                    <option value="INFO">Informational (Blue)</option>
-                                    <option value="WARNING">Warning (Yellow)</option>
-                                    <option value="CRITICAL">Critical (Red)</option>
-                                </select>
-                                <button type="submit" className="py-2.5 px-6 bg-red-600/90 text-white text-sm font-bold rounded-lg hover:bg-red-500 transition-colors whitespace-nowrap">
-                                    Publish
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                {/* Feature Flags */}
-                <div className="glass-panel overflow-hidden">
-                    <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border"><Key className="w-5 h-5 text-amber-400" /></div>
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Feature Flags</h3>
-                            <p className="text-sm text-brand-muted">Toggle platform features globally.</p>
-                        </div>
-                    </div>
-                    <div className="p-6 space-y-4">
-                        <form onSubmit={handleCreateFlag} className="flex gap-2">
-                            <input type="text" name="key" placeholder="flag_key" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50" required />
-                            <input type="text" name="description" placeholder="Description" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-3 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50" />
-                            <button type="submit" className="px-4 py-2 bg-brand-surface border border-brand-border text-white text-sm font-bold rounded-lg hover:border-brand-primary transition-colors">Add</button>
-                        </form>
-                        <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-                            {flags.length === 0 ? (
-                                <div className="text-center py-6 text-brand-muted border border-dashed border-brand-border rounded-xl text-sm">No flags created yet.</div>
-                            ) : (
-                                flags.map(flag => (
-                                    <div key={flag.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border flex items-center justify-between">
-                                        <div>
-                                            <p className="font-mono text-sm text-brand-primary">{flag.key}</p>
-                                            {flag.description && <p className="text-xs text-brand-muted line-clamp-1">{flag.description}</p>}
-                                        </div>
-                                        <button
-                                            onClick={() => handleToggleFlag(flag.key, flag.isEnabled, flag.description)}
-                                            disabled={togglingFlag === flag.key}
-                                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${flag.isEnabled ? 'bg-emerald-500' : 'bg-brand-surface'}`}
-                                        >
-                                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${flag.isEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-                                        </button>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {/* ═══ CONCIERGE ONBOARDING MODAL ═══ */}
+            {showConcierge && (
+                <ConciergeModal
+                    onClose={() => setShowConcierge(false)}
+                    refetch={() => queryClient.invalidateQueries({ queryKey: ['adminDashboard'] })}
+                />
+            )}
 
             {/* ═══ DELETE CONFIRMATION MODAL ═══ */}
             {deletingCompany && (

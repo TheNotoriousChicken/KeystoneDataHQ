@@ -40,6 +40,11 @@ import Profile from './pages/Profile';
 import Activity from './pages/Activity';
 import Notifications from './pages/Notifications';
 import FounderHQ from './pages/FounderHQ';
+import UserDirectory from './pages/admin/UserDirectory';
+import FeatureFlags from './pages/admin/FeatureFlags';
+import Broadcasts from './pages/admin/Broadcasts';
+import SystemLogs from './pages/admin/SystemLogs';
+import ErrorLogs from './pages/admin/ErrorLogs';
 
 function App() {
   return (
@@ -94,7 +99,14 @@ function App() {
                   {/* Admin-only Routes */}
                   <Route path="team" element={<AdminRoute><Team /></AdminRoute>} />
                   <Route path="activity" element={<AdminRoute><Activity /></AdminRoute>} />
-                  <Route path="founder-hq" element={<AdminRoute><FounderHQ /></AdminRoute>} />
+                  <Route path="founder-hq">
+                    <Route index element={<AdminRoute><FounderHQ /></AdminRoute>} />
+                    <Route path="users" element={<AdminRoute><UserDirectory /></AdminRoute>} />
+                    <Route path="flags" element={<AdminRoute><FeatureFlags /></AdminRoute>} />
+                    <Route path="broadcasts" element={<AdminRoute><Broadcasts /></AdminRoute>} />
+                    <Route path="logs" element={<AdminRoute><SystemLogs /></AdminRoute>} />
+                    <Route path="errors" element={<AdminRoute><ErrorLogs /></AdminRoute>} />
+                  </Route>
                   <Route path="settings" element={<AdminRoute><Settings /></AdminRoute>} />
                   <Route path="billing" element={<AdminRoute><Billing /></AdminRoute>} />
                 </Route>

@@ -88,6 +88,8 @@ app.use((_req, res) => {
 // ---------------------------------------------------------------------------
 // Global Error Handler — Must be LAST middleware
 // ---------------------------------------------------------------------------
+const errorLogger = require('./middleware/errorLogger');
+app.use(errorLogger);
 app.use(errorHandler);
 
 // ---------------------------------------------------------------------------

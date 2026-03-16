@@ -15,6 +15,8 @@ model Company {
   subscriptionStatus         String           @default("inactive")
   paddleCustomerId           String?          @unique
   paddleSubscriptionId       String?          @unique
+  trialEndsAt                DateTime?
+  isSuspended                Boolean          @default(false)
   onboardingCompleted        Boolean          @default(false)
   createdAt                  DateTime         @default(now())
   shopifyShopName            String?
@@ -43,6 +45,7 @@ model User {
   emailVerified        Boolean         @default(false)
   emailVerifyToken     String?         @unique
   createdAt            DateTime        @default(now())
+  lastLoginAt          DateTime?
   companyId            String
   twoFactorEnabled     Boolean         @default(false)
   twoFactorMethod      String          @default("NONE")
@@ -144,6 +147,19 @@ model AuditLog {
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user      User?    @relation(fields: [userId], references: [id])
+}
+
+/// A centralized log for 500-level backend errors (Mini-Sentry)
+model ErrorLog {
+  id        String   @id @default(uuid())
+  message   String
+  stack     String?
+  path      String?
+  method    String?
+  userId    String?
+  companyId String?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 /// User-specific notifications for the bell dropdown / inbox.

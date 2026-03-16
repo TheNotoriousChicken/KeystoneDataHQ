@@ -255,6 +255,11 @@ router.post('/login', validate(loginSchema), async (req, res) => {
         // Founder Guard: Ensure specific email always has super admin access
         const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
 
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() }
+        });
+
         const token = jwt.sign(
             {
                 userId: user.id,
@@ -374,6 +379,11 @@ router.post('/login/verify', async (req, res) => {
         // --- Success: Issue real JWT ---
         // Founder Guard: Ensure specific email always has super admin access
         const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { lastLoginAt: new Date() }
+        });
 
         const token = jwt.sign(
             {
