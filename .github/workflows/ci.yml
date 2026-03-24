@@ -17,9 +17,9 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
-      - name: Run founder guard tests (lightweight)
-        run: node tests/runFoundersTests.mjs || true
-      - name: Run lightweight test script (no heavy tests configured)
-        run: npm run test-founders || true
+      - name: Run unit tests
+        run: npm run test:unit
+      - name: Run founder guard tests
+        run: node tests/runFoundersTests.mjs
       - name: Build frontend
-        run: npm run build || true
+        run: npm run build

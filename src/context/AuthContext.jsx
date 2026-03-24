@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { initAccessToken } from '../utils/authRefresh';
 
 const AuthContext = createContext(null);
 const API_BASE = `${import.meta.env.VITE_API_URL}/api/auth`;
@@ -8,28 +9,52 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Hydrate from localStorage on mount
-    useEffect(() => {
-        const storedToken = localStorage.getItem('kd_token');
-        const storedUser = localStorage.getItem('kd_user');
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
-    }, []);
-
     const saveSession = (tokenValue, userData) => {
         localStorage.setItem('kd_token', tokenValue);
         localStorage.setItem('kd_user', JSON.stringify(userData));
         setToken(tokenValue);
         setUser(userData);
+        initAccessToken(tokenValue);
     };
+
+    // Hydrate from localStorage, then attempt silent refresh
+    useEffect(() => {
+        const restore = async () => {
+            // 1. Fast hydrate from localStorage
+            const storedToken = localStorage.getItem('kd_token');
+            const storedUser = localStorage.getItem('kd_user');
+            if (storedToken && storedUser) {
+                setToken(storedToken);
+                setUser(JSON.parse(storedUser));
+                initAccessToken(storedToken);
+            }
+
+            // 2. Attempt silent refresh via HttpOnly cookie
+            try {
+                const res = await fetch(`${API_BASE}/refresh`, {
+                    method: 'POST',
+                    credentials: 'include',
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.token && data.user) {
+                        saveSession(data.token, data.user);
+                    }
+                }
+            } catch (err) {
+                // Silent refresh failed — fall back to localStorage session
+            }
+
+            setLoading(false);
+        };
+        restore();
+    }, []);
 
     const login = async (email, password) => {
         const res = await fetch(`${API_BASE}/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ email, password }),
         });
         const data = await res.json();
@@ -47,7 +72,7 @@ export function AuthProvider({ children }) {
             err.requiresTwoFactor = true;
             err.method = data.method; // 'APP' or 'EMAIL'
             err.tempToken = data.tempToken;
-            throw err; // Throw to UI to handle rendering the 2FA screen
+            throw err;
         }
 
         saveSession(data.token, data.user);
@@ -58,6 +83,7 @@ export function AuthProvider({ children }) {
         const res = await fetch(`${API_BASE}/login/verify`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ tempToken, code }),
         });
         const data = await res.json();
@@ -82,11 +108,15 @@ export function AuthProvider({ children }) {
         return data.user;
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await fetch(`${API_BASE}/logout`, { method: 'POST', credentials: 'include' });
+        } catch (_) {}
         localStorage.removeItem('kd_token');
         localStorage.removeItem('kd_user');
         setToken(null);
         setUser(null);
+        initAccessToken(null);
     };
 
     const impersonate = async (companyId) => {
@@ -97,6 +127,7 @@ export function AuthProvider({ children }) {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
+            credentials: 'include',
             body: JSON.stringify({ companyId })
         });
         const data = await res.json();

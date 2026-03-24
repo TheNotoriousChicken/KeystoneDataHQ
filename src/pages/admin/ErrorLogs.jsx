@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 export default function ErrorLogs() {
     const queryClient = useQueryClient();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('kd_token');
     const [filter, setFilter] = useState('UNRESOLVED');
 
     const { data: logs, isLoading, isError } = useQuery({

@@ -58,6 +58,9 @@ model User {
   notifications        Notification[]
   passwordResets       PasswordReset[]
   company              Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([email])
 }
 
 /// A password reset token linked to a user.
@@ -96,6 +99,7 @@ model Integration {
   company      Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, platformName])
+  @@index([companyId])
 }
 
 /// A global feature flag to enable/disable specific platform features
@@ -133,6 +137,7 @@ model MetricCache {
   company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, date])
+  @@index([companyId])
 }
 
 /// Track user actions across the company for auditing.
@@ -147,6 +152,9 @@ model AuditLog {
   companyId String
   company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user      User?    @relation(fields: [userId], references: [id])
+
+  @@index([companyId, createdAt])
+  @@index([userId])
 }
 
 /// A centralized log for 500-level backend errors (Mini-Sentry)
@@ -160,6 +168,8 @@ model ErrorLog {
   companyId String?
   resolved  Boolean  @default(false)
   createdAt DateTime @default(now())
+
+  @@index([resolved, createdAt])
 }
 
 /// User-specific notifications for the bell dropdown / inbox.
@@ -173,6 +183,8 @@ model Notification {
   createdAt DateTime @default(now())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
 }
 
 enum SubscriptionTier {

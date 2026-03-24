@@ -13,6 +13,90 @@ router.use(verifySuperAdmin);
 // GET /api/admin/stats
 // Enhanced global platform metrics with growth & engagement data.
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// GET /api/admin/dashboard
+// Consolidated endpoint: returns stats, companies, revenue, health, signups
+// in a single request to reduce frontend round-trips.
+// ---------------------------------------------------------------------------
+router.get('/dashboard', async (_req, res) => {
+    try {
+        // STATS
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+        const [totalUsers, totalCompanies, activeIntegrations, newUsers7d, newUsers30d, newCompanies7d, newCompanies30d, verifiedUsers, twoFactorUsers, onboardedCompanies] =
+            await Promise.all([
+                prisma.user.count(), prisma.company.count(),
+                prisma.company.count({ where: { OR: [{ shopifyToken: { not: null } }, { metaAccessToken: { not: null } }, { ga4PropertyId: { not: null } }, { klaviyoApiKey: { not: null } }] } }),
+                prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+                prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+                prisma.company.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+                prisma.company.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+                prisma.user.count({ where: { emailVerified: true } }),
+                prisma.user.count({ where: { twoFactorEnabled: true } }),
+                prisma.company.count({ where: { onboardingCompleted: true } }),
+            ]);
+
+        const recentLogins = await prisma.auditLog.groupBy({ by: ['userId'], where: { action: 'USER_LOGIN', createdAt: { gte: sevenDaysAgo } } });
+        const stats = {
+            totalUsers, totalCompanies, activeIntegrations,
+            growth: { newUsers7d, newUsers30d, newCompanies7d, newCompanies30d },
+            engagement: {
+                verifiedRate: totalUsers > 0 ? Math.round((verifiedUsers / totalUsers) * 100) : 0,
+                twoFactorRate: totalUsers > 0 ? Math.round((twoFactorUsers / totalUsers) * 100) : 0,
+                onboardingRate: totalCompanies > 0 ? Math.round((onboardedCompanies / totalCompanies) * 100) : 0,
+                activeUsersLast7d: recentLogins.length,
+            },
+        };
+
+        // COMPANIES
+        const allCompanies = await prisma.company.findMany({ select: { id: true, name: true, subscriptionTier: true, subscriptionStatus: true, onboardingCompleted: true, createdAt: true, isSuspended: true, trialEndsAt: true, shopifyToken: true, metaAccessToken: true, ga4PropertyId: true, klaviyoApiKey: true, _count: { select: { users: true, integrations: true } }, integrations: { select: { syncStatus: true, lastSyncedAt: true }, orderBy: { lastSyncedAt: 'desc' }, take: 1 }, users: { select: { lastLoginAt: true }, orderBy: { lastLoginAt: 'desc' }, take: 1 } }, orderBy: { createdAt: 'desc' } });
+
+        const companyIds = allCompanies.map(c => c.id);
+        const lastLogins = await prisma.auditLog.groupBy({ by: ['companyId'], where: { action: 'USER_LOGIN', companyId: { in: companyIds } }, _max: { createdAt: true } });
+        const loginMap = {};
+        lastLogins.forEach(l => { loginMap[l.companyId] = l._max.createdAt; });
+
+        const companies = allCompanies.map(company => {
+            let integrationCount = 0;
+            if (company.shopifyToken) integrationCount++;
+            if (company.metaAccessToken) integrationCount++;
+            if (company.ga4PropertyId) integrationCount++;
+            if (company.klaviyoApiKey) integrationCount++;
+            let mrr = 0;
+            if (company.subscriptionStatus === 'active') { mrr = company.subscriptionTier === 'STARTER' ? 500 : company.subscriptionTier === 'GROWTH' ? 1500 : 0; }
+            const lastSync = company.integrations[0]?.lastSyncedAt || null;
+            const lastLogin = loginMap[company.id] || company.users[0]?.lastLoginAt || null;
+            let healthScore = 0;
+            if (company.subscriptionStatus === 'active') healthScore += 25;
+            if (company.onboardingCompleted) healthScore += 15;
+            if (integrationCount > 0) healthScore += Math.min(integrationCount * 10, 30);
+            if (lastLogin) { const d = (Date.now() - new Date(lastLogin).getTime()) / 864e5; if (d < 1) healthScore += 30; else if (d < 7) healthScore += 20; else if (d < 30) healthScore += 10; }
+            return { id: company.id, name: company.name, createdAt: company.createdAt, userCount: company._count.users, subscriptionTier: company.subscriptionTier, subscriptionStatus: company.subscriptionStatus, isSuspended: company.isSuspended, trialEndsAt: company.trialEndsAt, mrr, integrationCount, lastSync, lastLogin, healthScore: Math.min(healthScore, 100) };
+        }).sort((a, b) => b.mrr - a.mrr);
+
+        // REVENUE
+        let mrr = 0; let activeSubs = 0; let canceledSubs = 0; let starterMrr = 0; let growthMrr = 0;
+        allCompanies.forEach(c => { if (c.subscriptionStatus === 'active') { activeSubs++; if (c.subscriptionTier === 'STARTER') { mrr += 500; starterMrr += 500; } if (c.subscriptionTier === 'GROWTH') { mrr += 1500; growthMrr += 1500; } } else if (['canceled', 'past_due'].includes(c.subscriptionStatus)) canceledSubs++; });
+        const churnRate = (activeSubs + canceledSubs) > 0 ? (canceledSubs / (activeSubs + canceledSubs)) * 100 : 0;
+        const revenue = { mrr, arr: mrr * 12, activeSubs, canceledSubs, churnRate: churnRate.toFixed(1), tiers: { starter: { count: allCompanies.filter(c => c.subscriptionTier === 'STARTER' && c.subscriptionStatus === 'active').length, mrr: starterMrr }, growth: { count: allCompanies.filter(c => c.subscriptionTier === 'GROWTH' && c.subscriptionStatus === 'active').length, mrr: growthMrr } } };
+
+        // HEALTH (integrations)
+        const allIntegrations = await prisma.integration.findMany({ select: { platformName: true, status: true, lastSyncedAt: true, syncError: true, syncStatus: true } });
+        const health = allIntegrations;
+
+        // SIGNUPS (last 10)
+        const signups = await prisma.user.findMany({ orderBy: { createdAt: 'desc' }, take: 10, select: { id: true, email: true, firstName: true, lastName: true, createdAt: true, company: { select: { name: true } } } });
+
+        return res.json({ stats, companies, revenue, health, signups });
+    } catch (error) {
+        console.error('SuperAdmin dashboard error:', error);
+        return res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 router.get('/stats', async (_req, res) => {
     try {
         const now = new Date();

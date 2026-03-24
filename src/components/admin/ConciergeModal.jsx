@@ -25,7 +25,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                    Authorization: `Bearer ${localStorage.getItem('kd_token')}`
                 },
                 body: JSON.stringify(formData)
             });

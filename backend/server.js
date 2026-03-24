@@ -9,7 +9,7 @@ const errorHandler = require('./middleware/errorHandler');
 const { apiLimiter, authLimiter } = require('./middleware/rateLimiter');
 const prisma = require('./db');
 
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/auth/index');
 const billingRoutes = require('./routes/billing');
 const webhookRoute = require('./routes/webhook');
 const integrationRoutes = require('./routes/integrations');

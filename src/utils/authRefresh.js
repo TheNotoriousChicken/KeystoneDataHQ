@@ -45,8 +45,9 @@ export async function authorizedFetch(url, options = {}) {
 /**
  * silentRefresh — Calls /api/auth/refresh (which reads the HttpOnly
  * refresh cookie) and updates the in-memory access token.
+ * Exported so AuthContext can use it on mount.
  */
-async function silentRefresh() {
+export async function silentRefresh() {
     try {
         const API = import.meta.env.VITE_API_URL;
         const res = await fetch(`${API}/api/auth/refresh`, {
@@ -59,7 +60,7 @@ async function silentRefresh() {
         const data = await res.json();
         if (data.token) {
             accessToken = data.token;
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('kd_token', data.token);
             return true;
         }
         return false;

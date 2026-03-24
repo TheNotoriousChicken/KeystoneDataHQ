@@ -19,7 +19,7 @@ export default function EditCompanyModal({ company, onClose, refetch }) {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                        Authorization: `Bearer ${localStorage.getItem('kd_token')}`
                     },
                     body: JSON.stringify({ isSuspended })
                 });
@@ -35,7 +35,7 @@ export default function EditCompanyModal({ company, onClose, refetch }) {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                        Authorization: `Bearer ${localStorage.getItem('kd_token')}`
                     },
                     body: JSON.stringify(payload)
                 });

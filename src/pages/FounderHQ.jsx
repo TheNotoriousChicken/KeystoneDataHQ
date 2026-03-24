@@ -61,7 +61,7 @@ export default function FounderHQ() {
     // Admin data now fetched via useAdminDashboard hook
     // Initialize access token from localStorage if present
     useEffect(() => {
-        const t = localStorage.getItem('token');
+        const t = localStorage.getItem('kd_token');
         if (t) initAccessToken(t);
     }, []);
 

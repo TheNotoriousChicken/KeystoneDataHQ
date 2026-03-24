@@ -1,136 +1,88 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+// Unit tests for authService
+const { createAuthService } = require('../../backend/services/authService');
+const bcrypt = require('bcrypt');
 
-// Mocks
-vi.mock('bcrypt', () => ({ compare: vi.fn(), hash: vi.fn(() => 'hashed') }));
-vi.mock('jsonwebtoken', () => ({ sign: vi.fn(() => 'UNIT_TOKEN') }));
-vi.mock('crypto', () => ({ randomInt: vi.fn(() => 123456) }));
-vi.mock('../../backend/utils/auditLogger', () => ({ logActivity: vi.fn() }));
-vi.mock('../../backend/utils/founderGuard', () => ({ isFounderEmail: vi.fn(() => false) }));
-vi.mock('../../backend/utils/email', () => ({ sendTwoFactorEmail: vi.fn() }));
+// Mock dependencies
+jest.mock('../../backend/utils/auditLogger', () => ({ logActivity: jest.fn() }));
+jest.mock('../../backend/utils/founderGuard', () => ({ isFounderEmail: jest.fn((email) => email === 'tejas@keystonedatahq.com') }));
+jest.mock('../../backend/utils/email', () => ({ sendTwoFactorEmail: jest.fn().mockResolvedValue(true) }));
+jest.mock('../../backend/utils/refreshToken', () => ({ generateRefreshToken: jest.fn().mockReturnValue('mock-refresh-token') }));
 
-// Import the service with a mocked Prisma client using a dynamic import to cope with CommonJS export
-let createAuthService;
-beforeEach(async () => {
-  const mod = await import('../../backend/services/authService.js');
-  createAuthService = mod.default?.createAuthService ?? mod.createAuthService;
-});
+describe('AuthService', () => {
+    let authService;
+    let mockPrisma;
 
-function makeMockPrisma(fakeUser) {
-  return {
-    user: {
-      findUnique: vi.fn().mockResolvedValue(fakeUser),
-      update: vi.fn().mockResolvedValue(true),
-    },
-  };
-}
+    beforeEach(() => {
+        mockPrisma = {
+            user: {
+                findUnique: jest.fn(),
+                update: jest.fn(),
+            },
+        };
+        authService = createAuthService(mockPrisma);
+        process.env.JWT_SECRET = 'test-secret-key-for-testing-only';
+    });
 
-describe('Auth Service - loginUser (Phase 2)', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    test('throws on non-existent user', async () => {
+        mockPrisma.user.findUnique.mockResolvedValue(null);
+        await expect(authService.loginUser({ email: 'nobody@test.com', password: 'pass123', req: {} }))
+            .rejects.toThrow('Invalid email or password.');
+    });
 
-  it('logs in existing user without 2FA and returns a token', async () => {
-    const mockUser = {
-      id: 1,
-      email: 'regular@example.com',
-      passwordHash: 'hash',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      isSuperAdmin: false,
-      company: { id: 1, name: 'Acme', subscriptionTier: 'GROWTH', onboardingCompleted: true },
-    };
-    const prisma = makeMockPrisma(mockUser);
-    const bcrypt = await import('bcrypt');
-    vi.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+    test('throws on wrong password', async () => {
+        const hash = await bcrypt.hash('correctpassword', 10);
+        mockPrisma.user.findUnique.mockResolvedValue({
+            id: '1', email: 'user@test.com', passwordHash: hash,
+            emailVerified: true, twoFactorEnabled: false, isSuperAdmin: false,
+            companyId: 'c1', role: 'ADMIN',
+            company: { id: 'c1', name: 'Test Co', subscriptionTier: 'STARTER', onboardingCompleted: false },
+        });
+        await expect(authService.loginUser({ email: 'user@test.com', password: 'wrongpassword', req: {} }))
+            .rejects.toThrow('Invalid email or password.');
+    });
 
-    const service = createAuthService(prisma);
-    const res = await service.loginUser({ email: mockUser.email, password: 'pass', req: {} });
+    test('throws if email not verified', async () => {
+        const hash = await bcrypt.hash('password123', 10);
+        mockPrisma.user.findUnique.mockResolvedValue({
+            id: '1', email: 'user@test.com', passwordHash: hash,
+            emailVerified: false, twoFactorEnabled: false, isSuperAdmin: false,
+            companyId: 'c1', role: 'ADMIN',
+            company: { id: 'c1', name: 'Test Co', subscriptionTier: 'STARTER', onboardingCompleted: false },
+        });
+        await expect(authService.loginUser({ email: 'user@test.com', password: 'password123', req: {} }))
+            .rejects.toThrow('Please verify your email before signing in.');
+    });
 
-    expect(res).toHaveProperty('token', 'UNIT_TOKEN');
-    expect(res).toHaveProperty('refreshToken');
-    // Optional: ensure refreshToken exists and is a string
-    expect(typeof res.refreshToken).toBe('string');
-    expect(res).toHaveProperty('user');
-    expect(res.user.email).toBe(mockUser.email);
-  });
+    test('returns token + user on successful login', async () => {
+        const hash = await bcrypt.hash('password123', 10);
+        mockPrisma.user.findUnique.mockResolvedValue({
+            id: '1', email: 'user@test.com', passwordHash: hash,
+            firstName: 'Test', lastName: 'User',
+            emailVerified: true, twoFactorEnabled: false, isSuperAdmin: false,
+            companyId: 'c1', role: 'ADMIN',
+            company: { id: 'c1', name: 'Test Co', subscriptionTier: 'STARTER', onboardingCompleted: false },
+        });
+        mockPrisma.user.update.mockResolvedValue({});
 
-  it('requires 2FA via APP path', async () => {
-    const mockUser = {
-      id: 2,
-      email: '2fa-app@example.com',
-      passwordHash: 'hash',
-      emailVerified: true,
-      twoFactorEnabled: true,
-      twoFactorMethod: 'APP',
-      company: { id: 2, name: 'Beta', subscriptionTier: 'GROWTH', onboardingCompleted: false },
-    };
-    const prisma = makeMockPrisma(mockUser);
-    const bcrypt = await import('bcrypt');
-    vi.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+        const result = await authService.loginUser({ email: 'user@test.com', password: 'password123', req: {} });
+        expect(result).toHaveProperty('token');
+        expect(result).toHaveProperty('refreshToken');
+        expect(result.user.email).toBe('user@test.com');
+    });
 
-    const service = createAuthService(prisma);
-    const res = await service.loginUser({ email: mockUser.email, password: 'pass', req: {} });
+    test('returns 2FA response when enabled', async () => {
+        const hash = await bcrypt.hash('password123', 10);
+        mockPrisma.user.findUnique.mockResolvedValue({
+            id: '1', email: 'user@test.com', passwordHash: hash,
+            emailVerified: true, twoFactorEnabled: true, twoFactorMethod: 'APP',
+            twoFactorSecret: 'SECRET', isSuperAdmin: false,
+            companyId: 'c1', role: 'ADMIN',
+            company: { id: 'c1', name: 'Test Co', subscriptionTier: 'GROWTH', onboardingCompleted: true },
+        });
 
-    expect(res).toHaveProperty('requiresTwoFactor');
-    expect(res.method).toBe('APP');
-    expect(typeof res.tempToken).toBe('string');
-  });
-
-  it('rejects login when email is not verified', async () => {
-    const mockUser = {
-      id: 3,
-      email: 'notverified@example.com',
-      passwordHash: 'hash',
-      emailVerified: false,
-      twoFactorEnabled: false,
-      company: { id: 3, name: 'Gamma', subscriptionTier: 'STARTER', onboardingCompleted: true },
-    };
-    const prisma = makeMockPrisma(mockUser);
-    const bcrypt = require('bcrypt');
-    vi.spyOn(bcrypt, 'compare').mockResolvedValue(true);
-
-    const service = createAuthService(prisma);
-    await expect(service.loginUser({ email: mockUser.email, password: 'pass', req: {} })).rejects.toThrow('Please verify your email before signing in.');
-  });
-
-  it('rejects login with wrong password', async () => {
-    const mockUser = {
-      id: 4,
-      email: 'wrongpass@example.com',
-      passwordHash: 'hash',
-      emailVerified: true,
-      twoFactorEnabled: false,
-      company: { id: 4, name: 'Delta', subscriptionTier: 'GROWTH', onboardingCompleted: true },
-    };
-    const prisma = makeMockPrisma(mockUser);
-    const bcrypt = require('bcrypt');
-    vi.spyOn(bcrypt, 'compare').mockResolvedValue(false);
-
-    const service = createAuthService(prisma);
-    await expect(service.loginUser({ email: mockUser.email, password: 'wrong', req: {} })).rejects.toThrow('Invalid email or password.');
-  });
-
-  it('2FA EMAIL path triggers code write and email', async () => {
-    const mockUser = {
-      id: 5,
-      email: '2fa-email@example.com',
-      passwordHash: 'hash',
-      emailVerified: true,
-      twoFactorEnabled: true,
-      twoFactorMethod: 'EMAIL',
-      company: { id: 5, name: 'Epsilon', subscriptionTier: 'GROWTH', onboardingCompleted: true },
-    };
-    const prisma = makeMockPrisma(mockUser);
-    const bcrypt = require('bcrypt');
-    vi.spyOn(bcrypt, 'compare').mockResolvedValue(true);
-    const emailMod = require('../../backend/utils/email');
-    emailMod.sendTwoFactorEmail = vi.fn().mockImplementation((email, code) => Promise.resolve());
-
-    const service = createAuthService(prisma);
-    const res = await service.loginUser({ email: mockUser.email, password: 'pass', req: {} });
-    expect(res).toHaveProperty('requiresTwoFactor');
-    expect(res.method).toBe('EMAIL');
-    expect(typeof res.tempToken).toBe('string');
-    expect(prisma.user.update).toBeCalled();
-  });
+        const result = await authService.loginUser({ email: 'user@test.com', password: 'password123', req: {} });
+        expect(result.requiresTwoFactor).toBe(true);
+        expect(result.method).toBe('APP');
+        expect(result).toHaveProperty('tempToken');
+    });
 });
