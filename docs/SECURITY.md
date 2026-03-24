@@ -1,0 +1,20 @@
+Security notes: Refresh-token cookie flow
+- Architecture
+  - The app uses HttpOnly cookies to store refresh tokens. Access tokens are returned in API responses and stored in memory/client state (or local storage for non-sensitive uses only if you choose).
+- Cookie attributes
+  - refreshToken cookie: HttpOnly, Secure in production, SameSite lax by default to support cross-site contexts if needed.
+- Endpoints
+  - POST /api/auth/login: on success, sets refreshToken cookie and returns access token
+  - POST /api/auth/refresh: rotates the refresh token cookie and issues a new access token
+  - POST /api/auth/logout: clears the refresh token cookie
+- Testing strategy
+  - Unit tests cover the login and 2FA decision branches
+  - Integration tests cover /refresh and /logout cookie flows
+  - Phase 9A adds tests for refresh/logout rotation
+- How to run tests
+  - npm run test:unit
+  - npm run test:integration
+  - npm run test:e2e (optional; Playwright for UI flow)
+- Notes for production
+  - Ensure migrations and env vars (JWT_SECRET, JWT_REFRESH_SECRET) are configured
+  - Use secure cookies in production and proper CSRF strategy if needed

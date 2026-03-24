@@ -7,6 +7,7 @@ import {
     Download, Zap, ShieldCheck, UserPlus, CheckCircle2, BarChart3,
     ArrowUpRight, ArrowDownRight, Sparkles, Clock, Wifi, WifiOff
 } from 'lucide-react';
+import { authorizedFetch, initAccessToken } from '../utils/authRefresh';
 import { Skeleton } from '../components/Skeleton';
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -15,6 +16,7 @@ import HealthTable from '../components/admin/HealthTable';
 import InsightsPanel from '../components/admin/InsightsPanel';
 import EditCompanyModal from '../components/admin/EditCompanyModal';
 import ConciergeModal from '../components/admin/ConciergeModal';
+import { useAdminDashboard } from '../hooks/useAdminDashboard';
 
 // ── Helpers ──
 const pct = (value) => `${value}%`;
@@ -56,30 +58,14 @@ export default function FounderHQ() {
     const [syncTriggered, setSyncTriggered] = useState(false);
     const [error, setError] = useState('');
 
-    const API = import.meta.env.VITE_API_URL;
-    const headers = { 'Authorization': `Bearer ${token}` };
+    // Admin data now fetched via useAdminDashboard hook
+    // Initialize access token from localStorage if present
+    useEffect(() => {
+        const t = localStorage.getItem('token');
+        if (t) initAccessToken(t);
+    }, []);
 
-    const { data: adminData, isLoading, isError, error: queryError } = useQuery({
-        queryKey: ['adminDashboard'],
-        queryFn: async () => {
-            const endpoints = [
-                'stats', 'companies', 'revenue',
-                'integrations-health', 'signups'
-            ];
-            const responses = await Promise.all(
-                endpoints.map(ep => fetch(`${API}/api/admin/${ep}`, { headers }))
-            );
-
-            const failed = responses.find(r => !r.ok);
-            if (failed) throw new Error('Failed to fetch admin data.');
-
-            const [stats, companies, revenue, health, signups] =
-                await Promise.all(responses.map(r => r.json()));
-
-            return { stats, companies, revenue, health, signups };
-        },
-        enabled: !!user && user.isSuperAdmin === true,
-    });
+    const { adminData, isLoading, isError, error: queryError } = useAdminDashboard();
 
     const stats = adminData?.stats;
     const companies = adminData?.companies || [];
@@ -103,8 +89,8 @@ export default function FounderHQ() {
     const handleDeleteCompany = async (companyId) => {
         try {
             setError('');
-            const res = await fetch(`${API}/api/admin/companies/${companyId}`, {
-                method: 'DELETE', headers
+            const res = await authorizedFetch(`${import.meta.env.VITE_API_URL}/api/admin/companies/${companyId}`, {
+                method: 'DELETE'
             });
             if (!res.ok) throw new Error('Failed to delete company.');
             queryClient.invalidateQueries({ queryKey: ['adminDashboard'] });
@@ -118,8 +104,8 @@ export default function FounderHQ() {
     const handleTriggerSync = async () => {
         try {
             setSyncTriggered(true);
-            await fetch(`${API}/api/admin/trigger-sync`, {
-                method: 'POST', headers
+            await authorizedFetch(`${import.meta.env.VITE_API_URL}/api/admin/trigger-sync`, {
+                method: 'POST'
             });
             setTimeout(() => setSyncTriggered(false), 5000);
         } catch (err) {
@@ -161,7 +147,7 @@ export default function FounderHQ() {
         );
     }
 
-    if (error && !stats) {
+    if ((error || queryError) && !stats) {
         return (
             <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-xl max-w-2xl">
                 <p className="text-red-400 font-medium">{error}</p>

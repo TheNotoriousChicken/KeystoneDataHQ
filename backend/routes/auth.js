@@ -1,6 +1,14 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const { isFounderEmail } = require('../utils/founderGuard');
 const jwt = require('jsonwebtoken');
+/**
+ * Authentication routes:
+ *  - POST /login: login and set HttpOnly refresh cookie
+ *  - POST /refresh: rotate refresh cookie and issue new access token
+ *  - POST /logout: clear refresh cookie
+ */
+const { generateRefreshToken } = require('../utils/refreshToken');
 const crypto = require('crypto');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
@@ -12,9 +20,14 @@ const validate = require('../middleware/validate');
 const { registerSchema, loginSchema, forgotPasswordSchema, resetPasswordSchema, profileUpdateSchema } = require('../validations/auth.validation');
 
 const router = express.Router();
+const { createAuthService } = require('../services/authService');
+const { verifyRefreshToken } = require('../utils/refreshToken');
+// refresh utilities imported
 
 const SALT_ROUNDS = 10;
 const TOKEN_EXPIRY = '7d';
+// Instantiate service with actual Prisma client for runtime
+const authService = createAuthService(prisma);
 
 // ---------------------------------------------------------------------------
 // POST /api/auth/register
@@ -180,128 +193,102 @@ router.get('/validate-invite/:token', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------
-// POST /api/auth/login
-// ---------------------------------------------------------------------------
+// (Phase 2: login route consolidated with authService; previous duplicate removed)
+/**
+ * API Routes for Authentication (Phase 9+):
+ * - /login: issues access token and sets HttpOnly refresh cookie
+ * - /refresh: rotates refresh token and issues new access token
+ * - /logout: clears refresh cookie
+ */
+
+// POST /api/auth/refresh
+router.post('/refresh', async (req, res) => {
+  try {
+    const cookieHeader = req.headers.cookie || '';
+    const m = /refreshToken=([^;]+)/.exec(cookieHeader);
+    const oldToken = m?.[1];
+    if (!oldToken) return res.status(401).json({ error: 'Not authenticated' });
+
+    const payload = verifyRefreshToken(oldToken);
+    if (!payload) return res.status(401).json({ error: 'Invalid refresh token' });
+
+    const token = jwt.sign(
+      {
+        userId: payload.userId,
+        companyId: payload.companyId,
+        role: payload.role,
+        isSuperAdmin: payload.isSuperAdmin,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: TOKEN_EXPIRY }
+    );
+
+    const newRefreshToken = require('../utils/refreshToken').generateRefreshToken({
+      userId: payload.userId,
+      companyId: payload.companyId,
+      role: payload.role,
+      isSuperAdmin: payload.isSuperAdmin,
+    });
+
+    const isProd = process.env.NODE_ENV === 'production';
+    res.cookie('refreshToken', newRefreshToken, { httpOnly: true, secure: isProd, sameSite: 'lax' });
+
+    const user = await prisma.user.findUnique({ where: { id: payload.userId }, include: { company: true } });
+    const respUser = {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      isSuperAdmin: user.isSuperAdmin || payload.isSuperAdmin,
+      emailVerified: user.emailVerified,
+      company: {
+        id: user.company.id,
+        name: user.company.name,
+        subscriptionTier: user.company.subscriptionTier,
+        onboardingCompleted: user.company.onboardingCompleted,
+      },
+    };
+
+    res.json({ token, user: respUser });
+  } catch (err) {
+    console.error('Refresh error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/auth/logout
+router.post('/logout', (req, res) => {
+  res.clearCookie('refreshToken', { path: '/' });
+  res.json({ message: 'Logged out' });
+});
+
+// LOGIN ROUTE (Phase 2): delegate to AuthService for core login flow
 router.post('/login', validate(loginSchema), async (req, res) => {
-    try {
-        const { email, password } = req.body;
-
-        // --- Find user (include company info) ---
-        const user = await prisma.user.findUnique({
-            where: { email },
-            include: { company: true },
-        });
-
-        if (!user) {
-            return res.status(401).json({ error: 'Invalid email or password.' });
-        }
-
-        // --- Verify password ---
-        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid email or password.' });
-        }
-
-        // --- Check email verification ---
-        if (!user.emailVerified) {
-            return res.status(403).json({
-                error: 'Please verify your email before signing in.',
-                emailNotVerified: true,
-                email: user.email,
-            });
-        }
-
-        // --- Check if 2FA is required ---
-        if (user.twoFactorEnabled) {
-            // Generate a temporary 10-minute token just for 2FA verification
-            const tempToken = jwt.sign(
-                {
-                    userId: user.id,
-                    companyId: user.companyId,
-                    role: user.role,
-                    is2FAPending: true
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: '10m' }
-            );
-
-            // If their method is EMAIL, send the code now
-            if (user.twoFactorMethod === 'EMAIL') {
-                const code = crypto.randomInt(100000, 999999).toString();
-                const hashedCode = await bcrypt.hash(code, SALT_ROUNDS);
-                const expires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: {
-                        emailAuthCode: hashedCode,
-                        emailAuthCodeExpires: expires
-                    }
-                });
-
-                sendTwoFactorEmail(user.email, code).catch(err => console.error('Failed to send 2FA email', err));
-            }
-
-            return res.json({
-                requiresTwoFactor: true,
-                method: user.twoFactorMethod,
-                tempToken,
-                message: 'Two-factor authentication required.'
-            });
-        }
-
-        // --- Standard Login (No 2FA) ---
-        // Founder Guard: Ensure specific email always has super admin access
-        const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
-
-        await prisma.user.update({
-            where: { id: user.id },
-            data: { lastLoginAt: new Date() }
-        });
-
-        const token = jwt.sign(
-            {
-                userId: user.id,
-                companyId: user.companyId,
-                role: user.role,
-                isSuperAdmin: user.isSuperAdmin || isFounder,
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: TOKEN_EXPIRY }
-        );
-
-        // --- Audit Log ---
-        await logActivity({
-            action: 'USER_LOGIN',
-            companyId: user.companyId,
-            userId: user.id,
-            req
-        });
-
-        // --- Response ---
-        return res.json({
-            token,
-            user: {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                role: user.role,
-                isSuperAdmin: user.isSuperAdmin || isFounder,
-                emailVerified: user.emailVerified,
-                company: {
-                    id: user.company.id,
-                    name: user.company.name,
-                    subscriptionTier: user.company.subscriptionTier,
-                    onboardingCompleted: user.company.onboardingCompleted,
-                },
-            },
-        });
-    } catch (err) {
-        console.error('Login error:', err);
-        return res.status(500).json({ error: 'Internal server error.' });
+  try {
+    const { email, password } = req.body;
+    const loginResult = await authService.loginUser({ email, password, req });
+    if (loginResult?.requiresTwoFactor) {
+      return res.json({
+        requiresTwoFactor: true,
+        method: loginResult.method,
+        tempToken: loginResult.tempToken,
+        message: 'Two-factor authentication required.'
+      });
     }
+    if (loginResult?.token) {
+      // Issue a refresh token via HttpOnly cookie if provided
+      if (loginResult.refreshToken) {
+        const isProd = process.env.NODE_ENV === 'production';
+        res.cookie('refreshToken', loginResult.refreshToken, { httpOnly: true, secure: isProd, sameSite: 'lax' });
+      }
+      return res.json({ token: loginResult.token, user: loginResult.user });
+    }
+    return res.status(401).json({ error: loginResult?.error || 'Authentication failed.' });
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(401).json({ error: err.message || 'Invalid credentials.' });
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -376,15 +363,15 @@ router.post('/login/verify', async (req, res) => {
             return res.status(500).json({ error: 'Unknown 2FA method.' });
         }
 
-        // --- Success: Issue real JWT ---
-        // Founder Guard: Ensure specific email always has super admin access
-        const isFounder = user.email.toLowerCase() === 'tejas@keystonedatahq.com';
+// --- Success: Issue real JWT ---
 
         await prisma.user.update({
             where: { id: user.id },
             data: { lastLoginAt: new Date() }
         });
 
+        // Founder flag: derive from configured founder emails
+        const isFounder = isFounderEmail(user.email);
         const token = jwt.sign(
             {
                 userId: user.id,
@@ -395,6 +382,13 @@ router.post('/login/verify', async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: TOKEN_EXPIRY }
         );
+        // Generate refresh token for session continuation
+        const refreshToken = generateRefreshToken({
+            userId: user.id,
+            companyId: user.companyId,
+            role: user.role,
+            isSuperAdmin: user.isSuperAdmin || isFounder,
+        });
 
         await logActivity({
             action: 'USER_LOGIN',
