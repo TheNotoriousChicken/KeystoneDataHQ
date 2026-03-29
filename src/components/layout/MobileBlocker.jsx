@@ -2,15 +2,13 @@ import { Lock } from 'lucide-react';
 
 export default function MobileBlocker() {
     return (
-        <div className="bg-[#0F172A] flex flex-col items-center justify-center p-6 text-center w-full min-h-[50vh]">
-            <div className="mb-6 p-4 rounded-full bg-[#1E293B] border border-[#334155] shadow-lg shadow-black/20">
-                <Lock className="w-8 h-8 text-[#06B6D4]" />
+        <div className="bg-brand-bg flex flex-col items-center justify-center p-6 text-center w-full min-h-[50vh]">
+            <div className="mb-6 p-4 rounded-full bg-brand-surface border border-brand-border shadow-lg shadow-black/20">
+                <Lock className="w-8 h-8 text-brand-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-4">
-                Desktop Experience Required
-            </h1>
-            <p className="text-[#94A3B8] max-w-sm leading-relaxed">
-                Keystone Data HQ is a pro-level analytics suite optimized for desktop displays. Please open this link on a desktop or laptop computer to access your data.
+            <h2 className="text-xl font-bold text-brand-text mb-2">Desktop Only</h2>
+            <p className="text-brand-muted max-w-sm leading-relaxed">
+                Keystone Data HQ is built for desktop browsers. Please switch to a laptop or desktop to access your analytics dashboard.
             </p>
         </div>
     );

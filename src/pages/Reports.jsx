@@ -305,10 +305,10 @@ export default function Reports() {
                                         type="monotone"
                                         name="Total Revenue"
                                         dataKey="totalRevenue"
-                                        stroke="#10b981"
+                                        stroke="#8B5CF6"
                                         strokeWidth={3}
                                         dot={false}
-                                        activeDot={{ r: 6, fill: '#10b981', stroke: '#0d1117', strokeWidth: 2 }}
+                                        activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#09090B', strokeWidth: 2 }}
                                     />
                                     <Line
                                         yAxisId="right"

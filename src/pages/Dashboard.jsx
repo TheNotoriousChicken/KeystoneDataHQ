@@ -258,15 +258,15 @@ export default function Dashboard() {
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                                    <XAxis dataKey="name" stroke="#94A3B8" tick={{ fill: '#94A3B8', fontSize: 12 }} tickLine={false} axisLine={false} />
-                                    <YAxis stroke="#94A3B8" tick={{ fill: '#94A3B8', fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(val) => fmtShort(val)} />
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#27272A" vertical={false} />
+                                    <XAxis dataKey="name" stroke="#A1A1AA" tick={{ fill: '#A1A1AA', fontSize: 12 }} tickLine={false} axisLine={false} />
+                                    <YAxis stroke="#A1A1AA" tick={{ fill: '#A1A1AA', fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(val) => fmtShort(val)} />
                                     <RechartsTooltip
-                                        contentStyle={{ backgroundColor: '#1E293B', borderColor: '#334155', borderRadius: '8px' }}
+                                        contentStyle={{ backgroundColor: '#18181B', borderColor: '#27272A', borderRadius: '8px' }}
                                         itemStyle={{ color: '#FFFFFF' }}
                                         formatter={(val) => fmt(val)}
                                     />
-                                    <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#06B6D4" strokeWidth={3} dot={{ r: 4, fill: '#06B6D4', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                                    <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 4, fill: '#8B5CF6', strokeWidth: 0 }} activeDot={{ r: 6 }} />
                                     <Line type="monotone" dataKey="spend" name="Ad Spend" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 0 }} />
                                 </LineChart>
                             </ResponsiveContainer>
