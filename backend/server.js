@@ -30,7 +30,9 @@ const PORT = process.env.PORT || 4000;
 // ---------------------------------------------------------------------------
 // Security & Logging Middleware
 // ---------------------------------------------------------------------------
-app.use(helmet());                              // Security headers (XSS, HSTS, etc.)
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));                              // Security headers (XSS, HSTS, etc.)
 app.use(morgan('short'));                        // Request logging
 
 app.use(cors({
