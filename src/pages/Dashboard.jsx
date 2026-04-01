@@ -35,7 +35,7 @@ const DeltaBadge = ({ value, invertColors = false }) => {
     const Icon = isPositive ? TrendingUp : TrendingDown;
 
     return (
-        <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${colorClass}`}>
+        <div className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-md border border-transparent ${colorClass}`}>
             <Icon className="w-3 h-3" />
             {Math.abs(value).toFixed(1)}%
         </div>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="bg-brand-surface border border-brand-border rounded-lg px-3 py-2 flex items-center">
+                    <div className="bg-[#050505] border border-brand-border rounded-md px-3 py-2 flex items-center">
                         <DatePicker
                             selectsRange={true}
                             startDate={startDate}
@@ -152,7 +152,7 @@ export default function Dashboard() {
                     <button
                         onClick={() => syncMutation.mutate()}
                         disabled={isSyncing}
-                        className="flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-lg text-white font-semibold text-sm hover:border-brand-primary transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-brand-surface border border-brand-border rounded-md text-white font-semibold text-sm hover:border-brand-primary transition-colors disabled:opacity-50"
                     >
                         <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
                         {isSyncing ? 'Syncing...' : 'Sync Now'}
@@ -161,7 +161,7 @@ export default function Dashboard() {
             </div>
 
             {(error || syncError) && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">
                     {(error?.message || syncError?.message)}
                 </div>
             )}
@@ -171,7 +171,7 @@ export default function Dashboard() {
                 {/* Revenue */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-brand-primary/10 rounded-lg">
+                        <div className="p-2 bg-brand-primary/10 rounded-md">
                             <DollarSign className="w-5 h-5 text-brand-primary" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.revenue} />}
@@ -183,7 +183,7 @@ export default function Dashboard() {
                 {/* Ad Spend */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-amber-500/10 rounded-lg">
+                        <div className="p-2 bg-amber-500/10 rounded-md">
                             <TrendingUp className="w-5 h-5 text-amber-500" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.adSpend} invertColors={true} />}
@@ -195,7 +195,7 @@ export default function Dashboard() {
                 {/* ROAS */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-brand-secondary/10 rounded-lg">
+                        <div className="p-2 bg-brand-secondary/10 rounded-md">
                             <Target className="w-5 h-5 text-brand-secondary" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.roas} />}
@@ -209,7 +209,7 @@ export default function Dashboard() {
                 {/* Orders */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-fuchsia-500/10 rounded-lg">
+                        <div className="p-2 bg-fuchsia-500/10 rounded-md">
                             <ShoppingCart className="w-5 h-5 text-fuchsia-500" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.orders} />}
@@ -223,7 +223,7 @@ export default function Dashboard() {
                 {/* Visitors (GA4) */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-blue-500/10 rounded-lg">
+                        <div className="p-2 bg-blue-500/10 rounded-md">
                             <Users className="w-5 h-5 text-blue-500" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.visitors} />}
@@ -237,7 +237,7 @@ export default function Dashboard() {
                 {/* Email Revenue (Klaviyo) */}
                 <div className="glass-panel p-6">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-2 bg-[#20C6B6]/10 rounded-lg">
+                        <div className="p-2 bg-[#20C6B6]/10 rounded-md">
                             <Mail className="w-5 h-5 text-[#20C6B6]" />
                         </div>
                         {dashboardData?.deltas && <DeltaBadge value={dashboardData.deltas.emailRevenue} />}
@@ -262,12 +262,12 @@ export default function Dashboard() {
                                     <XAxis dataKey="name" stroke="#A1A1AA" tick={{ fill: '#A1A1AA', fontSize: 12 }} tickLine={false} axisLine={false} />
                                     <YAxis stroke="#A1A1AA" tick={{ fill: '#A1A1AA', fontSize: 12 }} tickLine={false} axisLine={false} tickFormatter={(val) => fmtShort(val)} />
                                     <RechartsTooltip
-                                        contentStyle={{ backgroundColor: '#18181B', borderColor: '#27272A', borderRadius: '8px' }}
-                                        itemStyle={{ color: '#FFFFFF' }}
+                                        contentStyle={{ backgroundColor: '#111111', borderColor: '#27272A', borderRadius: '6px' }}
+                                        itemStyle={{ color: '#FAFAFA' }}
                                         formatter={(val) => fmt(val)}
                                     />
-                                    <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#8B5CF6" strokeWidth={3} dot={{ r: 4, fill: '#8B5CF6', strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                                    <Line type="monotone" dataKey="spend" name="Ad Spend" stroke="#F59E0B" strokeWidth={3} dot={{ r: 4, fill: '#F59E0B', strokeWidth: 0 }} />
+                                    <Line type="monotone" dataKey="revenue" name="Revenue" stroke="#6366F1" strokeWidth={2} dot={{ r: 4, fill: '#6366F1', strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                                    <Line type="monotone" dataKey="spend" name="Ad Spend" stroke="#A855F7" strokeWidth={2} dot={{ r: 4, fill: '#A855F7', strokeWidth: 0 }} />
                                 </LineChart>
                             </ResponsiveContainer>
                         </div>
@@ -282,9 +282,9 @@ export default function Dashboard() {
                 <div className="glass-panel p-6">
                     <h3 className="text-lg font-bold text-white mb-6">Key Metrics Summary</h3>
                     <div className="space-y-5">
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-brand-primary/10 flex items-center justify-center">
                                     <DollarSign className="w-4 h-4 text-brand-primary" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Revenue</span>
@@ -292,9 +292,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{fmt(latest.totalRevenue)}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-amber-500/10 flex items-center justify-center">
                                     <TrendingUp className="w-4 h-4 text-amber-500" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Ad Spend</span>
@@ -302,9 +302,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{fmt(latest.adSpend)}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-brand-secondary/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-brand-secondary/10 flex items-center justify-center">
                                     <Target className="w-4 h-4 text-brand-secondary" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">ROAS</span>
@@ -312,9 +312,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{latest.roas != null ? `${latest.roas.toFixed(2)}x` : '—'}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-rose-500/10 flex items-center justify-center">
                                     <MousePointerClick className="w-4 h-4 text-rose-500" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Blended CAC</span>
@@ -322,9 +322,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{latest.cac != null ? fmt(latest.cac) : '—'}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-fuchsia-500/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-fuchsia-500/10 flex items-center justify-center">
                                     <ShoppingCart className="w-4 h-4 text-fuchsia-500" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Orders</span>
@@ -332,9 +332,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{latest.totalOrders?.toLocaleString() || '—'}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-blue-500/10 flex items-center justify-center">
                                     <Users className="w-4 h-4 text-blue-500" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Visitors</span>
@@ -342,9 +342,9 @@ export default function Dashboard() {
                             <span className="text-sm font-bold text-white">{latest.visitors?.toLocaleString() || '—'}</span>
                         </div>
 
-                        <div className="flex items-center justify-between p-3 bg-brand-surface/50 rounded-lg border border-brand-border/50">
+                        <div className="flex items-center justify-between p-3 bg-[#050505] rounded-md border border-brand-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-[#20C6B6]/10 flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-md bg-[#20C6B6]/10 flex items-center justify-center">
                                     <Mail className="w-4 h-4 text-[#20C6B6]" />
                                 </div>
                                 <span className="text-sm font-medium text-brand-muted">Email Revenue</span>

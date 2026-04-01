@@ -72,11 +72,10 @@ export default function Login() {
     return (
         <div className="min-h-screen bg-brand-bg flex">
             {/* Left Panel — Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-brand-surface/30 border-r border-brand-border">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.08),transparent_70%)]" />
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-[#050505] border-r border-brand-border">
                 <div className="relative z-10 text-center px-12 max-w-lg">
                     <div className="inline-flex items-center gap-3 mb-8">
-                        <div className="p-3 bg-brand-surface rounded-xl border border-brand-border shadow-lg">
+                        <div className="p-3 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-8 h-8 text-brand-primary" />
                         </div>
                         <span className="text-3xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -100,7 +99,7 @@ export default function Login() {
                 >
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-2 mb-10 justify-center">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                        <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-5 h-5 text-brand-primary" />
                         </div>
                         <span className="text-xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -120,7 +119,7 @@ export default function Login() {
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium"
+                                className="mb-6 p-4 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium"
                             >
                                 {error}
                             </motion.div>
@@ -134,7 +133,7 @@ export default function Login() {
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
-                                className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm"
+                                className="mb-6 p-4 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm"
                             >
                                 <div className="flex items-start gap-3">
                                     <Mail className="w-5 h-5 mt-0.5 shrink-0" />
@@ -178,7 +177,7 @@ export default function Login() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                     placeholder="john@acmecorp.com"
-                                    className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                             </div>
 
@@ -198,7 +197,7 @@ export default function Login() {
                                         required
                                         minLength={8}
                                         placeholder="••••••••"
-                                        className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 pr-12 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                        className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 pr-12 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                     />
                                     <button
                                         type="button"
@@ -214,7 +213,7 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-xl font-bold text-base transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-md font-bold text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -228,7 +227,7 @@ export default function Login() {
                         </form>
                     ) : (
                         <form onSubmit={handleVerify2FA} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="bg-brand-surface/50 border border-brand-primary/20 p-5 rounded-xl mb-6">
+                            <div className="bg-brand-surface/50 border border-brand-primary/20 p-5 rounded-md mb-6">
                                 <div className="flex items-start gap-3">
                                     <ShieldAlert className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
                                     <div>
@@ -253,14 +252,14 @@ export default function Login() {
                                     value={authCode}
                                     onChange={(e) => setAuthCode(e.target.value.replace(/\D/g, ''))} // numbers only
                                     placeholder="000000"
-                                    className="w-full text-center tracking-[0.5em] text-2xl font-bold bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-4 text-white placeholder-brand-muted/30 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full text-center tracking-[0.5em] text-2xl font-bold bg-[#050505] border border-brand-border rounded-md px-4 py-4 text-white placeholder-brand-muted/30 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isLoading || authCode.length !== 6}
-                                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-xl font-bold text-base transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-md font-bold text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

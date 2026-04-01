@@ -55,11 +55,10 @@ export default function VerifyEmail() {
     return (
         <div className="min-h-screen bg-brand-bg flex">
             {/* Left Panel — Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-brand-surface/30 border-r border-brand-border">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.08),transparent_70%)]" />
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-[#050505] border-r border-brand-border">
                 <div className="relative z-10 text-center px-12 max-w-lg">
                     <div className="inline-flex items-center gap-3 mb-8">
-                        <div className="p-3 bg-brand-surface rounded-xl border border-brand-border shadow-lg">
+                        <div className="p-3 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-8 h-8 text-brand-primary" />
                         </div>
                         <span className="text-3xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -80,7 +79,7 @@ export default function VerifyEmail() {
                 >
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-2 mb-10 justify-center">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                        <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-5 h-5 text-brand-primary" />
                         </div>
                         <span className="text-xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -128,7 +127,7 @@ export default function VerifyEmail() {
                                 <p className="text-rose-400 text-sm">{errorMessage}</p>
                                 <Link
                                     to="/login"
-                                    className="inline-block mt-4 bg-brand-surface border border-brand-border hover:bg-brand-surface/80 text-white py-3 px-6 rounded-xl font-bold transition-all"
+                                    className="inline-block mt-4 bg-brand-surface border border-brand-border hover:bg-brand-surface/80 text-white py-3 px-6 rounded-md font-bold transition-all"
                                 >
                                     Go to Sign In
                                 </Link>

@@ -25,7 +25,7 @@ export default function SystemLogs() {
 
             <div className="glass-panel overflow-hidden flex flex-col h-[calc(100vh-[var(--topbar-height)]-10rem)] min-h-[500px]">
                 <div className="p-6 border-b border-brand-border flex items-center gap-3 flex-shrink-0">
-                    <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                    <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                         <Globe className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
@@ -41,17 +41,17 @@ export default function SystemLogs() {
                             Loading audit logs...
                         </div>
                     ) : isError ? (
-                        <div className="text-center py-12 text-red-400 border border-dashed border-red-500/20 rounded-xl bg-red-500/5">
+                        <div className="text-center py-12 text-red-400 border border-dashed border-red-500/20 rounded-md bg-red-500/5">
                             Failed to load system logs.
                         </div>
                     ) : pulse.length === 0 ? (
-                        <p className="text-brand-muted text-center py-12 border border-dashed border-brand-border rounded-xl">
+                        <p className="text-brand-muted text-center py-12 border border-dashed border-brand-border rounded-md">
                             No recent activity found on the platform.
                         </p>
                     ) : (
                         <div className="space-y-4 pr-2">
                             {pulse.map((log) => (
-                                <div key={log.id} className="p-4 rounded-xl bg-brand-surface/30 border border-brand-border/50 hover:border-brand-border transition-colors">
+                                <div key={log.id} className="p-4 rounded-md bg-brand-surface/30 border border-brand-border/50 hover:border-brand-border transition-colors">
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <span className="font-semibold text-white whitespace-nowrap">{log.user?.firstName} {log.user?.lastName}</span>

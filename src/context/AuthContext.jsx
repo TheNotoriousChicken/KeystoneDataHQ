@@ -51,12 +51,18 @@ export function AuthProvider({ children }) {
     }, []);
 
     const login = async (email, password) => {
-        const res = await fetch(`${API_BASE}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ email, password }),
-        });
+        let res;
+        try {
+            res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password }),
+            });
+        } catch (error) {
+            throw new Error('Network error. Unable to connect to backend server.');
+        }
+
         const data = await res.json();
 
         if (!res.ok) {
@@ -97,11 +103,17 @@ export function AuthProvider({ children }) {
     };
 
     const register = async (email, password, firstName, lastName, companyName, inviteToken = null) => {
-        const res = await fetch(`${API_BASE}/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, firstName, lastName, companyName, inviteToken }),
-        });
+        let res;
+        try {
+            res = await fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, firstName, lastName, companyName, inviteToken }),
+            });
+        } catch (error) {
+            throw new Error('Network error. Unable to connect to backend server.');
+        }
+        
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Registration failed.');
         saveSession(data.token, data.user);

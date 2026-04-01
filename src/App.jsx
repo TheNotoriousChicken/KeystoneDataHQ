@@ -9,6 +9,13 @@ import PublicLayout from './components/layout/PublicLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import GlobalErrorBoundary from './components/GlobalErrorBoundary';
 
+const BackgroundAura = () => (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden z-[-1] bg-brand-bg">
+    <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#6366F1] rounded-full mix-blend-screen filter blur-[150px] opacity-15"></div>
+    <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-[#A855F7] rounded-full mix-blend-screen filter blur-[150px] opacity-15"></div>
+  </div>
+);
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -53,6 +60,7 @@ function App() {
         <AuthProvider>
           <FlagProvider>
             <BrowserRouter>
+              <BackgroundAura />
               <ScrollToTop />
               <Routes>
                 {/* Public Routes */}

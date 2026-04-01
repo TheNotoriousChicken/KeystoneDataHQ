@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-bg: #09090B;
-  --color-brand-surface: #18181B;
-  --color-brand-primary: #8B5CF6;
-  --color-brand-primary-hover: #7C3AED;
-  --color-brand-secondary: #A78BFA;
+  --color-brand-bg: #050505;
+  --color-brand-surface: #111111;
+  --color-brand-primary: #6366F1;
+  --color-brand-primary-hover: #4F46E5;
+  --color-brand-secondary: #A855F7;
   --color-brand-text: #FAFAFA;
   --color-brand-muted: #A1A1AA;
   --color-brand-border: #27272A;
 
   --font-sans: "Outfit", system-ui, sans-serif;
 
-  --radius-soft: 12px;
+  --radius-soft: 6px;
 }
 
 @layer base {
@@ -22,5 +22,6 @@
 }
 
 .glass-panel {
-  @apply bg-brand-surface/80 backdrop-blur-md border border-brand-border rounded-[8px] shadow-lg shadow-black/20;
+  /* Brutalist flat container: Solid graphite, crisp border, sharp corners, ZERO shadows/blur */
+  @apply bg-brand-surface border border-brand-border rounded-md;
 }

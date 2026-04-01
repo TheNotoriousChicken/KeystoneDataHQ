@@ -50,7 +50,7 @@ export default function ErrorLogs() {
                         Global real-time feed of unhandled 500-level backend exceptions.
                     </p>
                 </div>
-                <div className="flex bg-brand-surface p-1 rounded-lg border border-brand-border">
+                <div className="flex bg-brand-surface p-1 rounded-md border border-brand-border">
                     <button 
                         onClick={() => setFilter('UNRESOLVED')}
                         className={`px-4 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md transition-all ${filter === 'UNRESOLVED' ? 'bg-red-500/20 text-red-400' : 'text-brand-muted hover:text-white'}`}
@@ -68,22 +68,22 @@ export default function ErrorLogs() {
 
             <div className="space-y-4">
                 {isLoading ? (
-                    <div className="p-12 text-center text-brand-muted border-2 border-dashed border-brand-border rounded-xl">
+                    <div className="p-12 text-center text-brand-muted border-2 border-dashed border-brand-border rounded-md">
                         Loading crash reports...
                     </div>
                 ) : isError ? (
-                    <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 flex items-center gap-3">
+                    <div className="p-6 bg-red-500/10 border border-red-500/30 rounded-md text-red-400 flex items-center gap-3">
                         <ShieldAlert className="w-5 h-5" /> Failed to load Mini-Sentry data.
                     </div>
                 ) : displayLogs.length === 0 ? (
-                    <div className="p-12 text-center text-brand-muted border border-brand-border bg-brand-bg rounded-xl flex flex-col items-center">
+                    <div className="p-12 text-center text-brand-muted border border-brand-border bg-brand-bg rounded-md flex flex-col items-center">
                         <CheckCircle2 className="w-12 h-12 text-emerald-500/50 mb-4" />
                         <p className="text-lg font-medium text-white">All systems operational</p>
                         <p className="text-sm">No {filter.toLowerCase()} errors found in the logs.</p>
                     </div>
                 ) : (
                     displayLogs.map(log => (
-                        <div key={log.id} className={`p-6 rounded-xl border flex flex-col md:flex-row gap-6 ${log.resolved ? 'bg-brand-surface/30 border-brand-border opacity-70' : 'bg-brand-bg relative overflow-hidden border-brand-border hover:border-red-500/50 transition-colors'}`}>
+                        <div key={log.id} className={`p-6 rounded-md border flex flex-col md:flex-row gap-6 ${log.resolved ? 'bg-brand-surface/30 border-brand-border opacity-70' : 'bg-brand-bg relative overflow-hidden border-brand-border hover:border-red-500/50 transition-colors'}`}>
                             {!log.resolved && (
                                 <div className="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
                             )}
@@ -113,7 +113,7 @@ export default function ErrorLogs() {
                                 </div>
                                 
                                 {log.stack && (
-                                    <div className="bg-[#0f1115] border border-brand-border/50 rounded-lg p-4 custom-scrollbar overflow-x-auto">
+                                    <div className="bg-[#0f1115] border border-brand-border/50 rounded-md p-4 custom-scrollbar overflow-x-auto">
                                         <pre className="text-xs text-rose-300/80 font-mono whitespace-pre-wrap">{log.stack}</pre>
                                     </div>
                                 )}

@@ -154,7 +154,7 @@ export default function TwoFactorSetup() {
                         <div className="grid sm:grid-cols-2 gap-4">
                             <button
                                 onClick={() => handleInitiateSetup('APP')}
-                                className="text-left p-5 rounded-xl border border-brand-border bg-brand-surface/30 hover:border-brand-primary hover:bg-brand-surface transition-all group"
+                                className="text-left p-5 rounded-md border border-brand-border bg-brand-surface/30 hover:border-brand-primary hover:bg-brand-surface transition-all group"
                             >
                                 <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center mb-3 group-hover:bg-brand-primary/20 transition-colors">
                                     <Smartphone className="w-5 h-5 text-brand-primary" />
@@ -167,7 +167,7 @@ export default function TwoFactorSetup() {
 
                             <button
                                 onClick={() => handleInitiateSetup('EMAIL')}
-                                className="text-left p-5 rounded-xl border border-brand-border bg-brand-surface/30 hover:border-brand-primary hover:bg-brand-surface transition-all group"
+                                className="text-left p-5 rounded-md border border-brand-border bg-brand-surface/30 hover:border-brand-primary hover:bg-brand-surface transition-all group"
                             >
                                 <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center mb-3 group-hover:bg-brand-primary/20 transition-colors">
                                     <Mail className="w-5 h-5 text-brand-primary" />
@@ -197,8 +197,8 @@ export default function TwoFactorSetup() {
                         </div>
 
                         {selectedMethod === 'APP' && setupData?.qrCodeUrl && (
-                            <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start bg-brand-surface/30 p-6 rounded-xl border border-brand-border">
-                                <div className="bg-white p-2 rounded-lg shrink-0">
+                            <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start bg-brand-surface/30 p-6 rounded-md border border-brand-border">
+                                <div className="bg-white p-2 rounded-md shrink-0">
                                     <img src={setupData.qrCodeUrl} alt="QR Code" className="w-32 h-32" />
                                 </div>
                                 <div>
@@ -218,7 +218,7 @@ export default function TwoFactorSetup() {
                         )}
 
                         {selectedMethod === 'EMAIL' && (
-                            <div className="bg-brand-surface/30 p-5 rounded-xl border border-brand-border">
+                            <div className="bg-brand-surface/30 p-5 rounded-md border border-brand-border">
                                 <p className="text-sm text-brand-muted flex items-center gap-2">
                                     <Mail className="w-4 h-4" />
                                     We've sent a 6-digit verification code to your email address.
@@ -237,7 +237,7 @@ export default function TwoFactorSetup() {
                                 value={verificationCode}
                                 onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
                                 placeholder="000000"
-                                className="w-full sm:w-64 tracking-[0.5em] text-lg text-center bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-3 text-white placeholder-brand-muted/30 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                className="w-full sm:w-64 tracking-[0.5em] text-lg text-center bg-brand-surface/50 border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/30 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
                             />
                         </div>
 
@@ -250,7 +250,7 @@ export default function TwoFactorSetup() {
                         <button
                             type="submit"
                             disabled={verificationCode.length !== 6}
-                            className="bg-brand-primary hover:bg-brand-primary-hover text-white px-6 py-2.5 rounded-lg font-medium transition-colors disabled:opacity-50"
+                            className="bg-brand-primary hover:bg-brand-primary-hover text-white px-6 py-2.5 rounded-md font-medium transition-colors disabled:opacity-50"
                         >
                             Verify & Enable
                         </button>
@@ -258,7 +258,7 @@ export default function TwoFactorSetup() {
                 )}
 
                 {status.isEnabled && (
-                    <form onSubmit={handleDisable} className="bg-rose-500/5 border border-rose-500/20 rounded-xl p-6">
+                    <form onSubmit={handleDisable} className="bg-rose-500/5 border border-rose-500/20 rounded-md p-6">
                         <h4 className="text-rose-400 font-medium mb-2 flex items-center gap-2">
                             <AlertTriangle className="w-4 h-4" /> Danger Zone: Disable 2FA
                         </h4>
@@ -274,12 +274,12 @@ export default function TwoFactorSetup() {
                                 value={disablePassword}
                                 onChange={(e) => setDisablePassword(e.target.value)}
                                 placeholder="Current Password"
-                                className="flex-1 bg-brand-surface border border-rose-500/30 rounded-lg px-4 py-2 text-white placeholder-brand-muted/50 focus:outline-none focus:border-rose-400 transition-colors"
+                                className="flex-1 bg-brand-surface border border-rose-500/30 rounded-md px-4 py-2 text-white placeholder-brand-muted/50 focus:outline-none focus:border-rose-400 transition-colors"
                             />
                             <button
                                 type="submit"
                                 disabled={!disablePassword}
-                                className="bg-rose-500/20 hover:bg-rose-500 text-white px-5 py-2 rounded-lg font-medium transition-colors border border-rose-500/50 disabled:opacity-50 whitespace-nowrap"
+                                className="bg-rose-500/20 hover:bg-rose-500 text-white px-5 py-2 rounded-md font-medium transition-colors border border-rose-500/50 disabled:opacity-50 whitespace-nowrap"
                             >
                                 Disable 2FA
                             </button>

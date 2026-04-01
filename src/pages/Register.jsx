@@ -134,11 +134,10 @@ export default function Register() {
     return (
         <div className="min-h-screen bg-brand-bg flex">
             {/* Left Panel — Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-brand-surface/30 border-r border-brand-border">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.08),transparent_70%)]" />
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center bg-[#050505] border-r border-brand-border">
                 <div className="relative z-10 text-center px-12 max-w-lg">
                     <div className="inline-flex items-center gap-3 mb-8">
-                        <div className="p-3 bg-brand-surface rounded-xl border border-brand-border shadow-lg">
+                        <div className="p-3 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-8 h-8 text-brand-primary" />
                         </div>
                         <span className="text-3xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -162,7 +161,7 @@ export default function Register() {
                 >
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-2 mb-10 justify-center">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                        <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                             <Database className="w-5 h-5 text-brand-primary" />
                         </div>
                         <span className="text-xl font-bold tracking-tight text-white">Keystone Data HQ</span>
@@ -173,7 +172,7 @@ export default function Register() {
                     </h1>
 
                     {inviteDetails ? (
-                        <div className="mb-8 p-4 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-start gap-3">
+                        <div className="mb-8 p-4 rounded-md bg-brand-primary/10 border border-brand-primary/20 flex items-start gap-3">
                             <CheckCircle2 className="w-5 h-5 text-brand-primary shrink-0 mt-0.5" />
                             <p className="text-brand-muted text-sm leading-relaxed">
                                 You have been invited to join <strong className="text-white">{inviteDetails.companyName}</strong>. Fill out the details below to complete your setup.
@@ -194,7 +193,7 @@ export default function Register() {
                                 exit={{ opacity: 0, height: 0 }}
                                 className="overflow-hidden"
                             >
-                                <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium">
+                                <div className="mb-6 p-4 rounded-md bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium">
                                     {error}
                                 </div>
                             </motion.div>
@@ -211,7 +210,7 @@ export default function Register() {
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder="John"
-                                    className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                             </div>
                             <div>
@@ -222,7 +221,7 @@ export default function Register() {
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Doe"
-                                    className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                             </div>
                         </div>
@@ -237,7 +236,7 @@ export default function Register() {
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
                                     placeholder="Acme Corp"
-                                    className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                             </div>
                         )}
@@ -251,7 +250,7 @@ export default function Register() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="john@acmecorp.com"
-                                className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             />
                         </div>
 
@@ -265,7 +264,7 @@ export default function Register() {
                                     required
                                     minLength={8}
                                     placeholder="••••••••"
-                                    className="w-full bg-brand-surface/80 border border-brand-border rounded-xl px-4 py-3 pr-12 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-3 pr-12 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-colors"
                                 />
                                 <button
                                     type="button"
@@ -280,7 +279,7 @@ export default function Register() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-xl font-bold text-base transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-3.5 rounded-md font-bold text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
                         >
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -46,8 +46,8 @@ export default function ConciergeModal({ onClose, refetch }) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-background/80 backdrop-blur-sm p-4">
-            <div className="bg-brand-surface border border-brand-border rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+            <div className="bg-[#050505] border border-brand-border rounded-md max-w-md w-full overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center justify-between">
                     <div>
                         <h3 className="text-xl font-bold text-white flex items-center gap-2">
@@ -55,7 +55,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                         </h3>
                         <p className="text-sm text-brand-muted mt-1">Generate a Magic Workspace Link for a client.</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-md transition-colors">
                         <X className="w-5 h-5 text-brand-muted" />
                     </button>
                 </div>
@@ -63,12 +63,12 @@ export default function ConciergeModal({ onClose, refetch }) {
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         {error && (
-                            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
+                            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md text-sm">
                                 {error}
                             </div>
                         )}
                         {success && (
-                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-sm font-medium">
+                            <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-md text-sm font-medium">
                                 {success}
                             </div>
                         )}
@@ -82,7 +82,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                                     placeholder="e.g. Acme Corp"
                                     value={formData.companyName}
                                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                                    className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                    className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                 />
                             </div>
 
@@ -95,7 +95,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                                         placeholder="Jane"
                                         value={formData.firstName}
                                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                     />
                                 </div>
                                 <div>
@@ -106,7 +106,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                                         placeholder="Doe"
                                         value={formData.lastName}
                                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                     />
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                                     placeholder="jane@acme.com"
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                    className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                 />
                             </div>
 
@@ -129,7 +129,7 @@ export default function ConciergeModal({ onClose, refetch }) {
                                     <select
                                         value={formData.tier}
                                         onChange={(e) => setFormData({ ...formData, tier: e.target.value })}
-                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                     >
                                         <option value="STARTER">Starter</option>
                                         <option value="GROWTH">Growth</option>
@@ -142,21 +142,21 @@ export default function ConciergeModal({ onClose, refetch }) {
                                         min="0"
                                         value={formData.trialDays}
                                         onChange={(e) => setFormData({ ...formData, trialDays: parseInt(e.target.value) })}
-                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-lg px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
+                                        className="w-full bg-brand-background border border-brand-border text-white text-sm rounded-md px-3 py-2.5 focus:border-brand-primary focus:outline-none transition-colors"
                                     />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-6 border-t border-brand-border flex justify-end gap-3 bg-brand-surface/50">
+                    <div className="p-6 border-t border-brand-border flex justify-end gap-3 bg-[#050505]">
                         <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-brand-muted hover:text-white transition-colors">
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading || success}
-                            className="flex items-center gap-2 px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 px-5 py-2 bg-brand-primary hover:bg-brand-primary/90 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50"
                         >
                             {loading && <Activity className="w-4 h-4 animate-spin" />}
                             {success ? <UserPlus className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}

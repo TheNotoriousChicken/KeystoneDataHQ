@@ -103,7 +103,7 @@ export default function Onboarding() {
 
                 {/* Header Sequence */}
                 <div className="flex flex-col items-center text-center space-y-4 mb-10">
-                    <div className="w-16 h-16 bg-brand-surface border border-brand-border rounded-2xl flex items-center justify-center shadow-2xl relative overflow-hidden group">
+                    <div className="w-16 h-16 bg-brand-surface border border-brand-border rounded-md flex items-center justify-center  relative overflow-hidden group">
                         <div className="absolute inset-0 bg-brand-primary/20 scale-0 group-hover:scale-150 transition-transform duration-700 rounded-full blur-xl" />
                         <Database className="w-8 h-8 text-brand-primary relative z-10" />
                     </div>
@@ -120,7 +120,7 @@ export default function Onboarding() {
                 </div>
 
                 {error && (
-                    <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400 mb-6 text-center">
+                    <div className="p-4 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400 mb-6 text-center">
                         {error}
                     </div>
                 )}
@@ -144,7 +144,7 @@ export default function Onboarding() {
                         </div>
                         <button
                             onClick={() => setStep(2)}
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-md transition-colors flex items-center justify-center gap-2"
                         >
                             Next: Data Integrations
                             <ChevronRight className="w-4 h-4" />
@@ -172,7 +172,7 @@ export default function Onboarding() {
                                             value={shopifyShopName}
                                             onChange={(e) => setShopifyShopName(e.target.value)}
                                             placeholder="yourstore.myshopify.com"
-                                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                                            className="w-full bg-brand-surface border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
                                         />
                                     </div>
                                     <div>
@@ -182,13 +182,13 @@ export default function Onboarding() {
                                             value={shopifyToken}
                                             onChange={(e) => setShopifyToken(e.target.value)}
                                             placeholder="shpat_..."
-                                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                                            className="w-full bg-brand-surface border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
                                         />
                                     </div>
                                     <button
                                         onClick={handleConnectShopify}
                                         disabled={shopifyStatus === 'loading' || !shopifyShopName || !shopifyToken}
-                                        className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 text-sm"
+                                        className="w-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-semibold py-2.5 rounded-md transition-colors disabled:opacity-50 flex justify-center items-center gap-2 text-sm"
                                     >
                                         {shopifyStatus === 'loading' ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Connect Shopify'}
                                     </button>
@@ -215,7 +215,7 @@ export default function Onboarding() {
                                             value={metaAccountId}
                                             onChange={(e) => setMetaAccountId(e.target.value)}
                                             placeholder="act_1234567890"
-                                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                                            className="w-full bg-brand-surface border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
                                         />
                                     </div>
                                     <div>
@@ -225,13 +225,13 @@ export default function Onboarding() {
                                             value={metaToken}
                                             onChange={(e) => setMetaToken(e.target.value)}
                                             placeholder="EAAB..."
-                                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
+                                            className="w-full bg-brand-surface border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary transition-colors text-sm"
                                         />
                                     </div>
                                     <button
                                         onClick={handleConnectMeta}
                                         disabled={metaStatus === 'loading' || !metaAccountId || !metaToken}
-                                        className="w-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 text-sm"
+                                        className="w-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 font-semibold py-2.5 rounded-md transition-colors disabled:opacity-50 flex justify-center items-center gap-2 text-sm"
                                     >
                                         {metaStatus === 'loading' ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Connect Meta Ads'}
                                     </button>
@@ -243,7 +243,7 @@ export default function Onboarding() {
 
                         <button
                             onClick={() => setStep(3)}
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-brand-primary/20 mt-4"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-md transition-colors flex items-center justify-center gap-2  shadow-brand-primary/20 mt-4"
                         >
                             {(shopifyStatus === 'success' && metaStatus === 'success') ? 'Finalize Setup' : 'Skip & Finalize Setup'}
                             <ChevronRight className="w-4 h-4" />
@@ -265,7 +265,7 @@ export default function Onboarding() {
                         <button
                             onClick={handleCompleteOnboarding}
                             disabled={isSyncing}
-                            className="w-full mt-6 bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50"
+                            className="w-full mt-6 bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-3 rounded-md transition-colors flex items-center justify-center disabled:opacity-50"
                         >
                             {isSyncing ? 'Syncing...' : 'Enter Dashboard'}
                         </button>

@@ -21,30 +21,26 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
     const signature = req.headers['paddle-signature'] || '';
     const rawBody = req.body.toString('utf8');
 
+    let eventData;
     try {
-        // unmarshal is async — MUST be awaited
-        const eventData = await paddle.webhooks.unmarshal(rawBody, process.env.PADDLE_WEBHOOK_SECRET, signature);
+        eventData = paddle.webhooks.unmarshal(rawBody, process.env.PADDLE_WEBHOOK_SECRET, signature);
+    } catch (error) {
+        console.error('❌ Webhook verification failed:', error.message);
+        return res.status(400).send('Webhook verification failed');
+    }
 
+    try {
         console.log(`✅ Paddle webhook verified: ${eventData.eventType}`);
 
         const data = eventData.data;
-        // Paddle SDK usually uses camelCase, but we'll check both just in case
         const customData = data?.customData || data?.custom_data;
 
         if (!customData?.company_id) {
-            console.log(`ℹ️  Event "${eventData.eventType}" - No company_id found. Available keys in data:`, Object.keys(data || {}));
-            if (data?.customData) console.log(`   - customData keys:`, Object.keys(data.customData));
-            if (data?.custom_data) console.log(`   - custom_data keys:`, Object.keys(data.custom_data));
-        }
-
-        if (customData?.company_id) {
+            console.log(`ℹ️  Event "${eventData.eventType}" - No company_id found.`);
+        } else {
             const companyId = customData.company_id;
 
-            // -----------------------------------------------------
-            // Route Subscription Events
-            // -----------------------------------------------------
             switch (eventData.eventType) {
-
                 // --- ACTIVATED or UPDATED ---
                 case 'subscription.activated':
                 case 'subscription.updated': {
@@ -67,7 +63,6 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
 
                     console.log(`💰 Company ${companyId} → Tier: ${tier} / Status: ${status}`);
 
-                    // Only notify if it's explicitly active (avoid spam on billing cycle updates unless state changed)
                     if (status === 'active') {
                         await notifyAdmins({
                             companyId,
@@ -99,10 +94,6 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
                         type: 'WARNING',
                         link: '/dashboard/billing'
                     });
-
-                    // Note: In Phase 20 we restricted 2FA to GROWTH.
-                    // A real app might want to auto-disable 2FA here or force a logout.
-                    // For now, disabling the tier naturally restricts access in the frontend.
                     break;
                 }
 
@@ -131,14 +122,12 @@ router.post('/', express.raw({ type: 'application/json' }), async (req, res) => 
                     console.log(`ℹ️  Event "${eventData.eventType}" acknowledged, no DB update needed.`);
                     break;
             }
-        } else {
-            console.log(`ℹ️  Event "${eventData.eventType}" has no company_id — skipping.`);
         }
 
         return res.status(200).send('OK');
     } catch (error) {
-        console.error('❌ Webhook verification failed:', error.message);
-        return res.status(400).send('Webhook verification failed');
+        console.error('❌ Webhook processing failed:', error.message);
+        return res.status(500).send('Internal Server Error processing webhook');
     }
 });
 

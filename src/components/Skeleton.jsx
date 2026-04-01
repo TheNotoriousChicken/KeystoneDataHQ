@@ -16,8 +16,8 @@ export function DashboardSkeleton() {
                     <Skeleton className="h-4 w-48 rounded-md" />
                 </div>
                 <div className="flex gap-2">
-                    <Skeleton className="h-10 w-32 rounded-lg" />
-                    <Skeleton className="h-10 w-32 rounded-lg" />
+                    <Skeleton className="h-10 w-32 rounded-md" />
+                    <Skeleton className="h-10 w-32 rounded-md" />
                 </div>
             </div>
 
@@ -39,11 +39,11 @@ export function DashboardSkeleton() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="glass-panel p-6 space-y-6">
                     <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-[300px] w-full rounded-xl" />
+                    <Skeleton className="h-[300px] w-full rounded-md" />
                 </div>
                 <div className="glass-panel p-6 space-y-6">
                     <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-[300px] w-full rounded-xl" />
+                    <Skeleton className="h-[300px] w-full rounded-md" />
                 </div>
             </div>
         </div>

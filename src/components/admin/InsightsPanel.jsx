@@ -60,7 +60,7 @@ export default function InsightsPanel({ companies = [] }) {
     return (
         <div className="glass-panel overflow-hidden border-indigo-500/20 shadow-[0_0_30px_rgba(99,102,241,0.05)]">
             <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 rounded-lg border border-indigo-500/20">
+                <div className="p-2 bg-indigo-500/10 rounded-md border border-indigo-500/20">
                     <ShieldAlert className="w-5 h-5 text-indigo-400" />
                 </div>
                 <div>
@@ -70,9 +70,9 @@ export default function InsightsPanel({ companies = [] }) {
             </div>
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                 {insights.map((insight, idx) => (
-                    <div key={idx} className={`p-5 rounded-xl bg-brand-bg/50 border ${insight.border} flex flex-col`}>
+                    <div key={idx} className={`p-5 rounded-md bg-brand-bg/50 border ${insight.border} flex flex-col`}>
                         <div className="flex items-center justify-between mb-4">
-                            <div className={`p-2 rounded-lg ${insight.bg}`}>
+                            <div className={`p-2 rounded-md ${insight.bg}`}>
                                 <insight.icon className={`w-5 h-5 ${insight.color}`} />
                             </div>
                             <span className={`text-2xl font-bold ${insight.value > 0 ? insight.color : 'text-brand-muted'}`}>
@@ -104,7 +104,7 @@ export default function InsightsPanel({ companies = [] }) {
 
                         <button
                             disabled={insight.value === 0}
-                            className={`w-full py-2 rounded-lg text-xs font-bold transition-colors ${insight.value > 0
+                            className={`w-full py-2 rounded-md text-xs font-bold transition-colors ${insight.value > 0
                                     ? 'bg-brand-surface border border-brand-border hover:bg-brand-surface/80 text-white'
                                     : 'bg-brand-bg text-brand-muted/30 cursor-not-allowed'
                                 }`}

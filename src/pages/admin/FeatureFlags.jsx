@@ -67,14 +67,14 @@ export default function FeatureFlags() {
             </div>
 
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md text-sm">
                     {error}
                 </div>
             )}
 
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                    <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                         <Key className="w-5 h-5 text-amber-400" />
                     </div>
                     <div>
@@ -85,9 +85,9 @@ export default function FeatureFlags() {
 
                 <div className="p-6 space-y-6">
                     <form onSubmit={handleCreateFlag} className="flex flex-col sm:flex-row gap-3">
-                        <input type="text" name="key" placeholder="e.g. enable_beta_reports" className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-4 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary" required />
-                        <input type="text" name="description" placeholder="Short description..." className="flex-1 bg-brand-bg border border-brand-border rounded-lg px-4 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary" />
-                        <button type="submit" className="px-6 py-2 bg-brand-surface border border-brand-border text-white text-sm font-bold rounded-lg hover:border-brand-primary hover:text-white transition-colors">
+                        <input type="text" name="key" placeholder="e.g. enable_beta_reports" className="flex-1 bg-brand-bg border border-brand-border rounded-md px-4 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary" required />
+                        <input type="text" name="description" placeholder="Short description..." className="flex-1 bg-brand-bg border border-brand-border rounded-md px-4 py-2 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary" />
+                        <button type="submit" className="px-6 py-2 bg-brand-surface border border-brand-border text-white text-sm font-bold rounded-md hover:border-brand-primary hover:text-white transition-colors">
                             Add Flag
                         </button>
                     </form>
@@ -99,12 +99,12 @@ export default function FeatureFlags() {
                                 Loading flags...
                             </div>
                         ) : flags.length === 0 ? (
-                            <div className="text-center py-10 border border-dashed border-brand-border rounded-xl">
+                            <div className="text-center py-10 border border-dashed border-brand-border rounded-md">
                                 <p className="text-sm text-brand-muted">No feature flags created yet.</p>
                             </div>
                         ) : (
                             flags.map(flag => (
-                                <div key={flag.id} className="p-4 rounded-xl bg-brand-bg border border-brand-border flex items-center justify-between hover:border-brand-primary/30 transition-colors">
+                                <div key={flag.id} className="p-4 rounded-md bg-brand-bg border border-brand-border flex items-center justify-between hover:border-brand-primary/30 transition-colors">
                                     <div>
                                         <p className="font-mono text-sm font-medium text-brand-primary mb-1 inline-flex items-center gap-2">
                                             {flag.key}

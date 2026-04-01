@@ -79,7 +79,7 @@ export default function DashboardLayout() {
         <>
             {/* Global Broadcast Banner */}
             {broadcast && !isImpersonating && (
-                <div className={`fixed top-0 left-0 right-0 z-[100] px-4 py-2 flex items-center justify-center gap-4 backdrop-blur-md shadow-sm border-b
+                <div className={`fixed top-0 left-0 right-0 z-[100] px-4 py-2 flex items-center justify-center gap-4  shadow-sm border-b
                     ${broadcast.type === 'CRITICAL' ? 'bg-red-600/90 border-red-500 text-white' :
                         broadcast.type === 'WARNING' ? 'bg-amber-500/90 border-amber-400 text-amber-950' :
                             'bg-brand-primary/90 border-brand-primary text-white'}`}
@@ -98,7 +98,7 @@ export default function DashboardLayout() {
             )}
 
             {isImpersonating && (
-                <div className="fixed top-0 left-0 right-0 z-[100] bg-red-600/90 border-b border-red-500 text-white px-4 py-2 flex items-center justify-center gap-4 backdrop-blur-md">
+                <div className="fixed top-0 left-0 right-0 z-[100] bg-red-600/90 border-b border-red-500 text-white px-4 py-2 flex items-center justify-center gap-4 ">
                     <span className="text-sm font-bold flex items-center gap-2">
                         ⚠️ GOD MODE ACTIVE: You are currently viewing the app as {user?.email}
                     </span>
@@ -113,12 +113,12 @@ export default function DashboardLayout() {
 
             {/* Mobile View */}
             <div className={`flex flex-col lg:hidden min-h-screen bg-brand-bg pt-20 ${isImpersonating || broadcast ? 'mt-[40px]' : ''}`}>
-                <header className="h-20 border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm fixed top-0 w-full z-50 flex items-center px-6">
+                <header className="h-20 border-b border-brand-border bg-[#050505] fixed top-0 w-full z-50 flex items-center px-6">
                     <Link to="/" className="flex items-center gap-2">
                         {user?.company?.logoUrl ? (
-                            <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
+                            <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-md object-contain bg-brand-surface border border-brand-border" />
                         ) : (
-                            <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                            <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                                 <Database className="w-5 h-5 text-brand-primary" />
                             </div>
                         )}
@@ -137,9 +137,9 @@ export default function DashboardLayout() {
                     <div className="h-20 flex items-center px-6 border-b border-brand-border">
                         <Link to="/dashboard" className="flex items-center gap-2 group">
                             {user?.company?.logoUrl ? (
-                                <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-lg object-contain bg-brand-surface border border-brand-border" />
+                                <img src={`${import.meta.env.VITE_API_URL}${user.company.logoUrl}`} alt="Logo" className="w-8 h-8 rounded-md object-contain bg-brand-surface border border-brand-border" />
                             ) : (
-                                <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                                <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                                     <Database className="w-5 h-5 text-brand-primary" />
                                 </div>
                             )}
@@ -154,7 +154,7 @@ export default function DashboardLayout() {
                                 <Link
                                     key={item.href}
                                     to={item.href}
-                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium transition-colors ${isActive
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${isActive
                                         ? 'bg-brand-primary/10 text-brand-primary'
                                         : 'text-brand-muted hover:bg-brand-surface hover:text-white'
                                         }`}
@@ -167,7 +167,7 @@ export default function DashboardLayout() {
                     </nav>
 
                     <div className="p-4 border-t border-brand-border">
-                        <Link to="/dashboard/profile" className="flex items-center gap-3 px-3 py-3 rounded-[8px] glass-panel mb-2 hover:border-brand-primary transition-colors group">
+                        <Link to="/dashboard/profile" className="flex items-center gap-3 px-3 py-3 rounded-md glass-panel mb-2 hover:border-brand-primary transition-colors group">
                             <div className="w-8 h-8 rounded-full bg-brand-primary/20 flex flex-shrink-0 items-center justify-center text-brand-primary font-bold text-sm group-hover:bg-brand-primary group-hover:text-white transition-colors overflow-hidden border border-brand-primary/30">
                                 {user?.avatarUrl ? (
                                     <img src={`${import.meta.env.VITE_API_URL}${user.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
@@ -185,7 +185,7 @@ export default function DashboardLayout() {
                                 <p className="text-xs text-brand-muted truncate hover:text-white transition-colors">Manage profile →</p>
                             </div>
                         </Link>
-                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-sm font-medium text-brand-muted hover:text-white hover:bg-brand-surface transition-colors">
+                        <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-brand-muted hover:text-white hover:bg-brand-surface transition-colors">
                             <LogOut className="w-4 h-4" />
                             Logout
                         </button>
@@ -195,7 +195,7 @@ export default function DashboardLayout() {
                 {/* Main Content */}
                 <main className="flex-1 pl-64 flex flex-col min-h-screen">
                     {/* Topbar */}
-                    <header className="h-20 border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm sticky top-0 z-30 flex items-center justify-between px-8">
+                    <header className="h-20 border-b border-brand-border bg-[#050505] sticky top-0 z-30 flex items-center justify-between px-8">
                         <div>
                             <h1 className="text-xl font-bold text-white">
                                 {isSuperAdmin && !isImpersonating ? 'Founder HQ' : `${companyName} Analytics`}
@@ -226,7 +226,7 @@ export default function DashboardLayout() {
                                         <span className="font-medium">Last 30 Days</span>
                                         <ChevronDown className="w-4 h-4 text-brand-muted" />
                                     </div>
-                                    <button className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white font-medium px-4 py-2 rounded-[8px] transition-colors flex items-center gap-2 text-sm shadow-sm">
+                                    <button className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white font-medium px-4 py-2 rounded-md transition-colors flex items-center gap-2 text-sm shadow-sm">
                                         <Download className="w-4 h-4" />
                                         Export PDF
                                     </button>

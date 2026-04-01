@@ -112,7 +112,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
                     <button
                         onClick={() => checkoutMutation.mutate('STARTER')}
                         disabled={checkoutMutation.isPending}
-                        className="w-full py-3 rounded-lg bg-brand-surface border border-brand-border text-white font-semibold hover:border-brand-primary transition-all disabled:opacity-50"
+                        className="w-full py-3 rounded-md bg-brand-surface border border-brand-border text-white font-semibold hover:border-brand-primary transition-all disabled:opacity-50"
                     >
                         {checkoutMutation.isPending ? 'Processing...' : 'Select Starter'}
                     </button>
@@ -146,7 +146,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
                     <button
                         onClick={() => checkoutMutation.mutate('GROWTH')}
                         disabled={checkoutMutation.isPending}
-                        className="w-full py-3 rounded-lg bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_20px_rgba(6,182,212,0.3)] text-white font-bold transition-all disabled:opacity-50"
+                        className="w-full py-3 rounded-md bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_20px_rgba(6,182,212,0.3)] text-white font-bold transition-all disabled:opacity-50"
                     >
                         {checkoutMutation.isPending ? 'Processing...' : 'Select Growth'}
                     </button>
@@ -154,7 +154,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
             </div>
 
             {checkoutMutation.error && (
-                <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-center rounded-lg">
+                <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-center rounded-md">
                     {checkoutMutation.error.message}
                 </div>
             )}
@@ -164,7 +164,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
     const renderStep2 = () => (
         <motion.div key="step2" variants={fadeUp} initial="hidden" animate="visible" exit="exit" className="w-full max-w-2xl mx-auto">
             <div className="text-center mb-10">
-                <div className="w-16 h-16 rounded-2xl bg-brand-primary/10 flex items-center justify-center mx-auto mb-6">
+                <div className="w-16 h-16 rounded-md bg-brand-primary/10 flex items-center justify-center mx-auto mb-6">
                     <Plug className="w-8 h-8 text-brand-primary" />
                 </div>
                 <h2 className="text-3xl font-bold text-white mb-3">Connect Data Sources</h2>
@@ -184,13 +184,13 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
                             <p className="text-xs text-brand-muted">{int.desc}</p>
                         </div>
                         {statusData?.[int.id] ? (
-                            <div className="flex items-center gap-2 text-brand-secondary text-sm font-medium px-4 py-2 bg-brand-secondary/10 border border-brand-secondary/20 rounded-lg">
+                            <div className="flex items-center gap-2 text-brand-secondary text-sm font-medium px-4 py-2 bg-brand-secondary/10 border border-brand-secondary/20 rounded-md">
                                 <CheckCircle2 className="w-4 h-4" /> Connected
                             </div>
                         ) : (
                             <button
                                 onClick={int.action}
-                                className="px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-lg hover:border-brand-primary transition-colors"
+                                className="px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-md hover:border-brand-primary transition-colors"
                             >
                                 Connect
                             </button>
@@ -202,7 +202,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
             <button
                 onClick={handleNextStep}
                 disabled={!hasAnyIntegration}
-                className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-surface disabled:text-brand-muted text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 group"
+                className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary-hover disabled:bg-brand-surface disabled:text-brand-muted text-white font-bold rounded-md transition-all flex items-center justify-center gap-2 group"
             >
                 Continue to Dashboard
                 <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -234,7 +234,7 @@ export default function OnboardingWizard({ initialStep = 1, onComplete }) {
                 <button
                     onClick={() => syncMutation.mutate()}
                     disabled={syncMutation.isPending}
-                    className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary-hover disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                    className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary-hover disabled:opacity-50 text-white font-bold rounded-md transition-all shadow-[0_0_20px_rgba(6,182,212,0.2)]"
                 >
                     {syncMutation.isPending ? 'Syncing...' : 'Start Initial Sync'}
                 </button>

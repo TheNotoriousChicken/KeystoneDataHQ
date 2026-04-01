@@ -70,7 +70,7 @@ export default function Activity() {
 
     if (error) {
         return (
-            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-xl max-w-4xl">
+            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-md max-w-4xl">
                 <p className="text-rose-400 font-medium">{error.message}</p>
             </div>
         );

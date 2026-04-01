@@ -40,14 +40,14 @@ export default function Broadcasts() {
             </div>
 
             {error && (
-                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
+                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-md text-sm">
                     {error}
                 </div>
             )}
 
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                    <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                    <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                         <Megaphone className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
@@ -63,21 +63,21 @@ export default function Broadcasts() {
                                 name="message"
                                 placeholder="e.g. Scheduled maintenance in 1 hour. Some features may be temporarily degraded."
                                 rows={4}
-                                className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 resize-none"
+                                className="w-full bg-brand-bg border border-brand-border rounded-md px-4 py-3 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary/50 resize-none"
                                 required
                             />
                         </div>
                         <div className="flex gap-4">
                             <div className="flex-1">
                                 <label className="block text-sm font-medium text-brand-muted mb-2">Alert Type</label>
-                                <select name="type" className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-brand-primary/50 appearance-none">
+                                <select name="type" className="w-full bg-brand-bg border border-brand-border rounded-md px-4 py-3 text-white focus:outline-none focus:border-brand-primary/50 appearance-none">
                                     <option value="INFO">Informational (Blue)</option>
                                     <option value="WARNING">Warning (Yellow)</option>
                                     <option value="CRITICAL">Critical (Red)</option>
                                 </select>
                             </div>
                             <div className="flex items-end">
-                                <button type="submit" disabled={isPublishing} className="py-3 px-8 bg-red-600/90 text-white text-sm font-bold rounded-lg hover:bg-red-500 transition-colors whitespace-nowrap disabled:opacity-50">
+                                <button type="submit" disabled={isPublishing} className="py-3 px-8 bg-red-600/90 text-white text-sm font-bold rounded-md hover:bg-red-500 transition-colors whitespace-nowrap disabled:opacity-50">
                                     {isPublishing ? 'Publishing...' : 'Publish'}
                                 </button>
                             </div>

@@ -92,17 +92,17 @@ export default function Reports() {
                         <Skeleton className="h-8 w-64 rounded-md" />
                         <Skeleton className="h-4 w-48 rounded-md" />
                     </div>
-                    <Skeleton className="h-10 w-32 rounded-lg" />
+                    <Skeleton className="h-10 w-32 rounded-md" />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <Skeleton className="h-48 w-full rounded-xl" />
-                    <Skeleton className="h-48 w-full rounded-xl" />
-                    <Skeleton className="h-48 w-full rounded-xl" />
+                    <Skeleton className="h-48 w-full rounded-md" />
+                    <Skeleton className="h-48 w-full rounded-md" />
+                    <Skeleton className="h-48 w-full rounded-md" />
                 </div>
 
-                <Skeleton className="h-24 w-full rounded-xl" />
-                <Skeleton className="h-[400px] w-full rounded-xl" />
+                <Skeleton className="h-24 w-full rounded-md" />
+                <Skeleton className="h-[400px] w-full rounded-md" />
             </div>
         );
     }
@@ -119,7 +119,7 @@ export default function Reports() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <div className="bg-brand-surface border border-brand-border rounded-lg px-3 py-2 flex items-center">
+                    <div className="bg-[#050505] border border-brand-border rounded-md px-3 py-2 flex items-center">
                         <DatePicker
                             selectsRange={true}
                             startDate={startDate}
@@ -134,7 +134,7 @@ export default function Reports() {
                     <button
                         onClick={handleExportCSV}
                         disabled={!summary}
-                        className="bg-brand-primary hover:bg-brand-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-[8px] flex items-center gap-2 text-sm font-semibold transition-colors shadow-lg shadow-brand-primary/20"
+                        className="bg-brand-primary hover:bg-brand-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold transition-colors"
                     >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -143,7 +143,7 @@ export default function Reports() {
             </div>
 
             {error && (
-                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                <div className="p-4 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">
                     {error}
                 </div>
             )}
@@ -160,15 +160,15 @@ export default function Reports() {
                         {/* Period Totals */}
                         <div className="glass-panel p-6 space-y-4">
                             <h3 className="text-sm font-bold text-brand-muted uppercase tracking-wider mb-2">Period Totals</h3>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm flex items-center gap-2"><DollarSign className="w-4 h-4" /> Revenue</span>
                                 <span className="text-white font-bold">{fmtC(summary.totalRevenue)}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Ad Spend</span>
                                 <span className="text-white font-bold">{fmtC(summary.totalAdSpend)}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm flex items-center gap-2"><ShoppingCart className="w-4 h-4" /> Orders</span>
                                 <span className="text-white font-bold">{summary.totalOrders}</span>
                             </div>
@@ -177,22 +177,22 @@ export default function Reports() {
                         {/* Daily Averages */}
                         <div className="glass-panel p-6 space-y-4">
                             <h3 className="text-sm font-bold text-brand-muted uppercase tracking-wider mb-2">Daily Averages</h3>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm">Avg. Revenue / Day</span>
                                 <span className="text-white font-bold">{fmtC(summary.avgDailyRevenue)}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm">Avg. Spend / Day</span>
                                 <span className="text-white font-bold">{fmtC(summary.avgDailySpend)}</span>
                             </div>
-                            <div className="flex justify-between items-center bg-brand-surface/30 p-3 rounded-lg border border-brand-border/50">
+                            <div className="flex justify-between items-center bg-[#050505] p-3 rounded-md border border-brand-border">
                                 <span className="text-brand-muted text-sm">Avg. Orders / Day</span>
                                 <span className="text-white font-bold">{summary.avgDailyOrders}</span>
                             </div>
                         </div>
 
                         {/* Blended KPI Outcomes */}
-                        <div className="glass-panel p-6 space-y-4 bg-gradient-to-br from-brand-surface/80 to-brand-primary/5 border-brand-primary/20">
+                        <div className="glass-panel p-6 space-y-4 bg-gradient-to-br from-[#050505] to-brand-primary/5 border-brand-primary/20">
                             <h3 className="text-sm font-bold text-brand-primary uppercase tracking-wider mb-2">Blended KPIs</h3>
                             <div className="flex justify-between items-center p-3">
                                 <span className="text-brand-muted text-sm flex items-center gap-2"><Target className="w-4 h-4 text-brand-secondary" /> Blended ROAS</span>
@@ -207,7 +207,7 @@ export default function Reports() {
 
                     {/* AI Insights Card (Simplified) */}
                     <div className="glass-panel p-6 flex flex-col md:flex-row gap-6 items-center">
-                        <div className="w-16 h-16 shrink-0 bg-brand-primary/10 rounded-2xl flex items-center justify-center border border-brand-primary/20">
+                        <div className="w-16 h-16 shrink-0 bg-brand-primary/10 rounded-md flex items-center justify-center border border-brand-primary/20">
                             <FileText className="w-8 h-8 text-brand-primary" />
                         </div>
                         <div className="flex-1 space-y-2">
@@ -294,10 +294,10 @@ export default function Reports() {
                                         tickFormatter={fmtC}
                                     />
                                     <RechartsTooltip
-                                        contentStyle={{ backgroundColor: '#1c1f24', border: '1px solid #30363d', borderRadius: '8px' }}
+                                        contentStyle={{ backgroundColor: '#111111', border: '1px solid #27272A', borderRadius: '6px' }}
                                         itemStyle={{ color: '#fff' }}
                                         formatter={(value) => fmtC(value)}
-                                        labelStyle={{ color: '#8b949e', marginBottom: '4px' }}
+                                        labelStyle={{ color: '#A1A1AA', marginBottom: '4px' }}
                                     />
                                     <Legend wrapperStyle={{ paddingTop: '20px' }} />
                                     <Line
@@ -305,20 +305,20 @@ export default function Reports() {
                                         type="monotone"
                                         name="Total Revenue"
                                         dataKey="totalRevenue"
-                                        stroke="#8B5CF6"
-                                        strokeWidth={3}
+                                        stroke="#6366F1"
+                                        strokeWidth={2}
                                         dot={false}
-                                        activeDot={{ r: 6, fill: '#8B5CF6', stroke: '#09090B', strokeWidth: 2 }}
+                                        activeDot={{ r: 6, fill: '#6366F1', stroke: '#111111', strokeWidth: 2 }}
                                     />
                                     <Line
                                         yAxisId="right"
                                         type="monotone"
                                         name="Ad Spend"
                                         dataKey="adSpend"
-                                        stroke="#fbbf24"
-                                        strokeWidth={3}
+                                        stroke="#A855F7"
+                                        strokeWidth={2}
                                         dot={false}
-                                        activeDot={{ r: 6, fill: '#fbbf24', stroke: '#0d1117', strokeWidth: 2 }}
+                                        activeDot={{ r: 6, fill: '#A855F7', stroke: '#111111', strokeWidth: 2 }}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>

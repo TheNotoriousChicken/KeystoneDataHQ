@@ -20,8 +20,7 @@ const staggerContainer = {
 export default function Home() {
     return (
         <div className="flex flex-col bg-brand-bg relative overflow-hidden">
-            {/* Background Effects */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[50rem] bg-[radial-gradient(ellipse_at_top,rgba(6,182,212,0.15),transparent_60%)] pointer-events-none" />
+            {/* Background Effects (Handled globally in App.jsx) */}
 
             {/* Hero Section */}
             <section className="pt-32 pb-24 px-6 relative z-10">
@@ -43,7 +42,7 @@ export default function Home() {
                         className="text-6xl md:text-8xl font-bold leading-tight tracking-tight mb-8"
                     >
                         Stop Guessing. <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-[#38BDF8] to-brand-secondary drop-shadow-sm">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-indigo-400 to-brand-secondary">
                             Start Scaling.
                         </span>
                     </motion.h1>
@@ -63,11 +62,11 @@ export default function Home() {
                         transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
                     >
-                        <button className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all shadow-[0_0_40px_rgba(6,182,212,0.4)] hover:shadow-[0_0_60px_rgba(6,182,212,0.6)] hover:-translate-y-1 text-lg">
+                        <button className="w-full sm:w-auto bg-brand-primary hover:bg-brand-primary-hover text-white px-8 py-4 rounded-md font-semibold flex items-center justify-center gap-2 transition-transform hover:-translate-y-1 text-lg">
                             Book Strategy Call
                             <ArrowRight className="w-5 h-5" />
                         </button>
-                        <Link to="/pricing" className="w-full sm:w-auto bg-brand-surface/80 border border-brand-border hover:border-brand-primary text-white px-8 py-4 rounded-xl font-semibold transition-all hover:bg-brand-surface text-lg text-center">
+                        <Link to="/pricing" className="w-full sm:w-auto bg-brand-surface border border-brand-border hover:border-brand-primary text-white px-8 py-4 rounded-md font-semibold transition-all hover:bg-brand-surface/80 text-lg text-center">
                             View Pricing
                         </Link>
                     </motion.div>
@@ -81,11 +80,11 @@ export default function Home() {
                         className="relative max-w-5xl mx-auto perspective-1000"
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-transparent to-transparent z-20 pointer-events-none" />
-                        <div className="glass-panel p-2 md:p-4 rounded-2xl shadow-2xl shadow-black/50 border border-brand-primary/20 bg-brand-surface/50 backdrop-blur-xl">
+                        <div className="glass-panel p-2 md:p-3 bg-brand-surface">
                             <img
                                 src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
                                 alt="Keystone Data Platform Preview"
-                                className="rounded-xl border border-brand-border/50 opacity-90"
+                                className="rounded-md border border-brand-border/50 opacity-90"
                             />
                         </div>
                     </motion.div>
@@ -130,7 +129,7 @@ export default function Home() {
                                 <motion.p variants={fadeUp}>
                                     Founders spend hours exporting CSVs, fighting attribution windows, and guessing which ad actually drove the sale.
                                 </motion.p>
-                                <motion.div variants={fadeUp} className="flex items-start gap-4 p-4 rounded-xl bg-rose-500/5 border border-rose-500/10">
+                                <motion.div variants={fadeUp} className="flex items-start gap-4 p-4 rounded-md bg-rose-500/5 border border-rose-500/10">
                                     <XCircle className="w-6 h-6 text-rose-400 shrink-0 mt-1" />
                                     <p>Shopify says you made $10k. Meta says you made $15k. GA4 says you made $8k. Who do you trust when scaling your budget?</p>
                                 </motion.div>
@@ -160,8 +159,7 @@ export default function Home() {
             </section>
 
             {/* Features Grid */}
-            <section id="features" className="py-32 px-6 bg-brand-surface/20 border-y border-brand-border/30 relative">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-96 h-96 bg-brand-primary/10 rounded-full blur-3xl opacity-50" />
+            <section id="features" className="py-32 px-6 bg-brand-surface/10 border-y border-brand-border/30 relative">
                 <div className="max-w-7xl mx-auto relative z-10">
                     <motion.div
                         initial="hidden"
@@ -211,9 +209,9 @@ export default function Home() {
                                 key={idx}
                                 variants={fadeUp}
                                 whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                                className={`glass-panel p-8 rounded-2xl group hover:shadow-[0_20px_40px_-15px_${feature.colorCode}0.3)] hover:border-${feature.colorClass}/50 transition-all duration-300`}
+                                className={`glass-panel p-8 group hover:border-brand-primary/50 transition-all duration-300`}
                             >
-                                <div className={`w-14 h-14 rounded-xl bg-${feature.colorClass}/10 border border-${feature.colorClass}/20 flex items-center justify-center mb-6 text-${feature.colorClass} ${feature.colorClass === 'purple-500' ? 'text-purple-400' : ''} group-hover:scale-110 transition-transform`}>
+                                <div className={`w-14 h-14 rounded-md bg-brand-border/30 border border-brand-border flex items-center justify-center mb-6 text-brand-text group-hover:scale-110 group-hover:bg-brand-primary/10 transition-transform`}>
                                     <feature.icon className="w-7 h-7" />
                                 </div>
                                 <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
@@ -261,8 +259,8 @@ export default function Home() {
                             { step: '03', title: 'Visualize', desc: 'Access your fully-populated, real-time custom dashboard.' },
                             { step: '04', title: 'Scale', desc: 'Make budget allocation decisions based on mathematically proven ROI.' }
                         ].map((s, i) => (
-                            <motion.div key={i} variants={fadeUp} className="relative z-10 glass-panel p-6 border-brand-border/40 hover:border-brand-primary/50 transition-colors group">
-                                <div className="w-14 h-14 rounded-full bg-brand-surface border-2 border-brand-primary text-brand-primary font-bold text-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary group-hover:text-white transition-all shadow-lg">
+                            <motion.div key={i} variants={fadeUp} className="relative z-10 glass-panel p-6 hover:border-brand-primary/50 transition-colors group">
+                                <div className="w-14 h-14 rounded-md bg-brand-surface border border-brand-border text-brand-primary font-bold text-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary group-hover:text-white transition-all">
                                     {s.step}
                                 </div>
                                 <h3 className="text-xl font-bold mb-2">{s.title}</h3>
@@ -302,28 +300,21 @@ export default function Home() {
 
             {/* CTA Section */}
             <section className="py-32 px-6 relative overflow-hidden">
-                <div className="absolute inset-0 bg-brand-primary/5" />
-                <motion.div
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    viewport={{ once: true }}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(6,182,212,0.15),transparent_60%)] pointer-events-none"
-                />
+                <div className="absolute inset-0 bg-brand-primary/5 pointer-events-none" />
 
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true, margin: "-100px" }}
                     variants={fadeUp}
-                    className="max-w-4xl mx-auto text-center relative z-10 glass-panel p-16 rounded-3xl border-brand-primary/30 shadow-[0_0_100px_rgba(6,182,212,0.1)] hover:shadow-[0_0_120px_rgba(6,182,212,0.15)] transition-shadow duration-500"
+                    className="max-w-4xl mx-auto text-center relative z-10 glass-panel p-16 border-brand-primary/30"
                 >
                     <h2 className="text-5xl font-bold mb-6 tracking-tight">Ready to see your real numbers?</h2>
                     <p className="text-xl text-brand-muted mb-10 max-w-2xl mx-auto">
                         Join 40+ scaling operators who use Keystone Data HQ as their financial source of truth.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <button className="w-full sm:w-auto bg-white text-brand-bg hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-colors flex items-center justify-center gap-2">
+                        <button className="w-full sm:w-auto bg-white text-brand-bg hover:bg-gray-200 px-8 py-4 rounded-md font-bold text-lg transition-colors flex items-center justify-center gap-2">
                             Start Your Free Audit
                             <ArrowRight className="w-5 h-5" />
                         </button>

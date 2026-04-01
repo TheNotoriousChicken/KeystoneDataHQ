@@ -7,10 +7,10 @@ export default function PublicLayout() {
 
     return (
         <div className="min-h-screen flex flex-col">
-            <nav className="border-b border-brand-border bg-brand-bg/95 backdrop-blur-sm sticky top-0 z-50">
+            <nav className="border-b border-brand-border bg-[#050505] sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <Link to="/" className="flex items-center gap-2 group">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border group-hover:border-brand-primary transition-colors">
+                        <div className="p-2 bg-brand-surface rounded-md border border-brand-border group-hover:border-brand-primary transition-colors">
                             <Database className="w-5 h-5 text-brand-primary" />
                         </div>
                         <span className="font-bold text-xl tracking-tight">Keystone Data HQ</span>
@@ -26,7 +26,7 @@ export default function PublicLayout() {
                         <Link to="/login" className="text-sm font-medium text-brand-muted hover:text-white transition-colors">
                             Login
                         </Link>
-                        <button className="bg-brand-primary hover:bg-brand-primary-hover text-white font-medium px-5 py-2.5 rounded-[8px] transition-colors text-sm shadow-lg shadow-brand-primary/20">
+                        <button className="bg-brand-primary hover:bg-brand-primary-hover text-white font-medium px-5 py-2.5 rounded-md transition-colors text-sm">
                             Book Strategy Call
                         </button>
                     </div>

@@ -64,7 +64,7 @@ export default function Pricing() {
 
                         <Link
                             to="/register"
-                            className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-xl font-semibold transition-colors mb-8 flex items-center justify-center gap-2"
+                            className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-md font-semibold transition-colors mb-8 flex items-center justify-center gap-2"
                         >
                             Get Started
                         </Link>
@@ -94,7 +94,7 @@ export default function Pricing() {
                         whileHover={{ y: -8, transition: { duration: 0.2 } }}
                         className="glass-panel p-10 flex flex-col h-full border-brand-primary shadow-[0_0_50px_rgba(6,182,212,0.15)] hover:shadow-[0_0_70px_rgba(6,182,212,0.25)] relative transition-shadow transition-colors duration-300"
                     >
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-primary text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide uppercase shadow-lg shadow-brand-primary/30">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-primary text-white px-4 py-1 rounded-full text-sm font-bold tracking-wide uppercase  shadow-brand-primary/30">
                             Most Popular
                         </div>
 
@@ -108,7 +108,7 @@ export default function Pricing() {
 
                         <Link
                             to="/register"
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] text-white py-3 rounded-xl font-bold transition-all mb-8 flex items-center justify-center gap-2"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.4)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] text-white py-3 rounded-md font-bold transition-all mb-8 flex items-center justify-center gap-2"
                         >
                             Get Started
                         </Link>

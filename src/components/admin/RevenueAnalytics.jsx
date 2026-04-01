@@ -26,7 +26,7 @@ export default function RevenueAnalytics({ revenue }) {
     return (
         <div className="glass-panel overflow-hidden">
             <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                <div className="p-2 bg-emerald-500/10 rounded-md border border-emerald-500/20">
                     <DollarSign className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
@@ -59,7 +59,7 @@ export default function RevenueAnalytics({ revenue }) {
 
                 {/* Tier Breakdown Bars */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="p-4 rounded-xl bg-brand-bg border border-brand-border">
+                    <div className="p-4 rounded-md bg-brand-bg border border-brand-border">
                         <div className="flex items-center justify-between mb-3">
                             <span className="text-sm font-semibold text-white flex items-center gap-2">
                                 <Zap className="w-4 h-4 text-brand-primary" /> Starter Plan
@@ -74,7 +74,7 @@ export default function RevenueAnalytics({ revenue }) {
                         </div>
                         <p className="text-xs text-brand-muted mt-2">{revenue?.breakdown?.starter?.count || 0} companies</p>
                     </div>
-                    <div className="p-4 rounded-xl bg-brand-bg border border-amber-500/20">
+                    <div className="p-4 rounded-md bg-brand-bg border border-amber-500/20">
                         <div className="flex items-center justify-between mb-3">
                             <span className="text-sm font-semibold text-white flex items-center gap-2">
                                 <Sparkles className="w-4 h-4 text-amber-400" /> Growth Plan

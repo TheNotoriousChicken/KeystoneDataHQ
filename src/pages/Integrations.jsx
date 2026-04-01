@@ -90,16 +90,16 @@ export default function Integrations() {
                     {integrations.map((integration) => (
                         <div key={integration.id} className="glass-panel p-6 flex flex-col h-full border-brand-border/50 hover:border-brand-border transition-colors">
                             <div className="flex items-start justify-between mb-4">
-                                <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-brand-border shadow-sm shadow-black/20" style={{ backgroundColor: `${integration.color}15` }}>
+                                <div className="w-12 h-12 rounded-md flex items-center justify-center border border-brand-border" style={{ backgroundColor: `${integration.color}15` }}>
                                     <integration.icon className="w-6 h-6" style={{ color: integration.color }} />
                                 </div>
                                 {integration.status === 'connected' ? (
-                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-secondary/10 border border-brand-secondary/20">
+                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-brand-secondary/10 border border-brand-secondary/20">
                                         <CheckCircle2 className="w-4 h-4 text-brand-secondary" />
                                         <span className="text-xs font-medium text-brand-secondary">Connected</span>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-surface border border-brand-border">
+                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-brand-surface border border-brand-border">
                                         <XCircle className="w-4 h-4 text-brand-muted" />
                                         <span className="text-xs font-medium text-brand-muted">Disconnected</span>
                                     </div>
@@ -115,9 +115,9 @@ export default function Integrations() {
                                 </span>
                                 <button
                                     onClick={() => handleConnectClick(integration.id)}
-                                    className={`px-4 py-2 rounded-[8px] text-sm font-semibold transition-all ${integration.status === 'connected'
+                                    className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${integration.status === 'connected'
                                         ? 'bg-brand-surface border border-brand-border text-white hover:border-brand-primary'
-                                        : 'bg-brand-primary text-white hover:bg-brand-primary-hover shadow-lg shadow-brand-primary/20'
+                                        : 'bg-brand-primary text-white hover:bg-brand-primary-hover'
                                         }`}
                                 >
                                     {integration.status === 'connected' ? 'Manage' : 'Connect API'}

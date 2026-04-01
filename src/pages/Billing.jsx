@@ -151,7 +151,7 @@ export default function Billing() {
                         {/* Starter Plan Card */}
                         <div className="glass-panel p-8 flex flex-col border-brand-border/50 hover:border-brand-border transition-all duration-300 group">
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 rounded-xl bg-brand-surface border border-brand-border flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-md bg-brand-surface border border-brand-border flex items-center justify-center">
                                     <Zap className="w-5 h-5 text-brand-primary" />
                                 </div>
                                 <h4 className="text-xl font-bold text-white">Starter</h4>
@@ -175,7 +175,7 @@ export default function Billing() {
                             <button
                                 onClick={() => handleCheckout('STARTER')}
                                 disabled={checkoutLoading === 'STARTER'}
-                                className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-xl font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full bg-brand-surface border border-brand-border hover:border-brand-primary text-white py-3 rounded-md font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {checkoutLoading === 'STARTER' ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -187,12 +187,12 @@ export default function Billing() {
 
                         {/* Growth Plan Card — Highlighted */}
                         <div className="glass-panel p-8 flex flex-col border-brand-primary/60 shadow-[0_0_40px_rgba(6,182,212,0.12)] hover:shadow-[0_0_60px_rgba(6,182,212,0.2)] transition-all duration-300 relative">
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-primary text-white px-4 py-1 rounded-full text-xs font-bold tracking-wide uppercase shadow-lg shadow-brand-primary/30">
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-primary text-white px-4 py-1 rounded-full text-xs font-bold tracking-wide uppercase  shadow-brand-primary/30">
                                 Most Popular
                             </div>
 
                             <div className="flex items-center gap-3 mb-2">
-                                <div className="w-10 h-10 rounded-xl bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-md bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center">
                                     <Sparkles className="w-5 h-5 text-brand-primary" />
                                 </div>
                                 <h4 className="text-xl font-bold text-white">Growth</h4>
@@ -218,7 +218,7 @@ export default function Billing() {
                             <button
                                 onClick={() => handleCheckout('GROWTH')}
                                 disabled={checkoutLoading === 'GROWTH'}
-                                className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)] text-white py-3 rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                className="w-full bg-brand-primary hover:bg-brand-primary-hover shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)] text-white py-3 rounded-md font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                                 {checkoutLoading === 'GROWTH' ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

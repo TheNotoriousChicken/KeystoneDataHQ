@@ -90,16 +90,16 @@ export default function ImageUploader({ endpoint, label, currentImageUrl, onUplo
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                 <div className="shrink-0">
                     {displayUrl ? (
-                        <img src={displayUrl} alt="Preview" className="w-20 h-20 rounded-full object-cover border border-brand-border bg-brand-surface" />
+                        <img src={displayUrl} alt="Preview" className="w-20 h-20 rounded-md object-cover border border-brand-border bg-[#050505]" />
                     ) : (
-                        <div className="w-20 h-20 rounded-full bg-brand-surface/50 border border-brand-border flex items-center justify-center text-brand-muted text-xs">
+                        <div className="w-20 h-20 rounded-md bg-[#050505] border border-brand-border flex items-center justify-center text-brand-muted text-xs">
                             No image
                         </div>
                     )}
                 </div>
 
                 <div
-                    className={`flex-1 w-full border-2 border-dashed rounded-xl p-6 text-center transition-all cursor-pointer ${isDragging ? 'border-brand-primary bg-brand-primary/5' : 'border-brand-border hover:border-brand-primary/50 hover:bg-brand-surface/50'
+                    className={`flex-1 w-full border-2 border-dashed rounded-md p-6 text-center transition-all cursor-pointer ${isDragging ? 'border-brand-primary bg-brand-primary/5' : 'border-brand-border hover:border-brand-primary/50 hover:bg-[#050505]'
                         }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}

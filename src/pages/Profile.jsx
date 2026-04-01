@@ -120,15 +120,15 @@ export default function Profile() {
                     <Skeleton className="h-8 w-48 mb-2" />
                     <Skeleton className="h-4 w-96" />
                 </div>
-                <Skeleton className="h-[400px] w-full rounded-xl" />
-                <Skeleton className="h-[300px] w-full rounded-xl" />
+                <Skeleton className="h-[400px] w-full rounded-md" />
+                <Skeleton className="h-[300px] w-full rounded-md" />
             </div>
         );
     }
 
     if (initialFetchError) {
         return (
-            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-xl max-w-2xl">
+            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-md max-w-2xl">
                 <p className="text-rose-400 font-medium">{initialFetchError}</p>
             </div>
         );
@@ -182,7 +182,7 @@ export default function Profile() {
                                     required
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
-                                    className="w-full bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-brand-surface/50 border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
                                 />
                             </div>
                             <div>
@@ -192,7 +192,7 @@ export default function Profile() {
                                     required
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
-                                    className="w-full bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                    className="w-full bg-brand-surface/50 border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
                                 />
                             </div>
                         </div>
@@ -206,7 +206,7 @@ export default function Profile() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors mb-2"
+                                className="w-full bg-brand-surface/50 border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors mb-2"
                             />
 
                             {/* Email Verification Status */}
@@ -215,7 +215,7 @@ export default function Profile() {
                                     <CheckCircle2 className="w-3.5 h-3.5" /> Email address verified
                                 </p>
                             ) : (
-                                <div className="mt-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-start gap-2">
+                                <div className="mt-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-md flex items-start gap-2">
                                     <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-xs font-medium text-amber-500 mb-0.5">Verification Pending</p>
@@ -234,7 +234,7 @@ export default function Profile() {
                                     initial={{ opacity: 0, height: 0, marginTop: 0 }}
                                     animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
                                     exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                                    className={`p-3 rounded-lg border text-sm flex items-start gap-2 ${profileMessage.type === 'error'
+                                    className={`p-3 rounded-md border text-sm flex items-start gap-2 ${profileMessage.type === 'error'
                                         ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                                         : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                                         }`}
@@ -249,7 +249,7 @@ export default function Profile() {
                             <button
                                 type="submit"
                                 disabled={isSavingProfile || (firstName === profile.firstName && lastName === profile.lastName && email === profile.email)}
-                                className="bg-brand-primary hover:bg-brand-primary-hover text-white px-5 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                                className="bg-brand-primary hover:bg-brand-primary-hover text-white px-5 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                             >
                                 {isSavingProfile && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                                 Save Changes
@@ -279,7 +279,7 @@ export default function Profile() {
                                 required
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="w-full bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                className="w-full bg-brand-surface/50 border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
                             />
                         </div>
                         <div>
@@ -292,7 +292,7 @@ export default function Profile() {
                                 minLength={8}
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full bg-brand-surface/50 border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
+                                className="w-full bg-brand-surface/50 border border-brand-border rounded-md px-4 py-2.5 text-white placeholder-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/30 transition-colors"
                             />
                             <p className="text-[11px] text-brand-muted mt-1.5">Must be at least 8 characters.</p>
                         </div>
@@ -304,7 +304,7 @@ export default function Profile() {
                                     initial={{ opacity: 0, height: 0, marginTop: 0 }}
                                     animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
                                     exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                                    className={`p-3 rounded-lg border text-sm flex items-start gap-2 ${passwordMessage.type === 'error'
+                                    className={`p-3 rounded-md border text-sm flex items-start gap-2 ${passwordMessage.type === 'error'
                                         ? 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                                         : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
                                         }`}
@@ -319,7 +319,7 @@ export default function Profile() {
                             <button
                                 type="submit"
                                 disabled={isSavingPassword || !currentPassword || !newPassword}
-                                className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white px-5 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
+                                className="bg-brand-surface border border-brand-border hover:border-brand-primary text-white px-5 py-2 rounded-md font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
                             >
                                 {isSavingPassword && <div className="w-4 h-4 border-2 border-brand-muted border-t-white rounded-full animate-spin" />}
                                 Update Password

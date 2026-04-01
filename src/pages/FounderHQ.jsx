@@ -27,14 +27,14 @@ const usd = (value) => `$${(value || 0).toLocaleString()}`;
 // ── Stat Card ──
 function StatCard({ icon: Icon, label, value, sub, iconColor = 'text-brand-primary', bg = 'bg-brand-surface' }) {
     return (
-        <div className="p-5 rounded-xl bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 group">
+        <div className="p-5 rounded-md bg-gradient-to-br from-brand-surface to-brand-surface/50 border border-brand-border/50 group">
             <div className="flex items-start justify-between">
                 <div>
                     <p className="text-brand-muted font-medium text-xs mb-1">{label}</p>
                     <h3 className="text-2xl font-bold text-white">{value}</h3>
                     {sub && <p className="text-[11px] text-brand-muted mt-1">{sub}</p>}
                 </div>
-                <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center flex-shrink-0 border border-brand-border`}>
+                <div className={`w-9 h-9 rounded-md ${bg} flex items-center justify-center flex-shrink-0 border border-brand-border`}>
                     <Icon className={`w-4 h-4 ${iconColor}`} />
                 </div>
             </div>
@@ -140,16 +140,16 @@ export default function FounderHQ() {
             <div className="max-w-7xl mx-auto space-y-6">
                 <div><Skeleton className="h-8 w-64 mb-2" /><Skeleton className="h-4 w-96" /></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <Skeleton key={i} className="h-28 rounded-xl" />)}
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <Skeleton key={i} className="h-28 rounded-md" />)}
                 </div>
-                <Skeleton className="h-96 w-full rounded-xl" />
+                <Skeleton className="h-96 w-full rounded-md" />
             </div>
         );
     }
 
     if ((error || queryError) && !stats) {
         return (
-            <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-xl max-w-2xl">
+            <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-md max-w-2xl">
                 <p className="text-red-400 font-medium">{error}</p>
             </div>
         );
@@ -170,7 +170,7 @@ export default function FounderHQ() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setShowConcierge(true)}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors shadow-lg shadow-brand-primary/20"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-primary text-white rounded-md hover:bg-brand-primary/90 transition-colors  shadow-brand-primary/20"
                     >
                         <Sparkles className="w-4 h-4" />
                         Generate Client
@@ -178,14 +178,14 @@ export default function FounderHQ() {
                     <button
                         onClick={handleTriggerSync}
                         disabled={syncTriggered}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-lg hover:border-brand-primary transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-md hover:border-brand-primary transition-colors disabled:opacity-50"
                     >
                         <RefreshCw className={`w-4 h-4 ${syncTriggered ? 'animate-spin' : ''}`} />
                         {syncTriggered ? 'Syncing…' : 'Trigger Sync'}
                     </button>
                     <button
                         onClick={exportCompaniesCSV}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-lg hover:border-brand-primary transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-brand-surface border border-brand-border text-white rounded-md hover:border-brand-primary transition-colors"
                     >
                         <Download className="w-4 h-4" />
                         Export CSV
@@ -194,7 +194,7 @@ export default function FounderHQ() {
             </div>
 
             {error && (
-                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-sm text-red-400">{error}</div>
+                <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-md text-sm text-red-400">{error}</div>
             )}
 
             {/* ═══ REVENUE ANALYTICS ═══ */}
@@ -217,7 +217,7 @@ export default function FounderHQ() {
 
             {/* ═══ PLATFORM OVERVIEW CARDS ═══ */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-5 rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-surface border border-brand-primary/20">
+                <div className="p-5 rounded-md bg-gradient-to-br from-brand-primary/10 to-brand-surface border border-brand-primary/20">
                     <div className="flex items-start justify-between">
                         <div>
                             <p className="text-brand-primary font-medium text-xs mb-1 flex items-center gap-1.5">
@@ -228,7 +228,7 @@ export default function FounderHQ() {
                                 {revenue?.activeSubs || 0} active · {revenue?.churnRate || 0}% churn
                             </p>
                         </div>
-                        <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                        <div className="w-10 h-10 rounded-md bg-emerald-500/20 flex items-center justify-center flex-shrink-0 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                             <DollarSign className="w-5 h-5 text-emerald-400" />
                         </div>
                     </div>
@@ -242,7 +242,7 @@ export default function FounderHQ() {
             {signups && (signups.companies?.length > 0 || signups.users?.length > 0) && (
                 <div className="glass-panel overflow-hidden">
                     <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                        <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                        <div className="p-2 bg-emerald-500/10 rounded-md border border-emerald-500/20">
                             <UserPlus className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
@@ -256,7 +256,7 @@ export default function FounderHQ() {
                             <h4 className="text-xs font-bold uppercase tracking-wider text-brand-muted mb-3">New Companies ({signups.companies?.length || 0})</h4>
                             <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
                                 {signups.companies?.map(c => (
-                                    <div key={c.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border/50 flex items-center justify-between">
+                                    <div key={c.id} className="p-3 rounded-md bg-brand-bg border border-brand-border/50 flex items-center justify-between">
                                         <div>
                                             <span className="text-sm font-medium text-white">{c.name}</span>
                                             <span className={`ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full uppercase ${c.tier === 'GROWTH' ? 'bg-amber-500/20 text-amber-400' : c.tier === 'STARTER' ? 'bg-brand-primary/20 text-brand-primary' : 'bg-brand-surface text-brand-muted'}`}>
@@ -276,7 +276,7 @@ export default function FounderHQ() {
                             <h4 className="text-xs font-bold uppercase tracking-wider text-brand-muted mb-3">New Users ({signups.users?.length || 0})</h4>
                             <div className="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
                                 {signups.users?.map(u => (
-                                    <div key={u.id} className="p-3 rounded-lg bg-brand-bg border border-brand-border/50 flex items-center justify-between">
+                                    <div key={u.id} className="p-3 rounded-md bg-brand-bg border border-brand-border/50 flex items-center justify-between">
                                         <div>
                                             <span className="text-sm font-medium text-white">{u.name}</span>
                                             <span className="text-xs text-brand-muted ml-2">{u.company}</span>
@@ -297,7 +297,7 @@ export default function FounderHQ() {
             <div className="glass-panel overflow-hidden">
                 <div className="p-6 border-b border-brand-border flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-brand-surface rounded-lg border border-brand-border">
+                        <div className="p-2 bg-brand-surface rounded-md border border-brand-border">
                             <Cable className="w-5 h-5 text-indigo-400" />
                         </div>
                         <div>
@@ -308,19 +308,19 @@ export default function FounderHQ() {
                 </div>
                 <div className="p-6">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="p-4 rounded-xl bg-brand-bg border border-brand-border text-center">
+                        <div className="p-4 rounded-md bg-brand-bg border border-brand-border text-center">
                             <p className="text-sm font-medium text-brand-muted mb-1">Total Connections</p>
                             <p className="text-2xl font-bold text-white">{health?.metrics?.total || 0}</p>
                         </div>
-                        <div className="p-4 rounded-xl bg-brand-bg border border-emerald-500/20 text-center">
+                        <div className="p-4 rounded-md bg-brand-bg border border-emerald-500/20 text-center">
                             <p className="text-sm font-medium text-emerald-400 mb-1">Healthy Syncs</p>
                             <p className="text-2xl font-bold text-white">{health?.metrics?.successful || 0}</p>
                         </div>
-                        <div className="p-4 rounded-xl bg-brand-bg border border-brand-border text-center">
+                        <div className="p-4 rounded-md bg-brand-bg border border-brand-border text-center">
                             <p className="text-sm font-medium text-brand-muted mb-1">Pending Syncs</p>
                             <p className="text-2xl font-bold text-white">{health?.metrics?.pending || 0}</p>
                         </div>
-                        <div className={`p-4 rounded-xl border text-center ${health?.metrics?.failed > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-brand-bg border-brand-border'}`}>
+                        <div className={`p-4 rounded-md border text-center ${health?.metrics?.failed > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-brand-bg border-brand-border'}`}>
                             <p className={`text-sm font-medium mb-1 ${health?.metrics?.failed > 0 ? 'text-red-400' : 'text-brand-muted'}`}>Failed Syncs</p>
                             <div className="flex items-baseline justify-center gap-2">
                                 <p className="text-2xl font-bold text-white">{health?.metrics?.failed || 0}</p>
@@ -332,14 +332,14 @@ export default function FounderHQ() {
                     </div>
                     <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Recent Sync Errors</h4>
                     {health?.recentErrors?.length === 0 ? (
-                        <div className="text-center py-8 text-brand-muted bg-brand-bg rounded-xl border border-brand-border">
+                        <div className="text-center py-8 text-brand-muted bg-brand-bg rounded-md border border-brand-border">
                             <Activity className="w-8 h-8 mx-auto mb-2 opacity-50" />
                             <p>All integrations operating normally.</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
                             {health?.recentErrors?.map((err, idx) => (
-                                <div key={idx} className="p-4 rounded-xl bg-brand-bg border border-red-500/20 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                                <div key={idx} className="p-4 rounded-md bg-brand-bg border border-red-500/20 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-brand-surface text-brand-muted uppercase tracking-wider">{err.platformName}</span>
@@ -385,8 +385,8 @@ export default function FounderHQ() {
 
             {/* ═══ DELETE CONFIRMATION MODAL ═══ */}
             {deletingCompany && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-brand-bg border border-red-500/30 rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60  animate-in fade-in duration-200">
+                    <div className="bg-brand-bg border border-red-500/30 rounded-md  max-w-md w-full overflow-hidden">
                         <div className="p-6">
                             <div className="flex items-center gap-3 mb-4 text-red-500">
                                 <AlertTriangle className="w-8 h-8" />
@@ -403,18 +403,18 @@ export default function FounderHQ() {
                                 type="text"
                                 value={deleteConfirmText}
                                 onChange={(e) => setDeleteConfirmText(e.target.value)}
-                                className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2 mb-6 text-white text-sm focus:outline-none focus:border-red-500/50"
+                                className="w-full bg-brand-surface border border-brand-border rounded-md px-4 py-2 mb-6 text-white text-sm focus:outline-none focus:border-red-500/50"
                                 placeholder={deletingCompany.name}
                             />
                             <div className="flex gap-3 justify-end">
                                 <button
                                     onClick={() => { setDeletingCompany(null); setDeleteConfirmText(''); }}
-                                    className="px-4 py-2 text-sm font-semibold text-white bg-brand-surface hover:bg-brand-surface/80 rounded-lg transition-colors"
+                                    className="px-4 py-2 text-sm font-semibold text-white bg-brand-surface hover:bg-brand-surface/80 rounded-md transition-colors"
                                 >Cancel</button>
                                 <button
                                     onClick={() => handleDeleteCompany(deletingCompany.id)}
                                     disabled={deleteConfirmText !== deletingCompany.name}
-                                    className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-500 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-500 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >PERMANENTLY DELETE</button>
                             </div>
                         </div>

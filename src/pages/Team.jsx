@@ -89,13 +89,13 @@ export default function Team() {
 
             {/* Error & Success States */}
             {error && (
-                <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                <div className="p-4 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">
                     {error}
                 </div>
             )}
 
             {inviteSuccess && (
-                <div className="p-4 rounded-lg bg-brand-secondary/10 border border-brand-secondary/20 text-sm">
+                <div className="p-4 rounded-md bg-brand-secondary/10 border border-brand-secondary/20 text-sm">
                     <p className="text-brand-secondary font-medium mb-1 flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4" />
                         Invitation Created Successfully
@@ -191,7 +191,7 @@ export default function Team() {
                 {/* Right Col - Invite Form */}
                 <div className="lg:col-span-1">
                     <div className="glass-panel p-6 sticky top-28">
-                        <div className="w-10 h-10 rounded-lg bg-brand-primary/10 flex items-center justify-center mb-4">
+                        <div className="w-10 h-10 rounded-md bg-brand-primary/10 flex items-center justify-center mb-4">
                             <UserPlus className="w-5 h-5 text-brand-primary" />
                         </div>
                         <h3 className="text-lg font-bold text-white mb-2">Invite Colleague</h3>
@@ -210,13 +210,13 @@ export default function Team() {
                                     placeholder="colleague@company.com"
                                     value={inviteEmail}
                                     onChange={(e) => setInviteEmail(e.target.value)}
-                                    className="w-full bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+                                    className="w-full bg-brand-bg border border-brand-border rounded-md px-4 py-2.5 text-sm text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={isInviting || !inviteEmail}
-                                className="w-full py-2.5 px-4 bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold rounded-lg transition-all shadow-lg shadow-brand-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full py-2.5 px-4 bg-brand-primary hover:bg-brand-primary-hover text-white text-sm font-semibold rounded-md transition-all  shadow-brand-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {isInviting ? (
                                     <>

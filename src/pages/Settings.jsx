@@ -173,19 +173,19 @@ export default function Settings() {
                 <div className="glass-panel p-8">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-lg font-bold text-white">Personal Information</h3>
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand-surface border border-brand-border text-brand-muted">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-brand-surface border border-brand-border text-brand-muted">
                             <Shield className="w-3.5 h-3.5" />
                             Role: {authUser?.role}
                         </span>
                     </div>
 
                     {profileSuccess && (
-                        <div className="mb-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400 flex items-center gap-2">
+                        <div className="mb-6 p-4 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400 flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4" /> {profileSuccess}
                         </div>
                     )}
                     {profileError && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                        <div className="mb-6 p-4 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">
                             {profileError}
                         </div>
                     )}
@@ -201,7 +201,7 @@ export default function Settings() {
                                         required
                                         value={profileForm.firstName}
                                         onChange={(e) => setProfileForm({ ...profileForm, firstName: e.target.value })}
-                                        className="w-full pl-10 pr-4 py-2 bg-brand-surface border border-brand-border rounded-[8px] text-white focus:outline-none focus:border-brand-primary"
+                                        className="w-full pl-10 pr-4 py-2 bg-[#050505] border border-brand-border rounded-md text-white focus:outline-none focus:border-brand-primary"
                                     />
                                 </div>
                             </div>
@@ -214,7 +214,7 @@ export default function Settings() {
                                         required
                                         value={profileForm.lastName}
                                         onChange={(e) => setProfileForm({ ...profileForm, lastName: e.target.value })}
-                                        className="w-full pl-10 pr-4 py-2 bg-brand-surface border border-brand-border rounded-[8px] text-white focus:outline-none focus:border-brand-primary"
+                                        className="w-full pl-10 pr-4 py-2 bg-[#050505] border border-brand-border rounded-md text-white focus:outline-none focus:border-brand-primary"
                                     />
                                 </div>
                             </div>
@@ -228,7 +228,7 @@ export default function Settings() {
                                     type="email"
                                     disabled
                                     value={profileForm.email}
-                                    className="w-full pl-10 pr-4 py-2 bg-brand-surface/50 border border-brand-border rounded-[8px] text-brand-muted cursor-not-allowed"
+                                    className="w-full pl-10 pr-4 py-2 bg-[#050505] border border-brand-border rounded-md text-brand-muted cursor-not-allowed"
                                 />
                             </div>
                             <p className="text-xs text-brand-muted/70 mt-1.5 ml-1">Email cannot be changed online. Contact support.</p>
@@ -246,7 +246,7 @@ export default function Settings() {
                                             placeholder="Leave blank to keep current"
                                             value={profileForm.currentPassword}
                                             onChange={(e) => setProfileForm({ ...profileForm, currentPassword: e.target.value })}
-                                            className="w-full pl-10 pr-4 py-2 bg-brand-surface border border-brand-border rounded-[8px] text-white focus:outline-none focus:border-brand-primary placeholder:text-brand-muted/50 text-sm"
+                                            className="w-full pl-10 pr-4 py-2 bg-[#050505] border border-brand-border rounded-md text-white focus:outline-none focus:border-brand-primary placeholder:text-brand-muted/50 text-sm"
                                         />
                                     </div>
                                 </div>
@@ -259,7 +259,7 @@ export default function Settings() {
                                             placeholder="New 8+ char password"
                                             value={profileForm.newPassword}
                                             onChange={(e) => setProfileForm({ ...profileForm, newPassword: e.target.value })}
-                                            className="w-full pl-10 pr-4 py-2 bg-brand-surface border border-brand-border rounded-[8px] text-white focus:outline-none focus:border-brand-primary placeholder:text-brand-muted/50 text-sm"
+                                            className="w-full pl-10 pr-4 py-2 bg-[#050505] border border-brand-border rounded-md text-white focus:outline-none focus:border-brand-primary placeholder:text-brand-muted/50 text-sm"
                                         />
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@ export default function Settings() {
                             <button
                                 type="submit"
                                 disabled={isSavingProfile}
-                                className="bg-brand-primary hover:bg-brand-primary-hover text-white px-6 py-2 rounded-[8px] font-medium transition-colors shadow-lg shadow-brand-primary/20 disabled:opacity-50 flex items-center gap-2"
+                                className="bg-brand-primary hover:bg-brand-primary-hover text-white px-6 py-2 rounded-md font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
                             >
                                 {isSavingProfile ? 'Saving...' : 'Save Profile Details'}
                             </button>
@@ -294,12 +294,12 @@ export default function Settings() {
                     )}
 
                     {companySuccess && (
-                        <div className="mb-6 p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400 flex items-center gap-2">
+                        <div className="mb-6 p-4 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-sm text-emerald-400 flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4" /> {companySuccess}
                         </div>
                     )}
                     {companyError && (
-                        <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">
+                        <div className="mb-6 p-4 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">
                             {companyError}
                         </div>
                     )}
@@ -315,8 +315,8 @@ export default function Settings() {
                                     disabled={authUser?.role !== 'ADMIN'}
                                     value={companyForm.name}
                                     onChange={(e) => setCompanyForm({ ...companyForm, name: e.target.value })}
-                                    className={`w-full pl-10 pr-4 py-2 border rounded-[8px] text-white focus:outline-none transition-colors ${authUser?.role === 'ADMIN'
-                                        ? 'bg-brand-surface border-brand-border focus:border-brand-primary'
+                                    className={`w-full pl-10 pr-4 py-2 border rounded-md text-white focus:outline-none transition-colors ${authUser?.role === 'ADMIN'
+                                        ? 'bg-[#050505] border-brand-border focus:border-brand-primary'
                                         : 'bg-brand-surface/50 border-brand-border/50 text-brand-muted cursor-not-allowed'
                                         }`}
                                 />
@@ -327,11 +327,11 @@ export default function Settings() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-6 pt-2">
-                            <div className="p-4 bg-brand-surface/30 border border-brand-border rounded-lg">
+                            <div className="p-4 bg-[#050505] border border-brand-border rounded-md">
                                 <p className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1">Billing Tier</p>
                                 <p className="text-white font-bold">{companyForm.tier}</p>
                             </div>
-                            <div className="p-4 bg-brand-surface/30 border border-brand-border rounded-lg">
+                            <div className="p-4 bg-[#050505] border border-brand-border rounded-md">
                                 <p className="text-xs font-semibold text-brand-muted uppercase tracking-wider mb-1">Subscription Status</p>
                                 <p className={`font-bold capitalize ${companyForm.status === 'active' ? 'text-emerald-400' : 'text-amber-400'}`}>
                                     {companyForm.status}
@@ -344,7 +344,7 @@ export default function Settings() {
                                 <button
                                     type="submit"
                                     disabled={isSavingCompany}
-                                    className="bg-brand-surface hover:bg-brand-surface/80 border border-brand-border text-white px-6 py-2 rounded-[8px] font-medium transition-colors disabled:opacity-50"
+                                    className="bg-brand-surface hover:bg-brand-surface/80 border border-brand-border text-white px-6 py-2 rounded-md font-medium transition-colors disabled:opacity-50"
                                 >
                                     {isSavingCompany ? 'Saving...' : 'Update Company'}
                                 </button>

@@ -76,7 +76,7 @@ export default function UserDirectory() {
                         placeholder="Search users..." 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-brand-surface border border-brand-border rounded-lg text-sm text-white focus:border-brand-primary outline-none"
+                        className="w-full pl-9 pr-4 py-2 bg-brand-surface border border-brand-border rounded-md text-sm text-white focus:border-brand-primary outline-none"
                     />
                 </div>
             </div>

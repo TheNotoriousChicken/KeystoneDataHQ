@@ -20,7 +20,7 @@ export default function HealthTable({ companies, handleImpersonate, impersonatin
     return (
         <div className="glass-panel overflow-hidden">
             <div className="p-6 border-b border-brand-border flex items-center gap-3">
-                <div className="p-2 bg-brand-surface rounded-lg"><Activity className="w-4 h-4 text-brand-primary" /></div>
+                <div className="p-2 bg-brand-surface rounded-md"><Activity className="w-4 h-4 text-brand-primary" /></div>
                 <div>
                     <h3 className="text-lg font-bold text-white">Platform Tenants & Health</h3>
                     <p className="text-sm text-brand-muted">All companies ranked by MRR with health indicators.</p>

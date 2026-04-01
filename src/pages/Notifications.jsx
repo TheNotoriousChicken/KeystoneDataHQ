@@ -98,7 +98,7 @@ export default function Notifications() {
 
     if (error) {
         return (
-            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-xl max-w-4xl">
+            <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-md max-w-4xl">
                 <p className="text-rose-400 font-medium">{error}</p>
             </div>
         );
@@ -117,7 +117,7 @@ export default function Notifications() {
                 {unreadCount > 0 && (
                     <button
                         onClick={handleMarkAllRead}
-                        className="bg-brand-surface hover:bg-brand-surface/80 text-white font-medium px-4 py-2 rounded-lg transition-colors border border-brand-border text-sm flex items-center gap-2"
+                        className="bg-brand-surface hover:bg-brand-surface/80 text-white font-medium px-4 py-2 rounded-md transition-colors border border-brand-border text-sm flex items-center gap-2"
                     >
                         <Check className="w-4 h-4 text-brand-primary" />
                         Mark all as read

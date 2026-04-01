@@ -52,8 +52,8 @@ export default function MetaModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="glass-panel w-full max-w-md p-6 relative border-brand-border shadow-2xl animate-fade-in-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+            <div className="glass-panel w-full max-w-md p-6 relative border-brand-border animate-fade-in-up">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors"
@@ -62,7 +62,7 @@ export default function MetaModal({ isOpen, onClose }) {
                 </button>
 
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center border border-brand-border" style={{ backgroundColor: '#1877F215' }}>
+                    <div className="w-10 h-10 rounded-md flex items-center justify-center border border-brand-border" style={{ backgroundColor: '#1877F215' }}>
                         <Facebook className="w-5 h-5 text-[#1877F2]" />
                     </div>
                     <div>
@@ -80,7 +80,7 @@ export default function MetaModal({ isOpen, onClose }) {
                             onChange={(e) => setAdAccountId(e.target.value)}
                             placeholder="act_123456789..."
                             required
-                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+                            className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary"
                         />
                     </div>
                     <div>
@@ -91,15 +91,15 @@ export default function MetaModal({ isOpen, onClose }) {
                             onChange={(e) => setMetaToken(e.target.value)}
                             placeholder="EAAB..."
                             required
-                            className="w-full bg-brand-surface border border-brand-border rounded-lg px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all"
+                            className="w-full bg-[#050505] border border-brand-border rounded-md px-4 py-2.5 text-white placeholder:text-brand-muted/50 focus:outline-none focus:border-brand-primary"
                         />
                     </div>
 
                     {error && (
-                        <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">{error}</div>
+                        <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-sm text-red-400">{error}</div>
                     )}
                     {successMsg && (
-                        <div className="p-3 rounded-lg bg-brand-secondary/10 border border-brand-secondary/20 text-sm text-brand-secondary flex items-center gap-2">
+                        <div className="p-3 rounded-md bg-brand-secondary/10 border border-brand-secondary/20 text-sm text-brand-secondary flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4" />{successMsg}
                         </div>
                     )}
@@ -108,7 +108,7 @@ export default function MetaModal({ isOpen, onClose }) {
                         <button
                             type="submit"
                             disabled={metaMutation.isPending}
-                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-2.5 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-brand-primary/20 flex items-center justify-center gap-2"
+                            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white font-semibold py-2.5 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {metaMutation.isPending ? (
                                 <>

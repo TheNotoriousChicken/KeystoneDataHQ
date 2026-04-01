@@ -98,7 +98,7 @@ export default function NotificationDropdown() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-brand-bg border border-brand-border rounded-xl shadow-2xl z-50 overflow-hidden transform opacity-100 scale-100 transition-all origin-top-right">
+                <div className="absolute right-0 mt-2 w-80 bg-[#050505] border border-brand-border rounded-md z-50 overflow-hidden transform opacity-100 scale-100 transition-all origin-top-right">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border bg-brand-surface/50">
                         <h3 className="font-semibold text-white">Notifications</h3>
                         {unreadCount > 0 && (
@@ -152,7 +152,7 @@ export default function NotificationDropdown() {
                     <div className="p-2 border-t border-brand-border bg-brand-surface/30">
                         <button
                             onClick={() => { setIsOpen(false); navigate('/dashboard/notifications'); }}
-                            className="w-full text-center text-sm text-brand-muted hover:text-white py-2 transition-colors rounded-lg hover:bg-brand-surface"
+                            className="w-full text-center text-sm text-brand-muted hover:text-white py-2 transition-colors rounded-md hover:bg-brand-surface"
                         >
                             View all notifications →
                         </button>
