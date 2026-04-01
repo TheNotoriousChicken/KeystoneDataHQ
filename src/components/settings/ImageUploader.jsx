@@ -81,7 +81,9 @@ export default function ImageUploader({ endpoint, label, currentImageUrl, onUplo
         }
     };
 
-    const displayUrl = previewUrl?.startsWith('/uploads') ? `${import.meta.env.VITE_API_URL}${previewUrl}` : previewUrl;
+    const displayUrl = (previewUrl?.startsWith('http') || previewUrl?.startsWith('blob:')) 
+        ? previewUrl 
+        : (previewUrl ? `${import.meta.env.VITE_API_URL}${previewUrl}` : null);
 
     return (
         <div className="space-y-4">

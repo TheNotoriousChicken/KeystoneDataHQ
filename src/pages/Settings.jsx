@@ -287,7 +287,7 @@ export default function Settings() {
                             <ImageUploader
                                 endpoint="upload-logo"
                                 label="Company Logo"
-                                currentImageUrl={companyForm.logoUrl ? `${import.meta.env.VITE_API_URL}${companyForm.logoUrl}` : null}
+                                currentImageUrl={companyForm.logoUrl ? (companyForm.logoUrl.startsWith('http') ? companyForm.logoUrl : `${import.meta.env.VITE_API_URL}${companyForm.logoUrl}`) : null}
                                 onUploadSuccess={(url) => setCompanyForm({ ...companyForm, logoUrl: url })}
                             />
                         </div>

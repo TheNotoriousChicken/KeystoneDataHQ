@@ -7,26 +7,19 @@ const prisma = require('../db');
 const authMiddleware = require('../middleware/authMiddleware');
 const requireRole = require('../middleware/requireRole');
 
+const { createClient } = require('@supabase/supabase-js');
+
 const router = express.Router();
 const SALT_ROUNDS = 12;
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../public/uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Initialize Supabase Client
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_KEY
+);
 
-// Multer config
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-    }
-});
+// Multer config: Use memory storage so we can stream directly to Supabase
+const storage = multer.memoryStorage();
 
 const upload = multer({
     storage: storage,
@@ -144,11 +137,26 @@ router.post('/upload-avatar', authMiddleware, upload.single('avatar'), async (re
             return res.status(400).json({ error: 'No file uploaded.' });
         }
 
-        const avatarUrl = `/uploads/${req.file.filename}`;
+        const fileExt = path.extname(req.file.originalname);
+        const fileName = `avatar-${Date.now()}-${Math.round(Math.random() * 1E9)}${fileExt}`;
+        const filePath = `avatars/${fileName}`;
+
+        const { data, error } = await supabase.storage
+            .from('uploads')
+            .upload(filePath, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('uploads')
+            .getPublicUrl(filePath);
 
         const updatedUser = await prisma.user.update({
             where: { id: req.user.userId },
-            data: { avatarUrl },
+            data: { avatarUrl: publicUrl },
             select: { id: true, avatarUrl: true }
         });
 
@@ -169,11 +177,26 @@ router.post('/upload-logo', authMiddleware, upload.single('logo'), async (req, r
             return res.status(400).json({ error: 'No file uploaded.' });
         }
 
-        const logoUrl = `/uploads/${req.file.filename}`;
+        const fileExt = path.extname(req.file.originalname);
+        const fileName = `logo-${Date.now()}-${Math.round(Math.random() * 1E9)}${fileExt}`;
+        const filePath = `logos/${fileName}`;
+
+        const { data, error } = await supabase.storage
+            .from('uploads')
+            .upload(filePath, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            });
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+            .from('uploads')
+            .getPublicUrl(filePath);
 
         const updatedCompany = await prisma.company.update({
             where: { id: req.user.companyId },
-            data: { logoUrl },
+            data: { logoUrl: publicUrl },
             select: { id: true, logoUrl: true }
         });
 

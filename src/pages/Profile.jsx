@@ -146,7 +146,11 @@ export default function Profile() {
                 <div className="border-b border-white/5 p-6 flex items-start gap-4">
                     <div className="w-16 h-16 rounded-full bg-brand-primary/20 flex flex-shrink-0 items-center justify-center text-brand-primary font-bold text-2xl border border-brand-primary/30 overflow-hidden">
                         {profile?.avatarUrl ? (
-                            <img src={`${import.meta.env.VITE_API_URL}${profile.avatarUrl}`} alt="Avatar" className="w-full h-full object-cover" />
+                            <img 
+                                src={profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `${import.meta.env.VITE_API_URL}${profile.avatarUrl}`} 
+                                alt="Avatar" 
+                                className="w-full h-full object-cover" 
+                            />
                         ) : (
                             <>{firstName[0]}{lastName[0]}</>
                         )}
@@ -167,7 +171,7 @@ export default function Profile() {
                         <ImageUploader
                             endpoint="upload-avatar"
                             label="Profile Picture"
-                            currentImageUrl={profile.avatarUrl ? `${import.meta.env.VITE_API_URL}${profile.avatarUrl}` : null}
+                            currentImageUrl={profile.avatarUrl ? (profile.avatarUrl.startsWith('http') ? profile.avatarUrl : `${import.meta.env.VITE_API_URL}${profile.avatarUrl}`) : null}
                             onUploadSuccess={(url) => setProfile({ ...profile, avatarUrl: url })}
                         />
                     </div>
